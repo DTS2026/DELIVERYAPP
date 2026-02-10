@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pedidos – Grupo DN</title>
+<title>Consulta de Pedidos – Grupo DN</title>
 
 <style>
 body {
@@ -41,10 +41,11 @@ header {
   padding: 15px;
 }
 
-select, input, button {
+input, select, button {
   width: 100%;
-  padding: 8px;
-  margin: 5px 0;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 16px;
 }
 
 .card {
@@ -63,10 +64,9 @@ select, input, button {
   background: #25D366;
   color: white;
   border: none;
-  padding: 8px;
-  margin-top: 8px;
-  cursor: pointer;
+  padding: 10px;
   border-radius: 4px;
+  font-weight: bold;
 }
 </style>
 </head>
@@ -86,15 +86,19 @@ select, input, button {
 
   <!-- BUSCADOR -->
   <div id="buscador">
-    <input type="text" id="textoBuscar" placeholder="Buscar cliente, pedido, placa o conductor" onkeyup="buscar()">
+    <input
+      type="text"
+      id="textoBuscar"
+      placeholder="Buscar por código o nombre del cliente"
+      onkeyup="buscar()"
+    >
     <div id="resultados"></div>
   </div>
 
   <!-- POR VENDEDOR -->
   <div id="vendedor" class="hidden">
-    <label>Seleccionar vendedor</label>
     <select id="filtroVendedor" onchange="listarPorVendedor()">
-      <option value="">-- Seleccione --</option>
+      <option value="">Seleccione vendedor</option>
     </select>
     <div id="resultadosVendedor"></div>
   </div>
@@ -127,39 +131,45 @@ function cargarVendedores() {
 }
 
 function buscar() {
-  const txt = textoBuscar.value.toLowerCase();
+  const txt = textoBuscar.value.trim().toLowerCase();
+  resultados.innerHTML = '';
+
+  if (txt.length < 2) return;
+
   const res = pedidos.filter(p =>
-    p["NOMBRE.CLIENTE"]?.toLowerCase().includes(txt) ||
-    p["COM.IDHR_FK"]?.includes(txt) ||
-    p["VEHICULO"]?.toLowerCase().includes(txt) ||
-    p["CONDUCTOR"]?.toLowerCase().includes(txt)
+    String(p["CODIGO.CLIENTE"]).includes(txt) ||
+    p["NOMBRE.CLIENTE"]?.toLowerCase().includes(txt)
   );
+
   mostrar(res, resultados);
 }
 
 function listarPorVendedor() {
   const v = filtroVendedor.value;
+  resultadosVendedor.innerHTML = '';
+
+  if (!v) return;
+
   const res = pedidos.filter(p => p.VENDEDOR === v);
   mostrar(res, resultadosVendedor);
 }
 
 function compartirWhatsApp(p) {
   const texto = `
-📦 *Pedido:* ${p["COM.IDHR_FK"]}
-👤 *Cliente:* ${p["NOMBRE.CLIENTE"]}
-📦 *Producto:* ${p["Descripcion"]}
+📦 Pedido: ${p["COM.IDHR_FK"]}
+👤 Cliente: ${p["NOMBRE.CLIENTE"]}
+📦 Producto: ${p["Descripcion"]}
 
-🚚 *Placa:* ${p["VEHICULO"]}
-👨‍✈️ *Conductor:* ${p["CONDUCTOR"]}
-🧾 *Liquidador:* ${p["LIQUIDADOR"]}
-📞 *Contacto:* ${p["NROS DE CONTACTO"]}
-  `.trim();
+🚚 Placa: ${p["VEHICULO"]}
+👨‍✈️ Conductor: ${p["CONDUCTOR"]}
+🧾 Liquidador: ${p["LIQUIDADOR"]}
+📞 Contacto: ${p["NROS DE CONTACTO"]}
+`.trim();
 
   window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
 }
 
 function mostrar(lista, cont) {
-  cont.innerHTML = '';
   if (!lista.length) {
     cont.innerHTML = '<p>No hay resultados</p>';
     return;
@@ -169,6 +179,7 @@ function mostrar(lista, cont) {
     cont.innerHTML += `
       <div class="card">
         <b>${p["NOMBRE.CLIENTE"]}</b><br>
+        Código: ${p["CODIGO.CLIENTE"]}<br>
         Pedido: ${p["COM.IDHR_FK"]}<br>
         Producto: ${p["Descripcion"]}<br><br>
 
@@ -188,5 +199,3 @@ function mostrar(lista, cont) {
 
 </body>
 </html>
-
-
