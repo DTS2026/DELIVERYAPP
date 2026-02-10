@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta de Pedidos</title>
+
+<style>
+body {
+  font-family: system-ui, Arial, sans-serif;
+  margin: 0;
+  padding: 12px;
+  background: #f6f7f9;
+}
+h2 { text-align: center; }
+
+input, button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+
+.total {
+  background: #e0f2fe;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Pedidos por Cliente</h2>
+
+<input type="number" id="clienteInput" placeholder="Código de Cliente">
+<button onclick="buscar()">Buscar</button>
+
+<div id="totales"></div>
+<div id="resultados"></div>
+
+<script>
+let data = [];
+
+fetch('pedidos.json')
+  .then(r => r.json())
+  .then(json => data = json);
+
+function buscar() {
+  const codigo = document.getElementById('clienteInput').value.trim();
+  const resultados = document.getElementById('resultados');
+  const totales = document.getElementById('totales');
+
+  resultados.innerHTML = '';
+  totales.innerHTML = '';
+
+  let u = 0, kg = 0, monto = 0;
+
+  const rows = data.filter(r => String(r['CODIGO.CLIENTE']) === codigo);
+
+  rows.forEach(r => {
+    u += Number(r['Unidades Programadas'] || 0);
+    kg += Number(r['Kg Programados'] || 0);
+    monto += Number(r['Monto Programado'] || 0);
+
+    resultados.innerHTML += `
+      <div class="card">
+        <strong>${r['Descripcion']}</strong><br>
+        SKU: ${r['SKU']}<br>
+        Unidades: ${r['Unidades Programadas']}<br>
+        Kg: ${r['Kg Programados']}<br>
+        Monto: S/ ${Number(r['Monto Programado']).toFixed(2)}
+      </div>
+    `;
+  });
+
+  if (rows.length) {
+    totales.innerHTML = `
+      <div class="total">
+        Total Unidades: ${u}<br>
+        Total Kg: ${kg.toFixed(2)}<br>
+        Total Monto: S/ ${monto.toFixed(2)}
+      </div>
+    `;
+  } else {
+    resultados.innerHTML = '<p>No se encontraron pedidos.</p>';
+  }
+}
+</script>
+
+</body>
+</html>
