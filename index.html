@@ -30,9 +30,9 @@ header h1 {
   font-size: 18px;
 }
 
-input {
+select, input {
   width: 92%;
-  margin: 12px auto;
+  margin: 10px auto;
   display: block;
   padding: 14px;
   font-size: 16px;
@@ -107,20 +107,45 @@ button {
   <h1>DISTRIBUCION I HOJA DE RUTA GRUPODN</h1>
 </header>
 
+<select id="vendedorSelect">
+  <option value="">🔽 Seleccionar vendedor</option>
+</select>
+
 <input id="buscador" type="text" placeholder="Buscar por código o nombre del cliente">
 
 <div id="resultados"></div>
 
 <script>
 let pedidos = [];
+let pedidosVendedor = [];
 let timer = null;
+
+const vendedorSelect = document.getElementById("vendedorSelect");
+const buscador = document.getElementById("buscador");
+const resultados = document.getElementById("resultados");
 
 fetch("pedidos.json")
   .then(res => res.json())
-  .then(data => pedidos = data);
+  .then(data => {
+    pedidos = data;
+    cargarVendedores();
+  });
 
-const buscador = document.getElementById("buscador");
-const resultados = document.getElementById("resultados");
+function cargarVendedores() {
+  const vendedores = [...new Set(pedidos.map(p => p.empresa).filter(Boolean))].sort();
+  vendedores.forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.textContent = v;
+    vendedorSelect.appendChild(opt);
+  });
+}
+
+vendedorSelect.addEventListener("change", () => {
+  buscador.value = "";
+  resultados.innerHTML = "";
+  pedidosVendedor = pedidos.filter(p => p.empresa === vendedorSelect.value);
+});
 
 buscador.addEventListener("input", () => {
   clearTimeout(timer);
@@ -130,9 +155,9 @@ buscador.addEventListener("input", () => {
 function buscar() {
   const texto = buscador.value.toLowerCase().trim();
   resultados.innerHTML = "";
-  if (texto.length < 2) return;
+  if (!vendedorSelect.value || texto.length < 2) return;
 
-  const filtrados = pedidos.filter(p =>
+  const filtrados = pedidosVendedor.filter(p =>
     String(p["CODIGO.CLIENTE"]).includes(texto) ||
     p["NOMBRE.CLIENTE"].toLowerCase().includes(texto)
   );
@@ -154,7 +179,6 @@ function buscar() {
         productos: []
       };
     }
-
     clientes[key].productos.push(p);
     clientes[key].total += Number(p["Monto"] || 0);
   });
@@ -179,21 +203,20 @@ function pintarCliente(c) {
 
     <div class="total">TOTAL: S/ ${c.total.toFixed(2)}</div>
 
-    <button class="btn-toggle" onclick="toggleProductos(this)">Ver productos</button>
+    <button class="btn-toggle" onclick="toggleProductos(this)">Mostrar productos</button>
     <div class="productos">${productosHTML}</div>
 
     <button class="btn-wsp" onclick='compartir(${JSON.stringify(c)})'>
       📲 Compartir por WhatsApp
     </button>
   `;
-
   resultados.appendChild(div);
 }
 
 function toggleProductos(btn) {
   const prod = btn.nextElementSibling;
   prod.style.display = prod.style.display === "none" ? "block" : "none";
-  btn.textContent = prod.style.display === "none" ? "Ver productos" : "Ocultar productos";
+  btn.textContent = prod.style.display === "none" ? "Mostrar productos" : "Ocultar productos";
 }
 
 function compartir(c) {
@@ -220,6 +243,7 @@ Contacto: ${c.contacto}`;
 
 </body>
 </html>
+
 
 
 
