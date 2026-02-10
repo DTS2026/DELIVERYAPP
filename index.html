@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buscador de Pedidos</title>
+  <title>Pedidos – Ventas</title>
 
   <style>
     body {
@@ -18,47 +18,79 @@
       margin-bottom: 10px;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 12px;
       font-size: 16px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .tabs button {
+      flex: 1;
+      padding: 10px;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      background: #ddd;
+      cursor: pointer;
+    }
+
+    .tabs button.active {
+      background: #3498db;
+      color: #fff;
     }
 
     .card {
       background: #fff;
       border-radius: 10px;
       padding: 14px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .card h3 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .card small {
-      color: #666;
     }
 
     ul {
       padding-left: 18px;
+      margin-top: 8px;
     }
 
     li {
-      margin-bottom: 6px;
       font-size: 14px;
+      margin-bottom: 6px;
     }
 
     .totales {
-      margin-top: 10px;
+      margin-top: 8px;
       font-weight: bold;
     }
 
-    button {
+    .estado-btns {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .estado-btns button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .pendiente { background: #f39c12; }
+    .facturado { background: #27ae60; }
+
+    .whatsapp {
       margin-top: 10px;
       width: 100%;
       padding: 12px;
@@ -69,113 +101,192 @@
       color: white;
       cursor: pointer;
     }
-
-    button:hover {
-      opacity: 0.9;
-    }
   </style>
 </head>
 
 <body>
 
-  <h1>📦 Buscador de Pedidos</h1>
+<h1>📦 Pedidos – Ventas</h1>
 
+<div class="tabs">
+  <button id="btn-buscador" class="active" onclick="mostrarTab('buscador')">🔍 Buscador</button>
+  <button id="btn-estado" onclick="mostrarTab('estado')">📊 Estado</button>
+</div>
+
+<!-- ================= TAB BUSCADOR ================= -->
+<div id="tab-buscador">
   <input
     type="text"
     id="buscador"
     placeholder="Código o nombre del cliente"
     onkeyup="buscarCliente()"
   >
-
   <div id="resultados"></div>
+</div>
 
-  <script>
-    let pedidos = [];
+<!-- ================= TAB ESTADO ================= -->
+<div id="tab-estado" style="display:none;">
 
-    fetch('pedidos.json')
-      .then(res => res.json())
-      .then(data => {
-        pedidos = data;
-        console.log('Pedidos cargados:', pedidos.length);
-      })
-      .catch(err => console.error('Error cargando JSON:', err));
+  <select id="vendedorFiltro" onchange="listarPorEstado()">
+    <option value="">Seleccione Vendedor</option>
+  </select>
 
-    function buscarCliente() {
-      const texto = document.getElementById('buscador').value.trim().toLowerCase();
-      const contenedor = document.getElementById('resultados');
-      contenedor.innerHTML = '';
+  <div class="estado-btns">
+    <button class="pendiente" onclick="setEstadoListado('PENDIENTE')">Pendiente</button>
+    <button class="facturado" onclick="setEstadoListado('FACTURADO')">Facturado</button>
+  </div>
 
-      if (texto.length < 2) return;
+  <div id="listaEstado"></div>
+</div>
 
-      const filtrados = pedidos.filter(p =>
-        String(p["CODIGO.CLIENTE"]).includes(texto) ||
-        p["NOMBRE.CLIENTE"].toLowerCase().includes(texto)
-      );
+<script>
+let pedidos = [];
+let estadoListado = 'PENDIENTE';
 
-      if (filtrados.length === 0) {
-        contenedor.innerHTML = '<p>No se encontraron pedidos</p>';
-        return;
-      }
+fetch('pedidos.json')
+  .then(res => res.json())
+  .then(data => {
+    pedidos = data;
+    console.log('Pedidos cargados:', pedidos.length);
 
-      // Agrupar por cliente
-      const grupos = {};
-      filtrados.forEach(p => {
-        const key = p["CODIGO.CLIENTE"];
-        if (!grupos[key]) grupos[key] = [];
-        grupos[key].push(p);
-      });
+    // cargar vendedores (tipoCliente)
+    const vendedores = [...new Set(data.map(p => p.tipoCliente).filter(v => v))];
+    const select = document.getElementById('vendedorFiltro');
+    vendedores.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v;
+      opt.textContent = v;
+      select.appendChild(opt);
+    });
+  });
 
-      Object.values(grupos).forEach(pedidosCliente => {
-        const cliente = pedidosCliente[0];
+function mostrarTab(tab) {
+  document.getElementById('tab-buscador').style.display = 'none';
+  document.getElementById('tab-estado').style.display = 'none';
+  document.getElementById('btn-buscador').classList.remove('active');
+  document.getElementById('btn-estado').classList.remove('active');
 
-        let totalMonto = 0;
-        let totalUnidades = 0;
-        let productosHTML = '';
+  document.getElementById('tab-' + tab).style.display = 'block';
+  document.getElementById('btn-' + tab).classList.add('active');
+}
 
-        pedidosCliente.forEach(p => {
-          totalMonto += Number(p.Monto || 0);
-          totalUnidades += Number(p["Unidades Programadas"] || 0);
+/* ================= BUSCADOR ================= */
 
-          productosHTML += `
-            <li>
-              ${p.Descripcion}<br>
-              <small>${p["Unidades Programadas"]} ${p.unidad}</small>
-            </li>
-          `;
-        });
+function buscarCliente() {
+  const texto = document.getElementById('buscador').value.trim().toLowerCase();
+  const contenedor = document.getElementById('resultados');
+  contenedor.innerHTML = '';
 
-        contenedor.innerHTML += `
-          <div class="card">
-            <h3>${cliente["NOMBRE.CLIENTE"]}</h3>
-            <small>${cliente.departamento} - ${cliente.distrito}</small>
+  if (texto.length < 2) return;
 
-            <ul>
-              ${productosHTML}
-            </ul>
+  const filtrados = pedidos.filter(p =>
+    String(p["CODIGO.CLIENTE"]).includes(texto) ||
+    p["NOMBRE.CLIENTE"].toLowerCase().includes(texto)
+  );
 
-            <div class="totales">
-              Total Unidades: ${totalUnidades}<br>
-              Total Monto: S/ ${totalMonto.toFixed(2)}
-            </div>
+  if (filtrados.length === 0) {
+    contenedor.innerHTML = '<p>No se encontraron pedidos</p>';
+    return;
+  }
 
-            <button onclick="compartirWhatsApp('${cliente["NOMBRE.CLIENTE"]}', ${totalMonto})">
-              📲 Compartir por WhatsApp
-            </button>
-          </div>
-        `;
-      });
-    }
+  const grupos = {};
+  filtrados.forEach(p => {
+    if (!grupos[p["CODIGO.CLIENTE"]]) grupos[p["CODIGO.CLIENTE"]] = [];
+    grupos[p["CODIGO.CLIENTE"]].push(p);
+  });
 
-    function compartirWhatsApp(cliente, total) {
-      const mensaje = `
+  Object.values(grupos).forEach(lista => {
+    const c = lista[0];
+    let totalMonto = 0;
+    let totalUni = 0;
+    let productos = '';
+
+    lista.forEach(p => {
+      totalMonto += Number(p.Monto || 0);
+      totalUni += Number(p["Unidades Programadas"] || 0);
+
+      productos += `
+        <li>
+          ${p.Descripcion}<br>
+          <small>${p["Unidades Programadas"]} ${p.unidad}</small>
+        </li>
+      `;
+    });
+
+    contenedor.innerHTML += `
+      <div class="card">
+        <strong>${c["NOMBRE.CLIENTE"]}</strong><br>
+        <small>${c.departamento} - ${c.distrito}</small>
+
+        <ul>${productos}</ul>
+
+        <div class="totales">
+          Total Unidades: ${totalUni}<br>
+          Total Monto: S/ ${totalMonto.toFixed(2)}
+        </div>
+
+        <button class="whatsapp"
+          onclick="compartirWhatsApp('${c["NOMBRE.CLIENTE"]}', ${totalMonto})">
+          📲 Compartir por WhatsApp
+        </button>
+      </div>
+    `;
+  });
+}
+
+/* ================= ESTADO ================= */
+
+function setEstadoListado(e) {
+  estadoListado = e;
+  listarPorEstado();
+}
+
+function listarPorEstado() {
+  const vendedor = document.getElementById('vendedorFiltro').value;
+  const cont = document.getElementById('listaEstado');
+  cont.innerHTML = '';
+
+  if (!vendedor) return;
+
+  const filtrados = pedidos.filter(p => {
+    const pendiente = p.FechaPedido === '⚫ Pendiente';
+    const cumpleEstado = estadoListado === 'PENDIENTE' ? pendiente : !pendiente;
+    return p.tipoCliente === vendedor && cumpleEstado;
+  });
+
+  if (filtrados.length === 0) {
+    cont.innerHTML = '<p>No hay pedidos</p>';
+    return;
+  }
+
+  const grupos = {};
+  filtrados.forEach(p => {
+    if (!grupos[p["CODIGO.CLIENTE"]]) grupos[p["CODIGO.CLIENTE"]] = [];
+    grupos[p["CODIGO.CLIENTE"]].push(p);
+  });
+
+  Object.values(grupos).forEach(lista => {
+    const c = lista[0];
+    cont.innerHTML += `
+      <div class="card">
+        <strong>${c["NOMBRE.CLIENTE"]}</strong><br>
+        <small>${c.departamento} - ${c.distrito}</small><br>
+        <small>Pedido: ${c["Nro Pedido"] || '-'}</small>
+      </div>
+    `;
+  });
+}
+
+function compartirWhatsApp(cliente, total) {
+  const msg = `
 Cliente: ${cliente}
-Total facturado: S/ ${total.toFixed(2)}
-      `.trim();
+Total: S/ ${total.toFixed(2)}
+  `.trim();
 
-      const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
-    }
-  </script>
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+}
+</script>
 
 </body>
 </html>
+
