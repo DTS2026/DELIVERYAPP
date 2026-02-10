@@ -2,188 +2,231 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<title>DISTRIBUCION I HOJA DE RUTA GRUPODN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pedidos – Grupo DN</title>
 
 <style>
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f6f8;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f5f5f5;
 }
 
 header {
-  background: #1f3a5f;
-  color: white;
-  padding: 12px;
-  text-align: center;
+    background: #f2c300;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
 }
 
-.container {
-  padding: 15px;
+.tabs {
+    display: flex;
+    background: #333;
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  margin-bottom: 10px;
+.tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    color: #fff;
+    cursor: pointer;
+}
+
+.tab.active {
+    background: #555;
+}
+
+.content {
+    display: none;
+    padding: 15px;
+}
+
+.content.active {
+    display: block;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 .card {
-  background: white;
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0,0,0,.1);
-}
-
-.products {
-  margin-top: 8px;
-  padding-left: 15px;
-}
-
-.products li {
-  margin-bottom: 4px;
+    background: #fff;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
 }
 
 .total {
-  font-weight: bold;
-  margin-top: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #d32f2f;
+    margin-top: 8px;
 }
 
-.whatsapp {
-  background: #25D366;
-  color: white;
-  border: none;
-  padding: 10px;
-  width: 100%;
-  margin-top: 10px;
-  font-weight: bold;
-  border-radius: 4px;
+.btn {
+    padding: 6px 10px;
+    background: #25d366;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.btn-toggle {
+    background: #1976d2;
+    margin-top: 6px;
+}
+
+.products {
+    display: none;
+    margin-top: 8px;
+    padding-left: 15px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h2>📦 Consulta de Pedidos</h2>
-</header>
+<header>DISTRIBUCION I HOJA DE RUTA GRUPODN</header>
 
-<div class="container">
-  <input
-    type="text"
-    id="buscar"
-    placeholder="Buscar por código o nombre del cliente"
-  >
-  <div id="resultados"></div>
+<div class="tabs">
+    <div class="tab active" onclick="openTab(0)">🔍 Buscador</div>
+    <div class="tab" onclick="openTab(1)">📋 Clientes por Vendedor</div>
+</div>
+
+<div class="content active">
+    <input type="text" id="searchInput" placeholder="Buscar por código o nombre de cliente">
+    <div id="searchResults"></div>
+</div>
+
+<div class="content">
+    <select id="sellerFilter" onchange="filterBySeller()">
+        <option value="">Seleccione vendedor</option>
+    </select>
+    <div id="sellerResults"></div>
 </div>
 
 <script>
-let pedidos = [];
-let timer = null;
+let data = [
+    {
+        codigo: "C001",
+        cliente: "Bodega San Luis",
+        vendedor: "Juan",
+        conductor: "Pedro Rojas",
+        liquidador: "Luis Pérez",
+        placa: "ABC-123",
+        telefono: "999888777",
+        productos: [
+            { nombre: "Arroz", cantidad: 5 },
+            { nombre: "Azúcar", cantidad: 3 }
+        ],
+        total: 450
+    },
+    {
+        codigo: "C002",
+        cliente: "Market Central",
+        vendedor: "Juan",
+        conductor: "Pedro Rojas",
+        liquidador: "Luis Pérez",
+        placa: "ABC-123",
+        telefono: "988777666",
+        productos: [
+            { nombre: "Fideos", cantidad: 10 }
+        ],
+        total: 300
+    }
+];
 
-fetch('pedidos.json')
-  .then(r => r.json())
-  .then(data => pedidos = data);
+function openTab(index) {
+    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', i===index));
+    document.querySelectorAll('.content').forEach((c,i)=>c.classList.toggle('active', i===index));
+}
 
-document.getElementById('buscar').addEventListener('keyup', e => {
-  clearTimeout(timer);
-  timer = setTimeout(() => buscar(e.target.value), 300);
+let debounceTimer;
+document.getElementById("searchInput").addEventListener("input", e => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        searchClient(e.target.value.toLowerCase());
+    }, 300);
 });
 
-function buscar(texto) {
-  const txt = texto.trim().toLowerCase();
-  resultados.innerHTML = '';
-  if (txt.length < 2) return;
-
-  const filtrados = pedidos.filter(p =>
-    String(p["CODIGO.CLIENTE"]).includes(txt) ||
-    p["NOMBRE.CLIENTE"]?.toLowerCase().includes(txt)
-  );
-
-  const agrupados = agruparPedidos(filtrados);
-  renderizar(agrupados);
-}
-
-function agruparPedidos(data) {
-  const map = {};
-
-  data.forEach(p => {
-    const key = p["CODIGO.CLIENTE"] + '-' + p["COM.IDHR_FK"];
-
-    if (!map[key]) {
-      map[key] = {
-        cliente: p["NOMBRE.CLIENTE"],
-        codigo: p["CODIGO.CLIENTE"],
-        pedido: p["COM.IDHR_FK"],
-        vehiculo: p["VEHICULO"],
-        conductor: p["CONDUCTOR"],
-        liquidador: p["LIQUIDADOR"],
-        contacto: p["NROS DE CONTACTO"],
-        productos: [],
-        total: 0
-      };
-    }
-
-    map[key].productos.push(
-      `${p["Descripcion"]} – ${p["Unidades Programadas"] || 0} ${p["unidad"]}`
+function searchClient(text) {
+    let results = data.filter(d =>
+        d.codigo.toLowerCase().includes(text) ||
+        d.cliente.toLowerCase().includes(text)
     );
-
-    map[key].total += Number(p["Monto"] || 0);
-  });
-
-  return Object.values(map);
+    render(results, "searchResults");
 }
 
-function renderizar(lista) {
-  if (!lista.length) {
-    resultados.innerHTML = '<p>No hay resultados</p>';
-    return;
-  }
-
-  lista.forEach(p => {
-    const textoWhatsApp = `
-📦 Pedido: ${p.pedido}
-👤 Cliente: ${p.cliente}
-
-🚚 Placa: ${p.vehiculo}
-👨‍✈️ Conductor: ${p.conductor}
-🧾 Liquidador: ${p.liquidador}
-📞 Contacto: ${p.contacto}
-
-📦 Productos:
-${p.productos.map(x => '• ' + x).join('\n')}
-
-💰 Total: S/ ${p.total.toFixed(2)}
-`.trim();
-
-    resultados.innerHTML += `
-      <div class="card">
-        <b>${p.cliente}</b><br>
-        Código: ${p.codigo}<br>
-        Pedido: ${p.pedido}<br><br>
-
-        🚚 ${p.vehiculo}<br>
-        👨‍✈️ ${p.conductor}<br>
-        🧾 ${p.liquidador}<br>
-        📞 ${p.contacto}
-
-        <ul class="products">
-          ${p.productos.map(pr => `<li>${pr}</li>`).join('')}
-        </ul>
-
-        <div class="total">Total: S/ ${p.total.toFixed(2)}</div>
-
-        <button class="whatsapp"
-          onclick="window.open('https://wa.me/?text=${encodeURIComponent(textoWhatsApp)}','_blank')">
-          📲 Compartir por WhatsApp
-        </button>
-      </div>
-    `;
-  });
+function filterBySeller() {
+    let seller = document.getElementById("sellerFilter").value;
+    let results = data.filter(d => d.vendedor === seller);
+    render(results, "sellerResults");
 }
+
+function render(list, containerId) {
+    let container = document.getElementById(containerId);
+    container.innerHTML = "";
+
+    list.forEach(d => {
+        let productsHtml = d.productos.map(p => `• ${p.nombre} (${p.cantidad})`).join("<br>");
+
+        let msg = `Cliente: ${d.cliente}
+Conductor: ${d.conductor}
+Liquidador: ${d.liquidador}
+Placa: ${d.placa}
+Teléfono: ${d.telefono}
+
+Productos:
+${d.productos.map(p=>`- ${p.nombre} (${p.cantidad})`).join("\n")}
+
+TOTAL: S/ ${d.total}`;
+
+        let card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+            <strong>${d.codigo} - ${d.cliente}</strong><br>
+            Conductor: ${d.conductor}<br>
+            Liquidador: ${d.liquidador}<br>
+            Placa: ${d.placa}<br>
+            Teléfono: ${d.telefono}<br>
+
+            <button class="btn-toggle" onclick="toggleProducts(this)">Ver productos</button>
+            <div class="products">${productsHtml}</div>
+
+            <div class="total">TOTAL: S/ ${d.total}</div>
+
+            <a class="btn" target="_blank"
+               href="https://wa.me/?text=${encodeURIComponent(msg)}">
+               Compartir por WhatsApp
+            </a>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function toggleProducts(btn) {
+    let prod = btn.nextElementSibling;
+    prod.style.display = prod.style.display === "none" ? "block" : "none";
+}
+
+function loadSellers() {
+    let sellers = [...new Set(data.map(d => d.vendedor))];
+    let sel = document.getElementById("sellerFilter");
+    sellers.forEach(s => {
+        let o = document.createElement("option");
+        o.value = s;
+        o.textContent = s;
+        sel.appendChild(o);
+    });
+}
+
+loadSellers();
 </script>
 
 </body>
