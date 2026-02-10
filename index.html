@@ -1,11 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>DISTRIBUCION I HOJA DE RUTA GRUPODN</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f4f4;
+  font-size: 16px;
+}
+
+header {
+  background: #fa4f16;
+  color: #fff;
+  text-align: center;
+  padding: 16px 10px;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+select, input {
+  width: 92%;
+  margin: 10px auto;
+  display: block;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+#resultados {
+  padding: 10px;
+}
+
+.cliente {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.cliente h3 {
+  margin: 0 0 6px 0;
+}
+
+.info {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.total {
+  font-size: 20px;
+  font-weight: bold;
+  color: #0a7a0a;
+  margin: 8px 0;
+}
+
+.productos {
+  display: none;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.productos div {
+  border-bottom: 1px dashed #ddd;
+  padding: 4px 0;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-toggle {
+  background: #ddd;
+  margin-top: 6px;
+}
+
+.btn-wsp {
+  background: #25D366;
+  color: #fff;
+  margin-top: 8px;
+  width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>DISTRIBUCION I HOJA DE RUTA GRUPODN</h1>
+</header>
+
+<select id="vendedorSelect">
+  <option value="">🔽 Seleccionar vendedor</option>
+</select>
+
+<input id="buscador" type="text" placeholder="Buscar por código o nombre del cliente">
+
+<div id="resultados"></div>
+
 <script>
 let pedidos = [];
-let pedidosFiltrados = [];
+let pedidosVendedor = [];
 let timer = null;
 
+const vendedorSelect = document.getElementById("vendedorSelect");
 const buscador = document.getElementById("buscador");
 const resultados = document.getElementById("resultados");
-const filtroVendedor = document.getElementById("filtroVendedor");
 
 fetch("pedidos.json")
   .then(res => res.json())
@@ -15,51 +132,39 @@ fetch("pedidos.json")
   });
 
 function cargarVendedores() {
-  const vendedores = [...new Set(pedidos.map(p => p["VENDEDOR"]).filter(v => v))];
-  vendedores.sort();
-
+  const vendedores = [...new Set(pedidos.map(p => p.empresa).filter(Boolean))].sort();
   vendedores.forEach(v => {
-    const option = document.createElement("option");
-    option.value = v;
-    option.textContent = v;
-    filtroVendedor.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.textContent = v;
+    vendedorSelect.appendChild(opt);
   });
 }
 
-filtroVendedor.addEventListener("change", () => {
+vendedorSelect.addEventListener("change", () => {
   buscador.value = "";
-  filtrarPorVendedor();
+  resultados.innerHTML = "";
+  pedidosVendedor = pedidos.filter(p => p.empresa === vendedorSelect.value);
 });
 
 buscador.addEventListener("input", () => {
   clearTimeout(timer);
-  timer = setTimeout(filtrarPorVendedor, 300);
+  timer = setTimeout(buscar, 300);
 });
 
-function filtrarPorVendedor() {
-  const vendedor = filtroVendedor.value;
+function buscar() {
   const texto = buscador.value.toLowerCase().trim();
-
   resultados.innerHTML = "";
+  if (!vendedorSelect.value || texto.length < 2) return;
 
-  if (!vendedor) return;
+  const filtrados = pedidosVendedor.filter(p =>
+    String(p["CODIGO.CLIENTE"]).includes(texto) ||
+    p["NOMBRE.CLIENTE"].toLowerCase().includes(texto)
+  );
 
-  pedidosFiltrados = pedidos.filter(p => p["VENDEDOR"] === vendedor);
-
-  if (texto.length >= 2) {
-    pedidosFiltrados = pedidosFiltrados.filter(p =>
-      String(p["CODIGO.CLIENTE"]).includes(texto) ||
-      p["NOMBRE.CLIENTE"].toLowerCase().includes(texto)
-    );
-  }
-
-  agruparYPintar(pedidosFiltrados);
-}
-
-function agruparYPintar(lista) {
   const clientes = {};
 
-  lista.forEach(p => {
+  filtrados.forEach(p => {
     const key = p["CODIGO.CLIENTE"];
     if (!clientes[key]) {
       clientes[key] = {
@@ -74,7 +179,6 @@ function agruparYPintar(lista) {
         productos: []
       };
     }
-
     clientes[key].productos.push(p);
     clientes[key].total += Number(p["Monto"] || 0);
   });
@@ -99,21 +203,20 @@ function pintarCliente(c) {
 
     <div class="total">TOTAL: S/ ${c.total.toFixed(2)}</div>
 
-    <button class="btn-toggle" onclick="toggleProductos(this)">Ver productos</button>
+    <button class="btn-toggle" onclick="toggleProductos(this)">Mostrar productos</button>
     <div class="productos">${productosHTML}</div>
 
     <button class="btn-wsp" onclick='compartir(${JSON.stringify(c)})'>
       📲 Compartir por WhatsApp
     </button>
   `;
-
   resultados.appendChild(div);
 }
 
 function toggleProductos(btn) {
   const prod = btn.nextElementSibling;
   prod.style.display = prod.style.display === "none" ? "block" : "none";
-  btn.textContent = prod.style.display === "none" ? "Ver productos" : "Ocultar productos";
+  btn.textContent = prod.style.display === "none" ? "Mostrar productos" : "Ocultar productos";
 }
 
 function compartir(c) {
@@ -137,3 +240,6 @@ Contacto: ${c.contacto}`;
   window.open("https://wa.me/?text=" + encodeURIComponent(mensaje));
 }
 </script>
+
+</body>
+</html>
