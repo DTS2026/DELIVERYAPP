@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consulta de Pedidos – Grupo DN</title>
+<title>Pedidos – Grupo DN</title>
 
 <style>
 body {
@@ -19,45 +19,37 @@ header {
   text-align: center;
 }
 
-.tabs {
-  display: flex;
-  background: #ddd;
-}
-
-.tab {
-  flex: 1;
-  padding: 12px;
-  text-align: center;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.tab.active {
-  background: white;
-  border-bottom: 3px solid #1f3a5f;
-}
-
 .container {
   padding: 15px;
 }
 
-input, select, button {
+input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 8px;
+  padding: 12px;
   font-size: 16px;
+  margin-bottom: 10px;
 }
 
 .card {
   background: white;
   padding: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   border-radius: 6px;
   box-shadow: 0 2px 5px rgba(0,0,0,.1);
 }
 
-.hidden {
-  display: none;
+.products {
+  margin-top: 8px;
+  padding-left: 15px;
+}
+
+.products li {
+  margin-bottom: 4px;
+}
+
+.total {
+  font-weight: bold;
+  margin-top: 8px;
 }
 
 .whatsapp {
@@ -65,8 +57,10 @@ input, select, button {
   color: white;
   border: none;
   padding: 10px;
-  border-radius: 4px;
+  width: 100%;
+  margin-top: 10px;
   font-weight: bold;
+  border-radius: 4px;
 }
 </style>
 </head>
@@ -77,118 +71,113 @@ input, select, button {
   <h2>📦 Consulta de Pedidos</h2>
 </header>
 
-<div class="tabs">
-  <div class="tab active" onclick="mostrarTab('buscador')">🔍 Buscador</div>
-  <div class="tab" onclick="mostrarTab('vendedor')">👤 Por Vendedor</div>
-</div>
-
 <div class="container">
-
-  <!-- BUSCADOR -->
-  <div id="buscador">
-    <input
-      type="text"
-      id="textoBuscar"
-      placeholder="Buscar por código o nombre del cliente"
-      onkeyup="buscar()"
-    >
-    <div id="resultados"></div>
-  </div>
-
-  <!-- POR VENDEDOR -->
-  <div id="vendedor" class="hidden">
-    <select id="filtroVendedor" onchange="listarPorVendedor()">
-      <option value="">Seleccione vendedor</option>
-    </select>
-    <div id="resultadosVendedor"></div>
-  </div>
-
+  <input
+    type="text"
+    id="buscar"
+    placeholder="Buscar por código o nombre del cliente"
+  >
+  <div id="resultados"></div>
 </div>
 
 <script>
 let pedidos = [];
+let timer = null;
 
 fetch('pedidos.json')
   .then(r => r.json())
-  .then(data => {
-    pedidos = data;
-    cargarVendedores();
-  });
+  .then(data => pedidos = data);
 
-function mostrarTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+document.getElementById('buscar').addEventListener('keyup', e => {
+  clearTimeout(timer);
+  timer = setTimeout(() => buscar(e.target.value), 300);
+});
 
-  document.querySelector(`[onclick="mostrarTab('${tab}')"]`).classList.add('active');
-  document.getElementById(tab).classList.remove('hidden');
-}
-
-function cargarVendedores() {
-  const vendedores = [...new Set(pedidos.map(p => p.VENDEDOR).filter(Boolean))];
-  vendedores.forEach(v => {
-    filtroVendedor.innerHTML += `<option value="${v}">${v}</option>`;
-  });
-}
-
-function buscar() {
-  const txt = textoBuscar.value.trim().toLowerCase();
+function buscar(texto) {
+  const txt = texto.trim().toLowerCase();
   resultados.innerHTML = '';
-
   if (txt.length < 2) return;
 
-  const res = pedidos.filter(p =>
+  const filtrados = pedidos.filter(p =>
     String(p["CODIGO.CLIENTE"]).includes(txt) ||
     p["NOMBRE.CLIENTE"]?.toLowerCase().includes(txt)
   );
 
-  mostrar(res, resultados);
+  const agrupados = agruparPedidos(filtrados);
+  renderizar(agrupados);
 }
 
-function listarPorVendedor() {
-  const v = filtroVendedor.value;
-  resultadosVendedor.innerHTML = '';
+function agruparPedidos(data) {
+  const map = {};
 
-  if (!v) return;
+  data.forEach(p => {
+    const key = p["CODIGO.CLIENTE"] + '-' + p["COM.IDHR_FK"];
 
-  const res = pedidos.filter(p => p.VENDEDOR === v);
-  mostrar(res, resultadosVendedor);
+    if (!map[key]) {
+      map[key] = {
+        cliente: p["NOMBRE.CLIENTE"],
+        codigo: p["CODIGO.CLIENTE"],
+        pedido: p["COM.IDHR_FK"],
+        vehiculo: p["VEHICULO"],
+        conductor: p["CONDUCTOR"],
+        liquidador: p["LIQUIDADOR"],
+        contacto: p["NROS DE CONTACTO"],
+        productos: [],
+        total: 0
+      };
+    }
+
+    map[key].productos.push(
+      `${p["Descripcion"]} – ${p["Unidades Programadas"] || 0} ${p["unidad"]}`
+    );
+
+    map[key].total += Number(p["Monto"] || 0);
+  });
+
+  return Object.values(map);
 }
 
-function compartirWhatsApp(p) {
-  const texto = `
-📦 Pedido: ${p["COM.IDHR_FK"]}
-👤 Cliente: ${p["NOMBRE.CLIENTE"]}
-📦 Producto: ${p["Descripcion"]}
-
-🚚 Placa: ${p["VEHICULO"]}
-👨‍✈️ Conductor: ${p["CONDUCTOR"]}
-🧾 Liquidador: ${p["LIQUIDADOR"]}
-📞 Contacto: ${p["NROS DE CONTACTO"]}
-`.trim();
-
-  window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
-}
-
-function mostrar(lista, cont) {
+function renderizar(lista) {
   if (!lista.length) {
-    cont.innerHTML = '<p>No hay resultados</p>';
+    resultados.innerHTML = '<p>No hay resultados</p>';
     return;
   }
 
   lista.forEach(p => {
-    cont.innerHTML += `
+    const textoWhatsApp = `
+📦 Pedido: ${p.pedido}
+👤 Cliente: ${p.cliente}
+
+🚚 Placa: ${p.vehiculo}
+👨‍✈️ Conductor: ${p.conductor}
+🧾 Liquidador: ${p.liquidador}
+📞 Contacto: ${p.contacto}
+
+📦 Productos:
+${p.productos.map(x => '• ' + x).join('\n')}
+
+💰 Total: S/ ${p.total.toFixed(2)}
+`.trim();
+
+    resultados.innerHTML += `
       <div class="card">
-        <b>${p["NOMBRE.CLIENTE"]}</b><br>
-        Código: ${p["CODIGO.CLIENTE"]}<br>
-        Pedido: ${p["COM.IDHR_FK"]}<br>
-        Producto: ${p["Descripcion"]}<br><br>
+        <b>${p.cliente}</b><br>
+        Código: ${p.codigo}<br>
+        Pedido: ${p.pedido}<br><br>
 
-        🚚 Placa: ${p["VEHICULO"]}<br>
-        👨‍✈️ Conductor: ${p["CONDUCTOR"]}<br>
-        🧾 Liquidador: ${p["LIQUIDADOR"]}<br>
-        📞 Contacto: ${p["NROS DE CONTACTO"]}<br>
+        🚚 ${p.vehiculo}<br>
+        👨‍✈️ ${p.conductor}<br>
+        🧾 ${p.liquidador}<br>
+        📞 ${p.contacto}
 
-        <button class="whatsapp" onclick='compartirWhatsApp(${JSON.stringify(p)})'>
+        <ul class="products">
+          ${p.productos.map(pr => `<li>${pr}</li>`).join('')}
+        </ul>
+
+        <div class="total">Total: S/ ${p.total.toFixed(2)}</div>
+
+        <button class="whatsapp"
+          onclick="window.open('https://wa.me/?text=${encodeURIComponent(textoWhatsApp)}','_blank')">
           📲 Compartir por WhatsApp
         </button>
       </div>
