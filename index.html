@@ -1,194 +1,224 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta charset="UTF-8" />
-  <title>DISTRIBUCION I HOJA DE RUTA GRUPODN</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f4f4f4;
-    }
+<title>DISTRIBUCION I HOJA DE RUTA GRUPODN</title>
 
-    header {
-      background: #f2c200;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f4f4;
+  font-size: 16px;
+}
 
-    .tabs {
-      display: flex;
-      background: #333;
-    }
+header {
+  background: #f2b705;
+  color: #fff;
+  text-align: center;
+  padding: 16px 10px;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
 
-    .tab {
-      flex: 1;
-      padding: 12px;
-      text-align: center;
-      color: white;
-      cursor: pointer;
-    }
+header h1 {
+  margin: 0;
+  font-size: 18px;
+}
 
-    .tab.active {
-      background: #f2c200;
-      color: black;
-      font-weight: bold;
-    }
+input {
+  width: 92%;
+  margin: 12px auto;
+  display: block;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
 
-    .content {
-      display: none;
-      padding: 15px;
-    }
+#resultados {
+  padding: 10px;
+}
 
-    .content.active {
-      display: block;
-    }
+.cliente {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
 
-    input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 15px;
-    }
+.cliente h3 {
+  margin: 0 0 6px 0;
+}
 
-    .cliente {
-      background: white;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+.info {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
 
-    .total {
-      font-size: 18px;
-      font-weight: bold;
-      color: #d32f2f;
-      margin-top: 8px;
-    }
+.total {
+  font-size: 20px;
+  font-weight: bold;
+  color: #0a7a0a;
+  margin: 8px 0;
+}
 
-    .productos {
-      margin-top: 8px;
-      display: none;
-    }
+.productos {
+  display: none;
+  margin-top: 8px;
+  font-size: 14px;
+}
 
-    .producto {
-      font-size: 14px;
-      margin-left: 10px;
-    }
+.productos div {
+  border-bottom: 1px dashed #ddd;
+  padding: 4px 0;
+}
 
-    button {
-      padding: 6px 10px;
-      margin-top: 8px;
-      cursor: pointer;
-    }
-  </style>
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-toggle {
+  background: #ddd;
+  margin-top: 6px;
+}
+
+.btn-wsp {
+  background: #25D366;
+  color: #fff;
+  margin-top: 8px;
+  width: 100%;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  DISTRIBUCION I HOJA DE RUTA GRUPODN
+  <h1>DISTRIBUCION I HOJA DE RUTA GRUPODN</h1>
 </header>
 
-<div class="tabs">
-  <div class="tab active" onclick="showTab('buscador')">🔍 Buscador</div>
-</div>
+<input id="buscador" type="text" placeholder="Buscar por código o nombre del cliente">
 
-<div id="buscador" class="content active">
-  <input
-    id="search"
-    placeholder="Buscar por código o nombre del cliente"
-    oninput="buscarCliente()"
-  />
-  <div id="resultados"></div>
-</div>
+<div id="resultados"></div>
 
 <script>
 let pedidos = [];
-let timeout = null;
+let timer = null;
 
 fetch("pedidos.json")
   .then(res => res.json())
   .then(data => pedidos = data);
 
-function showTab(id) {
-  document.querySelectorAll(".content").forEach(c => c.classList.remove("active"));
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  event.target.classList.add("active");
+const buscador = document.getElementById("buscador");
+const resultados = document.getElementById("resultados");
+
+buscador.addEventListener("input", () => {
+  clearTimeout(timer);
+  timer = setTimeout(buscar, 300);
+});
+
+function buscar() {
+  const texto = buscador.value.toLowerCase().trim();
+  resultados.innerHTML = "";
+  if (texto.length < 2) return;
+
+  const filtrados = pedidos.filter(p =>
+    String(p["CODIGO.CLIENTE"]).includes(texto) ||
+    p["NOMBRE.CLIENTE"].toLowerCase().includes(texto)
+  );
+
+  const clientes = {};
+
+  filtrados.forEach(p => {
+    const key = p["CODIGO.CLIENTE"];
+    if (!clientes[key]) {
+      clientes[key] = {
+        codigo: key,
+        nombre: p["NOMBRE.CLIENTE"],
+        distrito: p["distrito"],
+        conductor: p["CONDUCTOR"],
+        placa: p["VEHICULO"],
+        liquidador: p["LIQUIDADOR"],
+        contacto: p["NROS DE CONTACTO"],
+        total: 0,
+        productos: []
+      };
+    }
+
+    clientes[key].productos.push(p);
+    clientes[key].total += Number(p["Monto"] || 0);
+  });
+
+  Object.values(clientes).forEach(c => pintarCliente(c));
 }
 
-function buscarCliente() {
-  clearTimeout(timeout);
-  timeout = setTimeout(() => {
-    const texto = document.getElementById("search").value.toLowerCase();
-    const contenedor = document.getElementById("resultados");
-    contenedor.innerHTML = "";
+function pintarCliente(c) {
+  const div = document.createElement("div");
+  div.className = "cliente";
 
-    if (texto.length < 2) return;
+  const productosHTML = c.productos.map(p =>
+    `<div>• ${p["Descripcion"]} — ${p["Unidades Programadas"]} ${p["unidad"]}</div>`
+  ).join("");
 
-    const filtrados = pedidos.filter(p =>
-      String(p["CODIGO.CLIENTE"]).includes(texto) ||
-      p["NOMBRE.CLIENTE"]?.toLowerCase().includes(texto)
-    );
+  div.innerHTML = `
+    <h3>${c.nombre}</h3>
+    <div class="info">Código: ${c.codigo}</div>
+    <div class="info">Distrito: ${c.distrito}</div>
+    <div class="info">🚚 ${c.conductor} | 🚛 ${c.placa}</div>
+    <div class="info">👷 ${c.liquidador} | 📞 ${c.contacto}</div>
 
-    const agrupados = {};
+    <div class="total">TOTAL: S/ ${c.total.toFixed(2)}</div>
 
-    filtrados.forEach(p => {
-      const key = p["CODIGO.CLIENTE"];
-      if (!agrupados[key]) agrupados[key] = [];
-      agrupados[key].push(p);
-    });
+    <button class="btn-toggle" onclick="toggleProductos(this)">Ver productos</button>
+    <div class="productos">${productosHTML}</div>
 
-    Object.values(agrupados).forEach(clientePedidos => {
-      const c = clientePedidos[0];
+    <button class="btn-wsp" onclick='compartir(${JSON.stringify(c)})'>
+      📲 Compartir por WhatsApp
+    </button>
+  `;
 
-      let total = 0;
-      let htmlProductos = "";
-
-      clientePedidos.forEach(p => {
-        total += Number(p["Monto"] || 0);
-        htmlProductos += `
-          <div class="producto">
-            • ${p["Descripcion"]} — ${p["Unidades Programadas"]} ${p["unidad"]}
-          </div>
-        `;
-      });
-
-      const div = document.createElement("div");
-      div.className = "cliente";
-
-      div.innerHTML = `
-        <b>${c["NOMBRE.CLIENTE"]}</b><br>
-        Código: ${c["CODIGO.CLIENTE"]}<br><br>
-
-        🚚 <b>Conductor:</b> ${c["CONDUCTOR"] || "-"}<br>
-        🚛 <b>Placa:</b> ${c["VEHICULO"] || "-"}<br>
-        📋 <b>Liquidador:</b> ${c["LIQUIDADOR"] || "-"}<br>
-        📞 <b>Contacto:</b> ${c["NROS DE CONTACTO"] || "-"}<br>
-
-        <div class="total">TOTAL: S/ ${total.toFixed(2)}</div>
-
-        <button onclick="toggleProductos(this)">Ver productos</button>
-        <div class="productos">${htmlProductos}</div>
-      `;
-
-      contenedor.appendChild(div);
-    });
-  }, 200); // evita congelamiento
+  resultados.appendChild(div);
 }
 
 function toggleProductos(btn) {
   const prod = btn.nextElementSibling;
   prod.style.display = prod.style.display === "none" ? "block" : "none";
+  btn.textContent = prod.style.display === "none" ? "Ver productos" : "Ocultar productos";
+}
+
+function compartir(c) {
+  const productos = c.productos
+    .map(p => `• ${p["Descripcion"]} (${p["Unidades Programadas"]})`)
+    .join("\n");
+
+  const mensaje =
+`HOJA DE RUTA – GRUPODN
+Cliente: ${c.nombre}
+
+${productos}
+
+TOTAL: S/ ${c.total.toFixed(2)}
+
+Conductor: ${c.conductor}
+Placa: ${c.placa}
+Liquidador: ${c.liquidador}
+Contacto: ${c.contacto}`;
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(mensaje));
 }
 </script>
 
 </body>
 </html>
+
 
