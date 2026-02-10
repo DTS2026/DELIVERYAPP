@@ -1,111 +1,181 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consulta de Pedidos</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Pedidos</title>
 
-<style>
-body {
-  font-family: system-ui, Arial, sans-serif;
-  margin: 0;
-  padding: 12px;
-  background: #f6f7f9;
-}
-h2 { text-align: center; }
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 10px;
+    }
 
-input, button {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  margin-top: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
+    h1 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
 
-button {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  font-weight: bold;
-}
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
 
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
-  margin-top: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.08);
-}
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-.total {
-  background: #e0f2fe;
-  border-radius: 10px;
-  padding: 10px;
-  margin-top: 10px;
-  font-weight: bold;
-}
-</style>
+    .card h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .card small {
+      color: #666;
+    }
+
+    ul {
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .totales {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #25D366;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
 </head>
 
 <body>
 
-<h2>Pedidos por Cliente</h2>
+  <h1>📦 Buscador de Pedidos</h1>
 
-<input type="number" id="clienteInput" placeholder="Código de Cliente">
-<button onclick="buscar()">Buscar</button>
+  <input
+    type="text"
+    id="buscador"
+    placeholder="Código o nombre del cliente"
+    onkeyup="buscarCliente()"
+  >
 
-<div id="totales"></div>
-<div id="resultados"></div>
+  <div id="resultados"></div>
 
-<script>
-let data = [];
+  <script>
+    let pedidos = [];
 
-fetch('pedidos.json')
-  .then(r => r.json())
-  .then(json => data = json);
+    fetch('pedidos.json')
+      .then(res => res.json())
+      .then(data => {
+        pedidos = data;
+        console.log('Pedidos cargados:', pedidos.length);
+      })
+      .catch(err => console.error('Error cargando JSON:', err));
 
-function buscar() {
-  const codigo = document.getElementById('clienteInput').value.trim();
-  const resultados = document.getElementById('resultados');
-  const totales = document.getElementById('totales');
+    function buscarCliente() {
+      const texto = document.getElementById('buscador').value.trim().toLowerCase();
+      const contenedor = document.getElementById('resultados');
+      contenedor.innerHTML = '';
 
-  resultados.innerHTML = '';
-  totales.innerHTML = '';
+      if (texto.length < 2) return;
 
-  let u = 0, kg = 0, monto = 0;
+      const filtrados = pedidos.filter(p =>
+        String(p["CODIGO.CLIENTE"]).includes(texto) ||
+        p["NOMBRE.CLIENTE"].toLowerCase().includes(texto)
+      );
 
-  const rows = data.filter(r => String(r['CODIGO.CLIENTE']) === codigo);
+      if (filtrados.length === 0) {
+        contenedor.innerHTML = '<p>No se encontraron pedidos</p>';
+        return;
+      }
 
-  rows.forEach(r => {
-    u += Number(r['Unidades Programadas'] || 0);
-    kg += Number(r['Kg Programados'] || 0);
-    monto += Number(r['Monto Programado'] || 0);
+      // Agrupar por cliente
+      const grupos = {};
+      filtrados.forEach(p => {
+        const key = p["CODIGO.CLIENTE"];
+        if (!grupos[key]) grupos[key] = [];
+        grupos[key].push(p);
+      });
 
-    resultados.innerHTML += `
-      <div class="card">
-        <strong>${r['Descripcion']}</strong><br>
-        SKU: ${r['SKU']}<br>
-        Unidades: ${r['Unidades Programadas']}<br>
-        Kg: ${r['Kg Programados']}<br>
-        Monto: S/ ${Number(r['Monto Programado']).toFixed(2)}
-      </div>
-    `;
-  });
+      Object.values(grupos).forEach(pedidosCliente => {
+        const cliente = pedidosCliente[0];
 
-  if (rows.length) {
-    totales.innerHTML = `
-      <div class="total">
-        Total Unidades: ${u}<br>
-        Total Kg: ${kg.toFixed(2)}<br>
-        Total Monto: S/ ${monto.toFixed(2)}
-      </div>
-    `;
-  } else {
-    resultados.innerHTML = '<p>No se encontraron pedidos.</p>';
-  }
-}
-</script>
+        let totalMonto = 0;
+        let totalUnidades = 0;
+        let productosHTML = '';
+
+        pedidosCliente.forEach(p => {
+          totalMonto += Number(p.Monto || 0);
+          totalUnidades += Number(p["Unidades Programadas"] || 0);
+
+          productosHTML += `
+            <li>
+              ${p.Descripcion}<br>
+              <small>${p["Unidades Programadas"]} ${p.unidad}</small>
+            </li>
+          `;
+        });
+
+        contenedor.innerHTML += `
+          <div class="card">
+            <h3>${cliente["NOMBRE.CLIENTE"]}</h3>
+            <small>${cliente.departamento} - ${cliente.distrito}</small>
+
+            <ul>
+              ${productosHTML}
+            </ul>
+
+            <div class="totales">
+              Total Unidades: ${totalUnidades}<br>
+              Total Monto: S/ ${totalMonto.toFixed(2)}
+            </div>
+
+            <button onclick="compartirWhatsApp('${cliente["NOMBRE.CLIENTE"]}', ${totalMonto})">
+              📲 Compartir por WhatsApp
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    function compartirWhatsApp(cliente, total) {
+      const mensaje = `
+Cliente: ${cliente}
+Total facturado: S/ ${total.toFixed(2)}
+      `.trim();
+
+      const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    }
+  </script>
 
 </body>
 </html>
