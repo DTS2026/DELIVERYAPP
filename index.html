@@ -12,31 +12,56 @@ body {
   background: #f4f4f4;
 }
 
+/* HEADER */
 header {
   background: #f5b400;
   color: white;
   text-align: center;
   padding: 14px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
+/* CONTENEDOR */
 .container {
-  padding: 12px;
-}
-
-input {
-  width: 100%;
   padding: 14px;
-  font-size: 16px;
-  margin-bottom: 12px;
 }
 
+/* BUSCADOR */
+.search-wrapper {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 14px 14px 14px 42px;
+  font-size: 16px;
+  border-radius: 30px;
+  border: 1px solid #ddd;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #888;
+}
+
+/* TARJETA CLIENTE */
 .cliente {
   background: white;
-  border-radius: 6px;
-  padding: 10px;
-  margin-bottom: 12px;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
 .total {
@@ -56,6 +81,7 @@ input {
   cursor: pointer;
 }
 
+/* DETALLE */
 .detalle {
   display: none;
   margin-top: 8px;
@@ -64,8 +90,43 @@ input {
 }
 
 .producto {
+  display: flex;
+  justify-content: space-between;
   font-size: 14px;
-  margin-bottom: 4px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.producto .desc {
+  flex: 2;
+}
+
+.producto .cant {
+  flex: 1;
+  text-align: center;
+}
+
+.producto .monto {
+  flex: 1;
+  text-align: right;
+  font-weight: bold;
+}
+
+/* CONTADOR */
+#contador {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #555;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  background: #222;
+  color: white;
+  margin-top: 20px;
 }
 </style>
 </head>
@@ -78,15 +139,23 @@ DISTRIBUCION I HOJA DE RUTA GRUPODN
 
 <div class="container">
 
-<input
-  type="text"
-  id="buscador"
-  placeholder="🔍 Buscar por código o nombre del cliente"
->
+<div class="search-wrapper">
+  <span class="search-icon">🔍</span>
+  <input
+    type="text"
+    id="buscador"
+    placeholder="Buscar por código o nombre del cliente"
+  >
+</div>
 
+<div id="contador"></div>
 <div id="resultados"></div>
 
 </div>
+
+<footer>
+Sistema Hoja de Ruta © 2026 - GrupoDN
+</footer>
 
 <script>
 let pedidos = [];
@@ -104,6 +173,7 @@ document.getElementById('buscador').addEventListener('input', () => {
 function buscar() {
   const q = buscador.value.toLowerCase();
   resultados.innerHTML = '';
+  contador.innerHTML = '';
 
   if (q.length < 1) return;
 
@@ -119,6 +189,8 @@ function buscar() {
     }
     agrupados[p["CODIGO.CLIENTE"]].push(p);
   });
+
+  contador.innerHTML = `Clientes encontrados: ${Object.keys(agrupados).length}`;
 
   Object.values(agrupados).forEach(lista => renderCliente(lista));
 }
@@ -138,7 +210,7 @@ function renderCliente(lista) {
     💼 Liquidador: ${p.LIQUIDADOR}<br>
     📞 Contacto: ${p["NROS DE CONTACTO"]}
 
-    <div class="total">TOTAL: S/ ${total}</div>
+    <div class="total">TOTAL: S/ ${Number(total).toFixed(2)}</div>
 
     <button class="btn" onclick="
       const d=this.nextElementSibling;
@@ -150,7 +222,9 @@ function renderCliente(lista) {
     <div class="detalle">
       ${lista.map(x => `
         <div class="producto">
-          ${x.Descripcion} — ${x["Unidades Programadas"]} und — S/ ${x.Monto}
+          <div class="desc">${x.Descripcion}</div>
+          <div class="cant">${x["Unidades Programadas"]} und</div>
+          <div class="monto">S/ ${Number(x.Monto).toFixed(2)}</div>
         </div>
       `).join('')}
     </div>
@@ -162,4 +236,3 @@ function renderCliente(lista) {
 
 </body>
 </html>
-
