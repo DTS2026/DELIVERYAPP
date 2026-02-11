@@ -2,131 +2,141 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>DISTRIBUCION I HOJA DE RUTA GRUPODN</title>
+<title>Dashboard Hoja de Ruta - GrupoDN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f4f4;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#eef1f5;
 }
 
 /* HEADER */
-header {
-  background: #f5b400;
-  color: white;
-  text-align: center;
-  padding: 14px;
-  font-size: 18px;
-  font-weight: bold;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+header{
+  background:#1f2d3d;
+  color:white;
+  padding:15px;
+  font-size:18px;
+  font-weight:bold;
+  position:sticky;
+  top:0;
+  z-index:1000;
 }
 
 /* CONTENEDOR */
-.container {
-  padding: 14px;
+.container{
+  padding:20px;
+  max-width:1200px;
+  margin:auto;
 }
 
 /* BUSCADOR */
-.search-wrapper {
-  position: relative;
-  margin-bottom: 14px;
+.search-box{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.08);
+  margin-bottom:20px;
 }
 
-.search-wrapper input {
-  width: 100%;
-  padding: 14px 14px 14px 42px;
-  font-size: 16px;
-  border-radius: 30px;
-  border: 1px solid #ddd;
-  outline: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #888;
+.search-box input{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
 
 /* TARJETA CLIENTE */
-.cliente {
-  background: white;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 14px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+.card{
+  background:white;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
-.total {
-  margin-top: 6px;
-  font-weight: bold;
-  font-size: 18px;
-  color: #c0392b;
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
 }
 
-.btn {
-  margin-top: 8px;
-  padding: 8px 12px;
-  border: none;
-  background: #2980b9;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
+.card h3{
+  margin:0;
 }
 
-/* DETALLE */
-.detalle {
-  display: none;
-  margin-top: 8px;
-  border-top: 1px solid #ddd;
-  padding-top: 8px;
+.info{
+  font-size:14px;
+  color:#555;
+  margin-bottom:6px;
 }
 
-.producto {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
+/* BOTONES */
+.btn{
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:13px;
 }
 
-.producto .desc {
-  flex: 2;
+.btn-detalle{
+  background:#3498db;
+  color:white;
 }
 
-.producto .cant {
-  flex: 1;
-  text-align: center;
+.btn-wsp{
+  background:#25D366;
+  color:white;
 }
 
-.producto .monto {
-  flex: 1;
-  text-align: right;
-  font-weight: bold;
+/* DETALLE PRODUCTOS */
+.detalle{
+  display:none;
+  margin-top:15px;
+  border-top:1px solid #ddd;
+  padding-top:10px;
 }
 
-/* CONTADOR */
-#contador {
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: #555;
+.producto{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  font-size:14px;
+  border-bottom:1px solid #f0f0f0;
 }
 
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 10px;
-  font-size: 12px;
-  background: #222;
-  color: white;
-  margin-top: 20px;
+.producto .desc{ flex:2; }
+.producto .cant{ flex:1; text-align:center; }
+.producto .monto{ flex:1; text-align:right; font-weight:bold; }
+
+/* TOTALES */
+.totales{
+  margin-top:10px;
+  text-align:right;
+  font-size:14px;
+}
+
+.subtotal{
+  font-weight:bold;
+  font-size:16px;
+}
+
+.totalgeneral{
+  font-weight:bold;
+  font-size:18px;
+  color:#c0392b;
+}
+
+footer{
+  text-align:center;
+  padding:10px;
+  background:#1f2d3d;
+  color:white;
+  font-size:12px;
 }
 </style>
 </head>
@@ -134,100 +144,118 @@ footer {
 <body>
 
 <header>
-DISTRIBUCION I HOJA DE RUTA GRUPODN
+🚚 Dashboard Hoja de Ruta - GrupoDN
 </header>
 
 <div class="container">
 
-<div class="search-wrapper">
-  <span class="search-icon">🔍</span>
-  <input
-    type="text"
-    id="buscador"
-    placeholder="Buscar por código o nombre del cliente"
-  >
+<div class="search-box">
+<input type="text" id="buscador" placeholder="Buscar por código o nombre del cliente">
 </div>
 
-<div id="contador"></div>
 <div id="resultados"></div>
 
 </div>
 
 <footer>
-Sistema Hoja de Ruta © 2026 - GrupoDN
+Sistema Logístico © 2026 GrupoDN
 </footer>
 
 <script>
-let pedidos = [];
-let debounceTimer = null;
+let pedidos=[];
+let debounceTimer=null;
 
 fetch('pedidos.json')
-  .then(r => r.json())
-  .then(data => pedidos = data);
+.then(r=>r.json())
+.then(data=>pedidos=data);
 
-document.getElementById('buscador').addEventListener('input', () => {
+document.getElementById('buscador').addEventListener('input',()=>{
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(buscar, 300);
+  debounceTimer=setTimeout(buscar,300);
 });
 
-function buscar() {
-  const q = buscador.value.toLowerCase();
-  resultados.innerHTML = '';
-  contador.innerHTML = '';
+function buscar(){
+  const q=buscador.value.toLowerCase();
+  resultados.innerHTML='';
+  if(q.length<1) return;
 
-  if (q.length < 1) return;
-
-  const filtrados = pedidos.filter(p =>
+  const filtrados=pedidos.filter(p=>
     p["CODIGO.CLIENTE"].toString().includes(q) ||
     p["NOMBRE.CLIENTE"].toLowerCase().includes(q)
   );
 
-  const agrupados = {};
-  filtrados.forEach(p => {
-    if (!agrupados[p["CODIGO.CLIENTE"]]) {
-      agrupados[p["CODIGO.CLIENTE"]] = [];
-    }
+  const agrupados={};
+  filtrados.forEach(p=>{
+    if(!agrupados[p["CODIGO.CLIENTE"]])
+      agrupados[p["CODIGO.CLIENTE"]]=[];
     agrupados[p["CODIGO.CLIENTE"]].push(p);
   });
 
-  contador.innerHTML = `Clientes encontrados: ${Object.keys(agrupados).length}`;
-
-  Object.values(agrupados).forEach(lista => renderCliente(lista));
+  Object.values(agrupados).forEach(lista=>renderCliente(lista));
 }
 
-function renderCliente(lista) {
-  const p = lista[0];
-  const total = lista.reduce((s,x)=>s + x.Monto, 0).toFixed(2);
+function renderCliente(lista){
 
-  const div = document.createElement('div');
-  div.className = 'cliente';
+  const p=lista[0];
+  const subtotal=lista.reduce((s,x)=>s+Number(x.Monto),0);
+  const igv=subtotal*0.18;
+  const totalGeneral=subtotal+igv;
 
-  div.innerHTML = `
-    <strong>${p["NOMBRE.CLIENTE"]}</strong><br>
-    Código: ${p["CODIGO.CLIENTE"]}<br>
-    🚚 Conductor: ${p.CONDUCTOR}<br>
-    🚛 Placa: ${p["VEHICULO"]}<br>
-    💼 Liquidador: ${p.LIQUIDADOR}<br>
-    📞 Contacto: ${p["NROS DE CONTACTO"]}
+  const div=document.createElement('div');
+  div.className='card';
 
-    <div class="total">TOTAL: S/ ${Number(total).toFixed(2)}</div>
+  const detalleProductos = lista.map(x=>
+    `${x.Descripcion} - ${x["Unidades Programadas"]} und - S/ ${Number(x.Monto).toFixed(2)}`
+  ).join('%0A');
 
-    <button class="btn" onclick="
-      const d=this.nextElementSibling;
-      d.style.display=d.style.display==='block'?'none':'block';
-    ">
-      Ver detalle
-    </button>
+  const mensaje = 
+`*HOJA DE RUTA - GRUPODN*%0A
+Cliente: ${p["NOMBRE.CLIENTE"]}%0A
+Código: ${p["CODIGO.CLIENTE"]}%0A
+Contacto: ${p["NROS DE CONTACTO"]}%0A
+Conductor: ${p.CONDUCTOR}%0A
+Placa: ${p["VEHICULO"]}%0A
+Liquidador: ${p.LIQUIDADOR}%0A
+%0A*DETALLE PEDIDO*%0A
+${detalleProductos}%0A
+%0ASubtotal: S/ ${subtotal.toFixed(2)}%0A
+IGV (18%): S/ ${igv.toFixed(2)}%0A
+*TOTAL GENERAL: S/ ${totalGeneral.toFixed(2)}*`;
 
-    <div class="detalle">
-      ${lista.map(x => `
-        <div class="producto">
-          <div class="desc">${x.Descripcion}</div>
-          <div class="cant">${x["Unidades Programadas"]} und</div>
-          <div class="monto">S/ ${Number(x.Monto).toFixed(2)}</div>
-        </div>
-      `).join('')}
+  div.innerHTML=`
+  <div class="card-header">
+    <h3>${p["NOMBRE.CLIENTE"]}</h3>
+    <div>
+      <button class="btn btn-detalle" onclick="
+        const d=this.closest('.card').querySelector('.detalle');
+        d.style.display=d.style.display==='block'?'none':'block';
+      ">Ver detalle</button>
+
+      <a class="btn btn-wsp" target="_blank"
+      href="https://wa.me/?text=${mensaje}">
+      Compartir WhatsApp</a>
     </div>
+  </div>
+
+  <div class="info">Código: ${p["CODIGO.CLIENTE"]}</div>
+  <div class="info">📞 ${p["NROS DE CONTACTO"]}</div>
+  <div class="info">🚚 ${p.CONDUCTOR} | 🚛 ${p["VEHICULO"]}</div>
+
+  <div class="detalle">
+    ${lista.map(x=>`
+      <div class="producto">
+        <div class="desc">${x.Descripcion}</div>
+        <div class="cant">${x["Unidades Programadas"]} und</div>
+        <div class="monto">S/ ${Number(x.Monto).toFixed(2)}</div>
+      </div>
+    `).join('')}
+
+    <div class="totales">
+      <div class="subtotal">Subtotal: S/ ${subtotal.toFixed(2)}</div>
+      <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
+      <div class="totalgeneral">TOTAL GENERAL: S/ ${totalGeneral.toFixed(2)}</div>
+    </div>
+  </div>
   `;
 
   resultados.appendChild(div);
