@@ -3,245 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hoja de Ruta - Grupo DN</title>
+<title>Dashboard Ventas</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f4f6f9;
-  margin:0;
-  padding:20px;
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f6f9;
 }
 
-h1{
-  text-align:center;
-  color:#1e3a8a;
+header {
+  background: linear-gradient(135deg,#0d6efd,#0a58ca);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-input{
-  width:100%;
-  padding:12px;
-  margin:20px 0;
-  border-radius:8px;
-  border:1px solid #ccc;
-  font-size:16px;
+.menu {
+  background: white;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-.card{
-  background:#fff;
-  padding:18px;
-  border-radius:12px;
-  margin-bottom:20px;
-  box-shadow:0 4px 8px rgba(0,0,0,0.05);
+.menu button {
+  background: #0d6efd;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.codigo{
-  font-size:14px;
-  color:#666;
-  margin-bottom:10px;
+section {
+  padding: 15px;
 }
 
-.linea-horizontal{
-  display:flex;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  margin-bottom:10px;
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+  gap: 15px;
 }
 
-.info{
-  margin-bottom:6px;
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  text-align: center;
 }
 
-.botones{
-  margin-top:12px;
+.search-box {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
-.btn{
-  padding:8px 12px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  text-decoration:none;
-  display:inline-block;
-  margin-right:8px;
-  font-size:14px;
+.search-box input {
+  width: 90%;
+  max-width: 400px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-.btn-detalle{
-  background:#1e3a8a;
-  color:white;
+.resultado {
+  background: white;
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.btn-wsp{
-  background:#16a34a;
-  color:white;
-}
-
-.detalle{
-  display:none;
-  margin-top:15px;
-  border-top:1px solid #ddd;
-  padding-top:10px;
-}
-
-.producto{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:6px;
-}
-
-.desc{
-  flex:2;
-}
-
-.cant{
-  flex:1;
-  text-align:center;
-}
-
-.monto{
-  flex:1;
-  text-align:right;
-}
-
-.totales{
-  margin-top:10px;
-  border-top:1px solid #ddd;
-  padding-top:8px;
-}
-
-.subtotal{
-  font-weight:bold;
-}
-
-.totalgeneral{
-  font-weight:bold;
-  color:#1e3a8a;
-  font-size:16px;
+canvas {
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🚚 HOJA DE RUTA - GRUPODN</h1>
+<header>
+📊 Dashboard General de Ventas
+</header>
 
-<input type="text" id="buscador" placeholder="Buscar por código o nombre de cliente...">
+<div class="menu">
+  <button onclick="mostrarSeccion('dashboard')">Dashboard</button>
+  <button onclick="mostrarSeccion('buscador')">Buscador</button>
+</div>
 
-<div id="resultados"></div>
+<!-- DASHBOARD -->
+<section id="dashboard">
+
+  <h3>Resumen por Vehículo</h3>
+  <div id="resumenVehiculos" class="cards"></div>
+
+  <h3 style="margin-top:25px;">Ventas por Unidad de Negocio</h3>
+  <canvas id="graficoUnidad"></canvas>
+
+</section>
+
+<!-- BUSCADOR -->
+<section id="buscador" style="display:none;">
+
+  <div class="search-box">
+    <input type="text" id="busqueda" placeholder="Buscar cliente o producto..." onkeyup="buscar()">
+  </div>
+
+  <div id="resultados"></div>
+
+</section>
 
 <script>
-let pedidos=[];
-let debounceTimer=null;
 
-fetch('pedidos.json')
-.then(r=>r.json())
-.then(data=>pedidos=data);
+// ⚠️ ESTE ARRAY DEBE SER REEMPLAZADO POR TU JSON REAL
+let ventasData = [];
 
-// 🔹 Función inteligente para detectar Monto con o sin espacios
-function obtenerMonto(obj){
-  const key = Object.keys(obj).find(k => k.trim() === "Monto");
-  if(!key) return 0;
-  const valor=parseFloat(obj[key]);
-  return isNaN(valor)?0:valor;
-}
-
-document.getElementById('buscador').addEventListener('input',()=>{
-  clearTimeout(debounceTimer);
-  debounceTimer=setTimeout(buscar,300);
-});
-
-function buscar(){
-  const q=buscador.value.toLowerCase();
-  resultados.innerHTML='';
-  if(q.length<1) return;
-
-  const filtrados=pedidos.filter(p=>
-    p["CODIGO.CLIENTE"]?.toString().includes(q) ||
-    p["NOMBRE.CLIENTE"]?.toLowerCase().includes(q)
-  );
-
-  const agrupados={};
-  filtrados.forEach(p=>{
-    if(!agrupados[p["CODIGO.CLIENTE"]])
-      agrupados[p["CODIGO.CLIENTE"]]=[];
-    agrupados[p["CODIGO.CLIENTE"]].push(p);
+// Cargar JSON externo
+fetch('ventas.json')
+  .then(res => res.json())
+  .then(data => {
+    ventasData = data;
+    generarResumen();
+    generarGrafico();
+  })
+  .catch(err => {
+    console.log("Error cargando JSON", err);
   });
 
-  Object.values(agrupados).forEach(lista=>renderCliente(lista));
+function mostrarSeccion(id){
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("buscador").style.display = "none";
+  document.getElementById(id).style.display = "block";
 }
 
-function renderCliente(lista){
+function generarResumen() {
 
-  const p=lista[0];
+  const resumen = {};
 
-  const subtotal=lista.reduce((s,x)=> s + obtenerMonto(x),0);
-  const igv=subtotal*0.18;
-  const totalGeneral=subtotal+igv;
+  ventasData.forEach(v => {
+    const vehiculo = v.vehiculo || "Sin Vehículo";
+    const monto = parseFloat(v.monto) || 0;
 
-  const detalleTexto = lista.map(x=>{
-    return `• ${x.Descripcion} - ${x["Unidades Programadas"]} und - S/ ${obtenerMonto(x).toFixed(2)}`;
-  }).join('%0A');
+    if(!resumen[vehiculo]){
+      resumen[vehiculo] = 0;
+    }
 
-  const mensaje =
-`*🚚 HOJA DE RUTA - GRUPODN*%0A
-🏢 Cliente: ${p["NOMBRE.CLIENTE"]}%0A
-🆔 Código: ${p["CODIGO.CLIENTE"]}%0A
-📞 Teléfonos: ${p["NROS DE CONTACTO"]}%0A
-🚛 Placa: ${p["VEHICULO"]}%0A
-👤 Conductor: ${p.CONDUCTOR}%0A
-📦 Repartidor: ${p.LIQUIDADOR}%0A
-%0A*📋 DETALLE DEL PEDIDO*%0A
-${detalleTexto}%0A
-%0A💰 Subtotal: S/ ${subtotal.toFixed(2)}%0A
-🧾 IGV (18%): S/ ${igv.toFixed(2)}%0A
-*TOTAL GENERAL: S/ ${totalGeneral.toFixed(2)}*`;
+    resumen[vehiculo] += monto;
+  });
 
-  const div=document.createElement('div');
-  div.className='card';
+  const contenedor = document.getElementById("resumenVehiculos");
+  contenedor.innerHTML = "";
 
-  div.innerHTML=`
-    <h3>🏢 ${p["NOMBRE.CLIENTE"]}</h3>
-    <div class="codigo">🆔 Código Cliente: ${p["CODIGO.CLIENTE"]}</div>
-
-    <div class="linea-horizontal">
-      <div>🚛 <strong>Placa Programada:</strong> ${p["VEHICULO"]}</div>
-      <div>👤 <strong>Conductor:</strong> ${p.CONDUCTOR}</div>
-    </div>
-
-    <div class="info">📦 <strong>Repartidor:</strong> ${p.LIQUIDADOR}</div>
-    <div class="info">📞 <strong>Teléfonos Tripulación:</strong> ${p["NROS DE CONTACTO"]}</div>
-
-    <div class="botones">
-      <button class="btn btn-detalle" onclick="
-        const d=this.closest('.card').querySelector('.detalle');
-        d.style.display=d.style.display==='block'?'none':'block';
-      ">📋 Ver detalle</button>
-
-      <a class="btn btn-wsp" target="_blank"
-      href="https://wa.me/?text=${mensaje}">
-      📲 Compartir WhatsApp</a>
-    </div>
-
-    <div class="detalle">
-      ${lista.map(x=>`
-        <div class="producto">
-          <div class="desc">${x.Descripcion}</div>
-          <div class="cant">${x["Unidades Programadas"]} und</div>
-          <div class="monto">S/ ${obtenerMonto(x).toFixed(2)}</div>
-        </div>
-      `).join('')}
-
-      <div class="totales">
-        <div class="subtotal">Subtotal: S/ ${subtotal.toFixed(2)}</div>
-        <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
-        <div class="totalgeneral">TOTAL GENERAL: S/ ${totalGeneral.toFixed(2)}</div>
+  for(let vehiculo in resumen){
+    contenedor.innerHTML += `
+      <div class="card">
+        <h4>${vehiculo}</h4>
+        <p><strong>S/ ${resumen[vehiculo].toFixed(2)}</strong></p>
       </div>
-    </div>
-  `;
-
-  resultados.appendChild(div);
+    `;
+  }
 }
+
+function generarGrafico() {
+
+  const unidades = {};
+
+  ventasData.forEach(v => {
+    const unidad = v.unidad || "Sin Unidad";
+    const monto = parseFloat(v.monto) || 0;
+
+    if(!unidades[unidad]){
+      unidades[unidad] = 0;
+    }
+
+    unidades[unidad] += monto;
+  });
+
+  const ctx = document.getElementById('graficoUnidad');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(unidades),
+      datasets: [{
+        label: 'Ventas S/',
+        data: Object.values(unidades),
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
+function buscar(){
+
+  const texto = document.getElementById("busqueda").value.toLowerCase();
+  const contenedor = document.getElementById("resultados");
+
+  contenedor.innerHTML = "";
+
+  const filtrados = ventasData.filter(v =>
+    (v.cliente && v.cliente.toLowerCase().includes(texto)) ||
+    (v.producto && v.producto.toLowerCase().includes(texto))
+  );
+
+  filtrados.forEach(v => {
+
+    const monto = parseFloat(v.monto) || 0;
+
+    contenedor.innerHTML += `
+      <div class="resultado">
+        <strong>${v.producto || ''}</strong><br>
+        ${v.cliente || ''}<br>
+        ${v.cantidad || ''} und<br>
+        <strong>S/ ${monto.toFixed(2)}</strong>
+      </div>
+    `;
+  });
+
+}
+
 </script>
 
 </body>
