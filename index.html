@@ -123,19 +123,18 @@ canvas {
 
 <script>
 
-// ⚠️ ESTE ARRAY DEBE SER REEMPLAZADO POR TU JSON REAL
 let ventasData = [];
 
-// Cargar JSON externo
-fetch('ventas.json')
-  .then(res => res.json())
+// 🔹 CARGA AUTOMÁTICA DE TU ARCHIVO PEDIDOS.json
+fetch('PEDIDOS.json')
+  .then(response => response.json())
   .then(data => {
     ventasData = data;
     generarResumen();
     generarGrafico();
   })
-  .catch(err => {
-    console.log("Error cargando JSON", err);
+  .catch(error => {
+    console.error("Error cargando PEDIDOS.json:", error);
   });
 
 function mostrarSeccion(id){
@@ -240,6 +239,8 @@ function buscar(){
 
 </body>
 </html>
+
+
 
 
 
