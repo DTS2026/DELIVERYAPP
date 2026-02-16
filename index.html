@@ -2,116 +2,81 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard Hoja de Ruta - GrupoDN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hoja de Ruta - Grupo DN</title>
 
 <style>
 body{
+  font-family: Arial, sans-serif;
+  background:#f4f6f9;
   margin:0;
-  font-family:Arial, sans-serif;
-  background:#eef1f5;
-}
-
-/* HEADER */
-header{
-  background:#f9ee2f;
-  color:white;
-  padding:16px;
-  font-size:18px;
-  font-weight:bold;
-  position:sticky;
-  top:0;
-  z-index:1000;
-}
-
-/* CONTENEDOR */
-.container{
   padding:20px;
-  max-width:1200px;
-  margin:auto;
 }
 
-/* BUSCADOR */
-.search-box{
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
-  margin-bottom:20px;
+h1{
+  text-align:center;
+  color:#1e3a8a;
 }
 
-.search-box input{
+input{
   width:100%;
   padding:12px;
-  font-size:16px;
+  margin:20px 0;
   border-radius:8px;
   border:1px solid #ccc;
+  font-size:16px;
 }
 
-/* TARJETA */
 .card{
-  background:white;
-  border-radius:14px;
-  padding:20px;
+  background:#fff;
+  padding:18px;
+  border-radius:12px;
   margin-bottom:20px;
-  box-shadow:0 6px 16px rgba(0,0,0,0.08);
-}
-
-.card h3{
-  margin:0 0 6px 0;
+  box-shadow:0 4px 8px rgba(0,0,0,0.05);
 }
 
 .codigo{
   font-size:14px;
-  color:#555;
-  margin-bottom:12px;
+  color:#666;
+  margin-bottom:10px;
 }
 
-/* BLOQUE OPERATIVO */
 .linea-horizontal{
   display:flex;
   justify-content:space-between;
   flex-wrap:wrap;
-  font-size:14px;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 
 .info{
-  font-size:14px;
   margin-bottom:6px;
-  color:#444;
 }
 
-/* BOTONES */
 .botones{
   margin-top:12px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
 }
 
 .btn{
-  padding:8px 14px;
+  padding:8px 12px;
   border:none;
-  border-radius:8px;
+  border-radius:6px;
   cursor:pointer;
-  font-size:13px;
-  font-weight:bold;
+  text-decoration:none;
+  display:inline-block;
+  margin-right:8px;
+  font-size:14px;
 }
 
 .btn-detalle{
-  background:#3498db;
+  background:#1e3a8a;
   color:white;
 }
 
 .btn-wsp{
-  background:#25D366;
+  background:#16a34a;
   color:white;
-  text-decoration:none;
-  display:inline-block;
 }
 
-/* DETALLE */
 .detalle{
   display:none;
   margin-top:15px;
@@ -122,62 +87,48 @@ header{
 .producto{
   display:flex;
   justify-content:space-between;
-  padding:6px 0;
-  font-size:14px;
-  border-bottom:1px solid #f0f0f0;
+  margin-bottom:6px;
 }
 
-.producto .desc{ flex:2; }
-.producto .cant{ flex:1; text-align:center; }
-.producto .monto{ flex:1; text-align:right; font-weight:bold; }
+.desc{
+  flex:2;
+}
 
-/* TOTALES */
-.totales{
-  margin-top:12px;
+.cant{
+  flex:1;
+  text-align:center;
+}
+
+.monto{
+  flex:1;
   text-align:right;
+}
+
+.totales{
+  margin-top:10px;
+  border-top:1px solid #ddd;
+  padding-top:8px;
 }
 
 .subtotal{
   font-weight:bold;
-  font-size:15px;
 }
 
 .totalgeneral{
   font-weight:bold;
-  font-size:18px;
-  color:#c0392b;
-}
-
-/* FOOTER */
-footer{
-  text-align:center;
-  padding:12px;
-  background:#1f2d3d;
-  color:white;
-  font-size:12px;
+  color:#1e3a8a;
+  font-size:16px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-🚚 Dashboard Hoja de Ruta - GrupoDN
-</header>
+<h1>🚚 HOJA DE RUTA - GRUPODN</h1>
 
-<div class="container">
-
-<div class="search-box">
-<input type="text" id="buscador" placeholder="🔎 Buscar por código o nombre del cliente">
-</div>
+<input type="text" id="buscador" placeholder="Buscar por código o nombre de cliente...">
 
 <div id="resultados"></div>
-
-</div>
-
-<footer>
-📦 Sistema Logístico © 2026 Equipo Distribucion GrupoDN
-</footer>
 
 <script>
 let pedidos=[];
@@ -186,6 +137,14 @@ let debounceTimer=null;
 fetch('pedidos.json')
 .then(r=>r.json())
 .then(data=>pedidos=data);
+
+// 🔹 Función inteligente para detectar Monto con o sin espacios
+function obtenerMonto(obj){
+  const key = Object.keys(obj).find(k => k.trim() === "Monto");
+  if(!key) return 0;
+  const valor=parseFloat(obj[key]);
+  return isNaN(valor)?0:valor;
+}
 
 document.getElementById('buscador').addEventListener('input',()=>{
   clearTimeout(debounceTimer);
@@ -198,8 +157,8 @@ function buscar(){
   if(q.length<1) return;
 
   const filtrados=pedidos.filter(p=>
-    p["CODIGO.CLIENTE"].toString().includes(q) ||
-    p["NOMBRE.CLIENTE"].toLowerCase().includes(q)
+    p["CODIGO.CLIENTE"]?.toString().includes(q) ||
+    p["NOMBRE.CLIENTE"]?.toLowerCase().includes(q)
   );
 
   const agrupados={};
@@ -215,13 +174,14 @@ function buscar(){
 function renderCliente(lista){
 
   const p=lista[0];
-  const subtotal=lista.reduce((s,x)=>s+Number(x.Monto),0);
+
+  const subtotal=lista.reduce((s,x)=> s + obtenerMonto(x),0);
   const igv=subtotal*0.18;
   const totalGeneral=subtotal+igv;
 
-  const detalleTexto = lista.map(x=>
-    `• ${x.Descripcion} - ${x["Unidades Programadas"]} und - S/ ${Number(x.Monto).toFixed(2)}`
-  ).join('%0A');
+  const detalleTexto = lista.map(x=>{
+    return `• ${x.Descripcion} - ${x["Unidades Programadas"]} und - S/ ${obtenerMonto(x).toFixed(2)}`;
+  }).join('%0A');
 
   const mensaje =
 `*🚚 HOJA DE RUTA - GRUPODN*%0A
@@ -260,7 +220,7 @@ ${detalleTexto}%0A
 
       <a class="btn btn-wsp" target="_blank"
       href="https://wa.me/?text=${mensaje}">
-      📲 Compartir WhatsApp.</a>
+      📲 Compartir WhatsApp</a>
     </div>
 
     <div class="detalle">
@@ -268,7 +228,7 @@ ${detalleTexto}%0A
         <div class="producto">
           <div class="desc">${x.Descripcion}</div>
           <div class="cant">${x["Unidades Programadas"]} und</div>
-          <div class="monto">S/ ${Number(x.Monto).toFixed(2)}</div>
+          <div class="monto">S/ ${obtenerMonto(x).toFixed(2)}</div>
         </div>
       `).join('')}
 
@@ -286,6 +246,7 @@ ${detalleTexto}%0A
 
 </body>
 </html>
+
 
 
 
