@@ -7,32 +7,73 @@
 
 <style>
 body{
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   background:#f4f6f9;
   margin:0;
   padding:20px;
 }
 
+/* HEADER MODERNO */
 h1{
   text-align:center;
-  color:#1e3a8a;
+  background: linear-gradient(135deg,#1e3a8a,#2563eb);
+  color:white;
+  padding:18px;
+  border-radius:14px;
+  margin-bottom:20px;
+  font-weight:600;
+  letter-spacing:0.5px;
 }
 
+/* BUSCADOR */
 input{
   width:100%;
   padding:12px;
   margin:20px 0;
-  border-radius:8px;
-  border:1px solid #ccc;
+  border-radius:10px;
+  border:1px solid #ddd;
   font-size:16px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
 }
 
+/* RESUMEN POR UNIDAD */
+.resumen-unidades{
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.card-unidad{
+  background:white;
+  padding:16px;
+  border-radius:14px;
+  box-shadow:0 6px 16px rgba(0,0,0,0.06);
+  border-left:6px solid #1e3a8a;
+  transition:.2s;
+}
+
+.card-unidad:hover{
+  transform:translateY(-3px);
+}
+
+.card-unidad h3{
+  margin:0 0 8px 0;
+  color:#1e3a8a;
+}
+
+/* CARD CLIENTE */
 .card{
   background:#fff;
-  padding:18px;
-  border-radius:12px;
+  padding:20px;
+  border-radius:16px;
   margin-bottom:20px;
-  box-shadow:0 4px 8px rgba(0,0,0,0.05);
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
 }
 
 .codigo{
@@ -52,19 +93,17 @@ input{
   margin-bottom:6px;
 }
 
-.botones{
-  margin-top:12px;
-}
-
+/* BOTONES */
 .btn{
-  padding:8px 12px;
+  padding:8px 14px;
   border:none;
-  border-radius:6px;
+  border-radius:8px;
   cursor:pointer;
   text-decoration:none;
   display:inline-block;
   margin-right:8px;
   font-size:14px;
+  font-weight:500;
 }
 
 .btn-detalle{
@@ -77,11 +116,18 @@ input{
   color:white;
 }
 
+/* DETALLE */
 .detalle{
   display:none;
   margin-top:15px;
-  border-top:1px solid #ddd;
-  padding-top:10px;
+  border-top:1px solid #eee;
+  padding-top:12px;
+  animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
 }
 
 .producto{
@@ -90,19 +136,9 @@ input{
   margin-bottom:6px;
 }
 
-.desc{
-  flex:2;
-}
-
-.cant{
-  flex:1;
-  text-align:center;
-}
-
-.monto{
-  flex:1;
-  text-align:right;
-}
+.desc{ flex:2; }
+.cant{ flex:1; text-align:center; }
+.monto{ flex:1; text-align:right; }
 
 .totales{
   margin-top:10px;
@@ -126,19 +162,27 @@ input{
 
 <h1>🚚 HOJA DE RUTA - GRUPODN</h1>
 
+<!-- RESUMEN POR UNIDAD -->
+<div id="resumenUnidades" class="resumen-unidades"></div>
+
 <input type="text" id="buscador" placeholder="Buscar por código o nombre de cliente...">
 
 <div id="resultados"></div>
 
 <script>
+
 let pedidos=[];
 let debounceTimer=null;
 
+/* CARGA AUTOMÁTICA DEL JSON */
 fetch('pedidos.json')
 .then(r=>r.json())
-.then(data=>pedidos=data);
+.then(data=>{
+  pedidos=data;
+  generarResumenUnidades();
+});
 
-// 🔹 Función inteligente para detectar Monto con o sin espacios
+/* DETECCIÓN INTELIGENTE DE MONTO */
 function obtenerMonto(obj){
   const key = Object.keys(obj).find(k => k.trim() === "Monto");
   if(!key) return 0;
@@ -146,6 +190,42 @@ function obtenerMonto(obj){
   return isNaN(valor)?0:valor;
 }
 
+/* RESUMEN POR UNIDAD DE NEGOCIO */
+function generarResumenUnidades(){
+
+  const resumen = {};
+  const clientesPorUnidad = {};
+
+  pedidos.forEach(p => {
+
+    const unidad = p.unidadNegocio || "Sin Unidad";
+    const monto = obtenerMonto(p);
+
+    if(!resumen[unidad]){
+      resumen[unidad] = 0;
+      clientesPorUnidad[unidad] = new Set();
+    }
+
+    resumen[unidad] += monto;
+    clientesPorUnidad[unidad].add(p["CODIGO.CLIENTE"]);
+  });
+
+  const contenedor = document.getElementById("resumenUnidades");
+  contenedor.innerHTML = "";
+
+  Object.keys(resumen).forEach(unidad => {
+
+    contenedor.innerHTML += `
+      <div class="card-unidad">
+        <h3>🏢 ${unidad}</h3>
+        <div>👥 Clientes: ${clientesPorUnidad[unidad].size}</div>
+        <div>💰 Total: S/ ${resumen[unidad].toFixed(2)}</div>
+      </div>
+    `;
+  });
+}
+
+/* BUSCADOR CON DEBOUNCE */
 document.getElementById('buscador').addEventListener('input',()=>{
   clearTimeout(debounceTimer);
   debounceTimer=setTimeout(buscar,300);
@@ -205,12 +285,12 @@ ${detalleTexto}%0A
     <div class="codigo">🆔 Código Cliente: ${p["CODIGO.CLIENTE"]}</div>
 
     <div class="linea-horizontal">
-      <div>🚛 <strong>Placa Programada:</strong> ${p["VEHICULO"]}</div>
+      <div>🚛 <strong>Placa:</strong> ${p["VEHICULO"]}</div>
       <div>👤 <strong>Conductor:</strong> ${p.CONDUCTOR}</div>
     </div>
 
     <div class="info">📦 <strong>Repartidor:</strong> ${p.LIQUIDADOR}</div>
-    <div class="info">📞 <strong>Teléfonos Tripulación:</strong> ${p["NROS DE CONTACTO"]}</div>
+    <div class="info">📞 <strong>Teléfonos:</strong> ${p["NROS DE CONTACTO"]}</div>
 
     <div class="botones">
       <button class="btn btn-detalle" onclick="
@@ -220,7 +300,7 @@ ${detalleTexto}%0A
 
       <a class="btn btn-wsp" target="_blank"
       href="https://wa.me/?text=${mensaje}">
-      📲 Compartir WhatsApp</a>
+      📲 WhatsApp</a>
     </div>
 
     <div class="detalle">
