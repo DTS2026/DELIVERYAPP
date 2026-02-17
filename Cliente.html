@@ -3,17 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consulta de Pedido - YUGO CORP</title>
+<title>Consulta Cliente - YUGO CORP</title>
 
 <style>
 body{
     margin:0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family:'Segoe UI',sans-serif;
     background:#f4f6f9;
     display:flex;
     justify-content:center;
 }
-
 .app{
     width:100%;
     max-width:420px;
@@ -21,29 +20,23 @@ body{
     min-height:100vh;
     box-shadow:0 0 25px rgba(0,0,0,0.1);
 }
-
 .header{
     background:linear-gradient(135deg,#0d6efd,#0a58ca);
     color:white;
-    padding:25px 20px;
+    padding:25px;
     text-align:center;
-    font-size:20px;
     font-weight:bold;
 }
-
 .container{
     padding:20px;
 }
-
 input{
     width:100%;
     padding:12px;
     border-radius:10px;
     border:1px solid #ccc;
     margin-bottom:15px;
-    font-size:15px;
 }
-
 button{
     width:100%;
     padding:12px;
@@ -53,69 +46,129 @@ button{
     cursor:pointer;
     margin-bottom:12px;
 }
-
 .btn-primary{
     background:#0d6efd;
     color:white;
 }
-
-.btn-primary:hover{
-    background:#084298;
-}
-
 .btn-whatsapp{
     background:#25D366;
     color:white;
     font-weight:bold;
 }
-
-.btn-whatsapp:hover{
-    background:#1ebe5d;
-}
-
 .card{
     background:#f8f9fa;
     padding:15px;
     border-radius:12px;
     margin-top:15px;
-    font-size:14px;
 }
-
+.block{
+    background:white;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:10px;
+    box-shadow:0 0 5px rgba(0,0,0,0.05);
+}
+.title{
+    font-weight:bold;
+    margin-bottom:8px;
+    color:#0d6efd;
+}
 .qr-section{
     text-align:center;
     margin-top:20px;
 }
-
 .qr-section img{
     width:180px;
     border-radius:12px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 </style>
 
 <script>
+function formatearFecha(fechaISO){
+    if(!fechaISO) return "-";
+    const fecha = new Date(fechaISO);
+    return fecha.toLocaleDateString("es-PE");
+}
+
 async function buscarPedido(){
 
-    const codigoInput = document.getElementById("codigo");
-    if(!codigoInput) return;
-
-    const codigo = codigoInput.value.trim();
+    const codigo = document.getElementById("codigo").value.trim();
     if(!codigo){
         alert("Ingrese su código de pedido");
         return;
     }
 
-    // Aquí va tu lógica original de búsqueda (NO modificada)
-    console.log("Buscando pedido:", codigo);
+    // ⚠️ AQUÍ VA TU LLAMADA REAL A GOOGLE SHEETS
+    // Simulación estructurada:
 
-    // Simulación de resultado (mantener tu backend real)
-    document.getElementById("resultado").innerHTML = `
-        <div class="card">
-            <b>Estado:</b> En proceso<br>
-            <b>Fecha:</b> 15/02/2026<br>
-            <b>Monto:</b> S/ 250.00
-        </div>
+    const data = {
+        cliente:{
+            nombre:"Juan Pérez",
+            dni:"12345678",
+            telefono:"999888777",
+            direccion:"Av. Siempre Viva 742",
+            distrito:"Lima",
+            fecha:"2026-02-15"
+        },
+        pedido:[
+            {tipo:"Frutas", sku:"FR001", producto:"Manzana", unidad:"Kg", cantidad:5, monto:25},
+            {tipo:"Frutas", sku:"FR002", producto:"Pera", unidad:"Kg", cantidad:3, monto:18},
+            {tipo:"Verduras", sku:"VE010", producto:"Zanahoria", unidad:"Kg", cantidad:2, monto:6}
+        ]
+    };
+
+    mostrarResultado(data);
+}
+
+function mostrarResultado(data){
+
+    const cliente = data.cliente;
+    const pedido = data.pedido;
+
+    let html = "";
+
+    /* ===== CLIENTE ===== */
+    html += `
+    <div class="card">
+        <div class="title">Información del Cliente</div>
+        <div><b>Nombre:</b> ${cliente.nombre}</div>
+        <div><b>DNI:</b> ${cliente.dni}</div>
+        <div><b>Teléfono:</b> ${cliente.telefono}</div>
+        <div><b>Ubicación:</b> ${cliente.direccion} - ${cliente.distrito}</div>
+        <div><b>Fecha Pedido:</b> ${formatearFecha(cliente.fecha)}</div>
+    </div>
     `;
+
+    /* ===== AGRUPAR PEDIDO POR TIPO ===== */
+    const agrupado = {};
+
+    pedido.forEach(item=>{
+        if(!agrupado[item.tipo]){
+            agrupado[item.tipo]=[];
+        }
+        agrupado[item.tipo].push(item);
+    });
+
+    html += `<div class="card"><div class="title">Detalle del Pedido</div>`;
+
+    for(const tipo in agrupado){
+        html += `<div class="block"><b>${tipo}</b><br><br>`;
+        agrupado[tipo].forEach(p=>{
+            html += `
+                <div>
+                <b>${p.producto}</b><br>
+                SKU: ${p.sku}<br>
+                Cantidad: ${p.cantidad} ${p.unidad}<br>
+                Monto: S/ ${p.monto}
+                </div><hr>
+            `;
+        });
+        html += `</div>`;
+    }
+
+    html += `</div>`;
+
+    document.getElementById("resultado").innerHTML = html;
 }
 
 function enviarWhatsApp(){
@@ -128,20 +181,17 @@ function enviarWhatsApp(){
     window.open(url, "_blank");
 }
 </script>
-
 </head>
 
 <body>
-
 <div class="app">
-
     <div class="header">
         Consulta tu Pedido
     </div>
 
     <div class="container">
 
-        <input type="text" id="codigo" placeholder="Ingrese su código de pedido">
+        <input type="text" id="codigo" placeholder="Ingrese su código">
 
         <button class="btn-primary" onclick="buscarPedido()">
             Consultar Pedido
@@ -159,8 +209,8 @@ function enviarWhatsApp(){
         </div>
 
     </div>
-
 </div>
-
 </body>
 </html>
+
+
