@@ -113,13 +113,7 @@ function obtenerMonto(obj) {
     );
     return claveMonto ? Number(obj[claveMonto]) : 0;
 }
-/* MONTO CON ESPACIOS */
-function obtenerMonto(obj){
-  const key = Object.keys(obj).find(k => k.trim() === "Monto");
-  if(!key) return 0;
-  const valor=parseFloat(obj[key]);
-  return isNaN(valor)?0:valor;
-}
+
 function buscarCliente() {
 
     const codigo = document.getElementById("codigoCliente").value.trim();
@@ -180,7 +174,7 @@ function buscarCliente() {
 
                     <div><strong>Unidad:</strong> ${item["unidad"] || "-"}
                     <strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}</div>
-                    <div><strong>Precio:</strong> ${item["Monto Programado"] || "-"}${obtenerMonto(x).toFixed(2)}</div>
+                    <div><strong>Precio:</strong> ${item["Monto Programado"] || "-"}</div>
 
 
                     <div style="
@@ -241,6 +235,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
