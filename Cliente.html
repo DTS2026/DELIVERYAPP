@@ -101,9 +101,9 @@ button:hover{
 <div class="container">
     <h2>Consulta tu Pedido AQUI</h2>
 
-    <input type="text" id="CODIGO.CLIENTE" placeholder="Ingresa tu código de cliente">
+    <input type="text" id="codigoCliente" placeholder="Ingresa tu código de cliente">
 
-    <button onclick="buscarPedido()">Buscar BOTON</button>
+    <button onclick="buscarPedido()">BOTON</button>
 
     <div class="resultado" id="resultado"></div>
 </div>
@@ -120,7 +120,7 @@ function obtenerMonto(obj) {
 }
 
 async function buscarPedido() {
-    const codigo = document.getElementById("codigoInput").value.trim();
+    const codigo = document.getElementById("codigoCliente").value.trim();
     const resultado = document.getElementById("resultado");
     resultado.innerHTML = "";
 
@@ -192,6 +192,7 @@ async function buscarPedido() {
 
 </body>
 </html>
+
 
 
 
