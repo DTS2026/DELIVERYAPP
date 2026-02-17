@@ -207,6 +207,12 @@ function buscarCliente() {
             <p><strong>Reparto:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
             <p><strong>Nros Contacto:</strong> ${cliente["NROS DE CONTACTO"] || "-"}</p>
         </div>
+🏢 Cliente: ${p["NOMBRE.CLIENTE"]}%0A
+🆔 Código: ${p["CODIGO.CLIENTE"]}%0A
+📞 Teléfonos: ${p["NROS DE CONTACTO"]}%0A
+🚛 Placa: ${p["VEHICULO"]}%0A
+👤 Conductor: ${p.CONDUCTOR}%0A
+📦 Repartidor: ${p.LIQUIDADOR}%0A
 
         ${detalleHTML}
 
@@ -235,6 +241,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
