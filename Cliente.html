@@ -169,14 +169,12 @@ function buscarCliente() {
                     font-size:14px;
                 ">
                     <div style="font-weight:bold; color:#0b3d91; margin-bottom:4px;">
-                        ${item["Descripcion"] || "-"}
+                         ${item["SKU"] || "-"}${item["Descripcion"] || "-"}
                     </div>
 
-                    <div><strong>SKU:</strong> ${item["SKU"] || "-"}</div>
-                    <div><strong>Unidad:</strong> ${item["unidad"] || "-"}</div>
-                    <div><strong>Unid. Prog:</strong> ${item["Unidades Programadas"] || "-"}</div>
-                    <div><strong>Kg Prog:</strong> ${item["Kg Programados"] || "-"}</div>
-                    <div><strong>Monto Prog:</strong> ${item["Monto Programado"] || "-"}</div>
+                    <div><strong>Unidad:</strong> ${item["unidad"] || "-"}
+                    <strong>Unid. Prog:</strong> ${item["Cantidad"] || "-"}</div>
+                    <div><strong>Monto Prog:</strong> ${item["Precio"] || "-"}</div>
 
                     <div style="
                         margin-top:6px;
@@ -238,3 +236,4 @@ function buscarCliente() {
 
 </body>
 </html>
+
