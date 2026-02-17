@@ -3,247 +3,223 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consulta de Pedido - YUGO CORP</title>
+<title>Consulta tu Pedido</title>
 
 <style>
-body{
-    margin:0;
+body {
+    margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background:#f4f6f9;
-    display:flex;
-    justify-content:center;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    display: flex;
+    justify-content: center;
+    padding: 20px;
 }
 
-.app{
-    width:100%;
-    max-width:420px;
-    background:white;
-    min-height:100vh;
-    box-shadow:0 0 25px rgba(0,0,0,0.1);
+.app {
+    width: 100%;
+    max-width: 420px;
 }
 
-.header{
-    background:linear-gradient(135deg,#0d6efd,#0a58ca);
-    color:white;
-    padding:25px 20px;
-    text-align:center;
-    font-size:20px;
-    font-weight:bold;
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
-.container{
-    padding:20px;
+h2 {
+    text-align: center;
+    color: white;
 }
 
-input{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:1px solid #ccc;
-    margin-bottom:15px;
-    font-size:15px;
+input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    margin-top: 15px;
 }
 
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    font-size:15px;
-    cursor:pointer;
-    margin-bottom:12px;
+button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
+    cursor: pointer;
 }
 
-.btn-primary{
-    background:#0d6efd;
-    color:white;
+.btn-primary {
+    background: #0b3d91;
+    color: white;
 }
 
-.btn-primary:hover{
-    background:#084298;
+.btn-primary:hover {
+    background: #072d6b;
 }
 
-.btn-whatsapp{
-    background:#25D366;
-    color:white;
-    font-weight:bold;
+.estado {
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 5px;
 }
 
-.btn-whatsapp:hover{
-    background:#1ebe5d;
+.estado.pendiente {
+    background: #ffe0e0;
+    color: #d60000;
 }
 
-.card{
-    background:#f8f9fa;
-    padding:15px;
-    border-radius:12px;
-    margin-top:15px;
-    font-size:14px;
+.estado.entregado {
+    background: #e0ffe7;
+    color: #008f3d;
 }
 
-.qr-section{
-    text-align:center;
-    margin-top:20px;
+.producto {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 14px;
 }
 
-.qr-section img{
-    width:180px;
-    border-radius:12px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
+.total {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #0b3d91;
+}
+
+.whatsapp {
+    background: #25D366;
+    color: white;
+    text-align: center;
+}
+
+.qr img {
+    width: 180px;
+    display: block;
+    margin: 10px auto;
 }
 </style>
-
-<script>
-async function buscarPedido(){
-
-    const codigoInput = document.getElementById("codigo");
-    if(!codigoInput) return;
-
-    const codigo = codigoInput.value.trim();
-    if(!codigo){
-        alert("Ingrese su código de pedido");
-        return;
-    }
-
-    try{
-
-        // ⚠️ MANTÉN AQUÍ TU URL ORIGINAL DEL JSON
-        const response = await fetch("TU_URL_JSON_AQUI");
-        const data = await response.json();
-
-        // Comparación ignorando espacios y mayúsculas
-        const pedido = data.find(item =>
-            item.codigo &&
-            item.codigo.toString().replace(/\s+/g,'').toLowerCase() ===
-            codigo.replace(/\s+/g,'').toLowerCase()
-        );
-
-        if(!pedido){
-            document.getElementById("resultado").innerHTML =
-                "<div class='card'>No se encontró el pedido.</div>";
-            return;
-        }
-
-        // Mostrar exactamente como estaba originalmente
-
-        // Filtrar todos los registros del cliente
-const pedidosCliente = data.filter(item =>
-    item["CODIGO.CLIENTE"] &&
-    item["CODIGO.CLIENTE"].toString().trim() === codigo
-);
-
-if(pedidosCliente.length === 0){
-    document.getElementById("resultado").innerHTML =
-        "<div class='card'>No se encontró información.</div>";
-    return;
-}
-
-const cliente = pedidosCliente[0];
-
-// ===== AGRUPAR POR TIPO =====
-const grupos = {};
-pedidosCliente.forEach(item=>{
-    const tipo = item["TIPO"] || "SIN TIPO";
-    if(!grupos[tipo]){
-        grupos[tipo] = [];
-    }
-    grupos[tipo].push(item);
-});
-
-// ===== CONSTRUIR HTML =====
-let html = "";
-
-/* ===== DETALLE CLIENTE ===== */
-html += `
-<div class="card">
-<b>NOMBRE.CLIENTE:</b> ${cliente["NOMBRE.CLIENTE"] || "-"}<br>
-<b>CODIGO.CLIENTE:</b> ${cliente["CODIGO.CLIENTE"] || "-"}<br>
-<b>formaPago:</b> ${cliente["formaPago"] || "-"}<br>
-<b>departamento:</b> ${cliente["departamento"] || "-"} 
-<b>distrito:</b> ${cliente["distrito"] || "-"}<br>
-<b>Fecha.Facturacion:</b> ${cliente["Fecha.Facturacion"] || "-"}<br>
-<b>VEHICULO:</b> ${cliente["VEHICULO"] || "-"}<br>
-<b>LIQUIDADOR:</b> ${cliente["LIQUIDADOR"] || "-"}<br>
-<b>NROS DE CONTACTO:</b> ${cliente["NROS DE CONTACTO"] || "-"}
-</div>
-`;
-
-/* ===== DETALLE PEDIDO AGRUPADO ===== */
-for(const tipo in grupos){
-
-    html += `<div class="card"><b>${tipo}</b><br><br>`;
-
-    grupos[tipo].forEach(item=>{
-
-        html += `
-        <div style="margin-bottom:10px;">
-        <b>SKU:</b> ${item["SKU"] || "-"}<br>
-        <b>Descripcion:</b> ${item["Descripcion"] || "-"}<br>
-        <b>unidad:</b> ${item["unidad"] || "-"}<br>
-        <b>Unidades Programadas:</b> ${item["Unidades Programadas"] || "-"}<br>
-        <b>Kg Programados:</b> ${item["Kg Programados"] || "-"}<br>
-        <b>Monto Programado:</b> ${item["Monto Programado"] || "-"}<br>
-        <b>Monto:</b> ${item["Monto"] || "-"}
-        </div>
-        <hr>
-        `;
-    });
-
-    html += `</div>`;
-}
-
-document.getElementById("resultado").innerHTML = html;
-
-
-    }catch(error){
-        console.error(error);
-        alert("Error al consultar datos.");
-    }
-}
-
-function enviarWhatsApp(){
-    const codigo = document.getElementById("codigo").value.trim();
-    let mensaje = "Hola, quiero consultar o subir un reclamo";
-    if(codigo){
-        mensaje += " sobre mi pedido código: " + codigo;
-    }
-    const url = "https://wa.me/51996639020?text=" + encodeURIComponent(mensaje);
-    window.open(url, "_blank");
-}
-</script>
-
 </head>
 
 <body>
 
 <div class="app">
 
-    <div class="header">
-        Consulta tu Pedido
-    </div>
+<h2>Consulta tu Pedido</h2>
 
-    <div class="container">
+<div class="card">
+    <input type="text" id="codigoCliente" placeholder="Ingresa tu código">
+    <button class="btn-primary" onclick="buscarCliente()">Buscar Pedido</button>
+</div>
 
-        <input type="text" id="codigo" placeholder="Ingrese su código de pedido">
+<div id="resultado"></div>
 
-        <button class="btn-primary" onclick="buscarPedido()">
-            Consultar Pedido
-        </button>
+</div>
 
-        <button class="btn-whatsapp" onclick="enviarWhatsApp()">
-            Consulta o sube tu reclamo
-        </button>
+<script>
 
-        <div id="resultado"></div>
+let pedidos = [];
 
-        <div class="qr-section">
-            <h4>Paga con Yape</h4>
+fetch("pedidos.json")
+.then(response => response.json())
+.then(data => pedidos = data)
+.catch(error => console.error("Error cargando JSON:", error));
+
+function obtenerMonto(obj) {
+    const claveMonto = Object.keys(obj).find(k =>
+        k.toLowerCase().replace(/\s/g, "").includes("monto")
+    );
+    return claveMonto ? Number(obj[claveMonto]) : 0;
+}
+
+function buscarCliente() {
+
+    const codigo = document.getElementById("codigoCliente").value.trim();
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = "";
+
+    if (!codigo) {
+        alert("Ingrese su código.");
+        return;
+    }
+
+    const pedidosCliente = pedidos.filter(p =>
+        String(p["CODIGO.CLIENTE"]).trim() === codigo
+    );
+
+    if (pedidosCliente.length === 0) {
+        resultado.innerHTML = `<div class="card">No se encontró información.</div>`;
+        return;
+    }
+
+    const p = pedidosCliente[0];
+    let subtotal = 0;
+
+    let productosHTML = "";
+
+    pedidosCliente.forEach(item => {
+        const monto = obtenerMonto(item);
+        subtotal += monto;
+
+        productosHTML += `
+            <div class="producto">
+                <div>${item["Descripcion"]}</div>
+                <div>S/ ${monto.toFixed(2)}</div>
+            </div>
+        `;
+    });
+
+    const igv = subtotal * 0.18;
+    const total = subtotal + igv;
+
+    const estadoTexto = p["FechaPedido"] || "Pendiente";
+    const estadoClase = estadoTexto.toLowerCase().includes("pendiente") 
+        ? "pendiente" 
+        : "entregado";
+
+    const mensajeWA = encodeURIComponent(
+        `Hola, soy el cliente código ${codigo} y tengo una consulta sobre mi pedido.`
+    );
+
+    resultado.innerHTML = `
+        <div class="card">
+            <h3>${p["NOMBRE.CLIENTE"]}</h3>
+            <div class="estado ${estadoClase}">${estadoTexto}</div>
+            <p><strong>Vehículo:</strong> ${p["VEHICULO"]}</p>
+            <p><strong>Conductor:</strong> ${p["CONDUCTOR"]}</p>
+        </div>
+
+        <div class="card">
+            ${productosHTML}
+            <hr>
+            <div>Subtotal: S/ ${subtotal.toFixed(2)}</div>
+            <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
+            <div class="total">Total a pagar: S/ ${total.toFixed(2)}</div>
+        </div>
+
+        <div class="card qr">
+            <strong>Paga con Yape</strong>
             <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
         </div>
 
-    </div>
+        <div class="card">
+            <button class="whatsapp" 
+                onclick="window.open('https://wa.me/51996639020?text=${mensajeWA}','_blank')">
+                Consulta o Reclamo por WhatsApp
+            </button>
+        </div>
+    `;
+}
 
-</div>
+</script>
 
 </body>
 </html>
