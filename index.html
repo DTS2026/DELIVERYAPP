@@ -13,7 +13,6 @@ body{
   padding:20px;
 }
 
-/* HEADER MODERNO */
 h1{
   text-align:center;
   background: linear-gradient(135deg,#1e3a8a,#2563eb);
@@ -25,7 +24,6 @@ h1{
   letter-spacing:0.5px;
 }
 
-/* BUSCADOR */
 input{
   width:100%;
   padding:12px;
@@ -36,7 +34,6 @@ input{
   box-shadow:0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* RESUMEN POR UNIDAD */
 .resumen-unidades{
   display:grid;
   grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
@@ -62,7 +59,6 @@ input{
   color:#1e3a8a;
 }
 
-/* CARD CLIENTE */
 .card{
   background:#fff;
   padding:20px;
@@ -93,7 +89,6 @@ input{
   margin-bottom:6px;
 }
 
-/* BOTONES */
 .btn{
   padding:8px 14px;
   border:none;
@@ -116,18 +111,11 @@ input{
   color:white;
 }
 
-/* DETALLE */
 .detalle{
   display:none;
   margin-top:15px;
   border-top:1px solid #eee;
   padding-top:12px;
-  animation:fadeIn .3s ease;
-}
-
-@keyframes fadeIn{
-  from{opacity:0}
-  to{opacity:1}
 }
 
 .producto{
@@ -162,7 +150,6 @@ input{
 
 <h1>🚚 HOJA DE RUTA -DISTRIBUCION GRUPODN</h1>
 
-<!-- RESUMEN POR UNIDAD -->
 <div id="resumenUnidades" class="resumen-unidades"></div>
 
 <input type="text" id="buscador" placeholder="Buscar por código o nombre de cliente...">
@@ -171,45 +158,26 @@ input{
 
 <script>
 
-
-<script>
-
 let pedidos=[];
 let debounceTimer=null;
 
-/* =========================
-   CARGA AUTOMÁTICA JSON
-========================= */
 fetch('pedidos.json')
-.then(r=>{
-  if(!r.ok) throw new Error("Error cargando JSON");
-  return r.json();
-})
+.then(r=>r.json())
 .then(data=>{
   pedidos=data;
   generarResumenUnidades();
-})
-.catch(err=>{
-  console.error("Error:",err);
-  alert("No se pudo cargar pedidos.json");
 });
 
-/* =========================
-   NORMALIZADOR GLOBAL
-========================= */
+/* NORMALIZADOR */
 function normalizarTexto(texto){
-  return texto
-    ?.toString()
-    .toLowerCase()
+  return texto?.toString().toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\u0300-\u036f]/g,"")
     .replace(/\s+/g," ")
     .trim();
 }
 
-/* =========================
-   DETECCIÓN INTELIGENTE MONTO
-========================= */
+/* MONTO CON ESPACIOS */
 function obtenerMonto(obj){
   const key = Object.keys(obj).find(k => k.trim() === "Monto");
   if(!key) return 0;
@@ -217,9 +185,7 @@ function obtenerMonto(obj){
   return isNaN(valor)?0:valor;
 }
 
-/* =========================
-   RESUMEN POR UNIDAD
-========================= */
+/* RESUMEN */
 function generarResumenUnidades(){
 
   const resumen = {};
@@ -254,9 +220,7 @@ function generarResumenUnidades(){
   });
 }
 
-/* =========================
-   BUSCADOR CORREGIDO TOTAL
-========================= */
+/* BUSCADOR CORREGIDO */
 document.getElementById('buscador').addEventListener('input',()=>{
   clearTimeout(debounceTimer);
   debounceTimer=setTimeout(buscar,250);
@@ -264,47 +228,34 @@ document.getElementById('buscador').addEventListener('input',()=>{
 
 function buscar(){
 
-  const q = normalizarTexto(buscador.value);
-  resultados.innerHTML='';
+  const input = document.getElementById("buscador");
+  const resultadosDiv = document.getElementById("resultados");
 
-  if(q.length < 1) return;
+  const q = normalizarTexto(input.value);
+  resultadosDiv.innerHTML='';
 
-  const filtrados = pedidos.filter(p => {
+  if(q.length<1) return;
+
+  const filtrados=pedidos.filter(p=>{
 
     const codigo = normalizarTexto(p["CODIGO.CLIENTE"]);
     const nombre = normalizarTexto(p["NOMBRE.CLIENTE"]);
-    const placa = normalizarTexto(p["VEHICULO"]);
-    const conductor = normalizarTexto(p["CONDUCTOR"]);
-    const unidad = normalizarTexto(p["unidadNegocio"]);
 
-    return (
-      codigo?.includes(q) ||
-      nombre?.includes(q) ||
-      placa?.includes(q) ||
-      conductor?.includes(q) ||
-      unidad?.includes(q)
-    );
+    return codigo?.includes(q) || nombre?.includes(q);
   });
-
-  if(filtrados.length===0){
-    resultados.innerHTML="<p style='color:#999'>No se encontraron resultados</p>";
-    return;
-  }
 
   const agrupados={};
 
   filtrados.forEach(p=>{
-    const codigo = p["CODIGO.CLIENTE"];
-    if(!agrupados[codigo]) agrupados[codigo]=[];
-    agrupados[codigo].push(p);
+    if(!agrupados[p["CODIGO.CLIENTE"]])
+      agrupados[p["CODIGO.CLIENTE"]]=[];
+    agrupados[p["CODIGO.CLIENTE"]].push(p);
   });
 
   Object.values(agrupados).forEach(lista=>renderCliente(lista));
 }
 
-/* =========================
-   RENDER CLIENTE
-========================= */
+/* RENDER */
 function renderCliente(lista){
 
   const p=lista[0];
@@ -312,24 +263,6 @@ function renderCliente(lista){
   const subtotal=lista.reduce((s,x)=> s + obtenerMonto(x),0);
   const igv=subtotal*0.18;
   const totalGeneral=subtotal+igv;
-
-  const detalleTexto = lista.map(x=>{
-    return `• ${x.Descripcion} - ${x["Unidades Programadas"]} und - S/ ${obtenerMonto(x).toFixed(2)}`;
-  }).join('%0A');
-
-  const mensaje =
-`*🚚 HOJA DE RUTA - GRUPODN*%0A
-🏢 Cliente: ${p["NOMBRE.CLIENTE"]}%0A
-🆔 Código: ${p["CODIGO.CLIENTE"]}%0A
-📞 Teléfonos: ${p["NROS DE CONTACTO"]}%0A
-🚛 Placa: ${p["VEHICULO"]}%0A
-👤 Conductor: ${p.CONDUCTOR}%0A
-📦 Repartidor: ${p.LIQUIDADOR}%0A
-%0A*📋 DETALLE DEL PEDIDO*%0A
-${detalleTexto}%0A
-%0A💰 Subtotal: S/ ${subtotal.toFixed(2)}%0A
-🧾 IGV (18%): S/ ${igv.toFixed(2)}%0A
-*TOTAL GENERAL: S/ ${totalGeneral.toFixed(2)}*`;
 
   const div=document.createElement('div');
   div.className='card';
@@ -345,17 +278,6 @@ ${detalleTexto}%0A
 
     <div class="info">📦 <strong>Repartidor:</strong> ${p.LIQUIDADOR}</div>
     <div class="info">📞 <strong>Teléfonos:</strong> ${p["NROS DE CONTACTO"]}</div>
-
-    <div class="botones">
-      <button class="btn btn-detalle" onclick="
-        const d=this.closest('.card').querySelector('.detalle');
-        d.style.display=d.style.display==='block'?'none':'block';
-      ">📋 Ver detalle</button>
-
-      <a class="btn btn-wsp" target="_blank"
-      href="https://wa.me/?text=${mensaje}">
-      📲 WhatsApp</a>
-    </div>
 
     <div class="detalle">
       ${lista.map(x=>`
@@ -374,18 +296,10 @@ ${detalleTexto}%0A
     </div>
   `;
 
-  resultados.appendChild(div);
+  document.getElementById("resultados").appendChild(div);
 }
 
 </script>
 
-
-
-  
-</script>
-
 </body>
 </html>
-
-
-
