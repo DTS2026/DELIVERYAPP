@@ -186,13 +186,24 @@ function buscarCliente() {
       ]
     : "-"
 }</div>
+<div><strong>Precio final:</strong> ${
+    Object.keys(item).find(k =>
+        k.toLowerCase().replace(/\s/g,"").includes("Monto")
+    )
+    ? item[
+        Object.keys(item).find(k =>
+            k.toLowerCase().replace(/\s/g,"").includes("Monto")
+        )
+      ]
+    : "-"
+}</div>
 
                     <div style="
                         margin-top:6px;
                         font-weight:bold;
                         color:#0b3d91;
                     ">
-                        Monto: S/ ${monto.toFixed(2)}*${item["Unidades Programadas"] }
+                        Monto: S/ ${monto.toFixed(2)}
                     </div>
                 </div>
             `;
@@ -247,6 +258,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
