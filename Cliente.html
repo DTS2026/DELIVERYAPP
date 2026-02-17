@@ -204,17 +204,48 @@ function buscarCliente() {
 
     // 🔹 Mostrar información del cliente y detalle
     resultado.innerHTML = `
-        <div class="card">
-            <h3>${cliente["NOMBRE.CLIENTE"] || "-"}</h3>
-            <p><strong>CODIGO.CLIENTE:</strong> ${cliente["CODIGO.CLIENTE"] || "-"}</p>
-            <p><strong>formaPago:</strong> ${cliente["formaPago"] || "-"}</p>
-            <p><strong>departamento:</strong> ${cliente["departamento"] || "-"} 
-               <strong>distrito:</strong> ${cliente["distrito"] || "-"}</p>
-            <p><strong>Fecha.Facturacion:</strong> ${cliente["Fecha.Facturacion"] || "-"}</p>
-            <p><strong>VEHICULO:</strong> ${cliente["VEHICULO"] || "-"}</p>
-            <p><strong>LIQUIDADOR:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
-            <p><strong>📞 NROS DE CONTACTO:</strong> ${cliente["NROS DE CONTACTO"] || "-"}</p>
+
+
+    
+<div class="card" style="padding:14px; line-height:1.4; background: #f5f8fb;">
+    <h3 style="margin-bottom:10px; color:#0b3d91; font-size:18px;">
+        ${cliente["NOMBRE.CLIENTE"] || "-"}
+    </h3>
+
+    <div style="display:flex; flex-wrap:wrap; gap:10px; font-size:14px; color:#333;">
+        <!-- Código y forma de pago -->
+        <div style="flex: 1 1 45%; background:#e6f0ff; padding:6px 8px; border-radius:8px;">
+            <strong>🆔 Código:</strong> ${cliente["CODIGO.CLIENTE"] || "-"}
         </div>
+        <div style="flex: 1 1 45%; background:#e6f0ff; padding:6px 8px; border-radius:8px;">
+            <strong>💰 Pago:</strong> ${cliente["formaPago"] || "-"}
+        </div>
+
+        <!-- Ubicación -->
+        <div style="flex: 1 1 45%; background:#e0f7e6; padding:6px 8px; border-radius:8px;">
+            <strong>📍 Depto:</strong> ${cliente["departamento"] || "-"}
+        </div>
+        <div style="flex: 1 1 45%; background:#e0f7e6; padding:6px 8px; border-radius:8px;">
+            <strong>🏘 Distrito:</strong> ${cliente["distrito"] || "-"}
+        </div>
+
+        <!-- Facturación y vehículo -->
+        <div style="flex: 1 1 45%; background:#fff3e6; padding:6px 8px; border-radius:8px;">
+            <strong>📅 Facturación:</strong> ${cliente["Fecha.Facturacion"] || "-"}
+        </div>
+        <div style="flex: 1 1 45%; background:#fff3e6; padding:6px 8px; border-radius:8px;">
+            <strong>🚚 Vehículo:</strong> ${cliente["VEHICULO"] || "-"}
+        </div>
+
+        <!-- Liquidador y contactos -->
+        <div style="flex: 1 1 45%; background:#f9e6ff; padding:6px 8px; border-radius:8px;">
+            <strong>🧾 Liquidador:</strong> ${cliente["LIQUIDADOR"] || "-"}
+        </div>
+        <div style="flex: 1 1 45%; background:#f9e6ff; padding:6px 8px; border-radius:8px;">
+            <strong>📞 Contacto:</strong> ${cliente["NROS DE CONTACTO"] || "-"}
+        </div>
+    </div>
+</div
 
         ${detalleHTML}
 
@@ -242,3 +273,4 @@ function buscarCliente() {
 
 </body>
 </html>
+
