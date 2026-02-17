@@ -2,89 +2,137 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Consulta tu Pedido</title>
 
 <style>
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    padding: 20px;
 }
 
-.container {
+.app {
+    width: 100%;
+    max-width: 420px;
+}
+
+.card {
     background: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 420px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
 h2 {
     text-align: center;
+    color: white;
 }
 
 input {
     width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
     font-size: 16px;
+    margin-top: 15px;
 }
 
 button {
     width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-    border-radius: 8px;
+    padding: 14px;
+    border-radius: 12px;
     border: none;
-    background: #1f4e9e;
-    color: white;
     font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
     cursor: pointer;
 }
 
-button:hover {
-    background: #163c7a;
+.btn-primary {
+    background: #0b3d91;
+    color: white;
 }
 
-#resultado {
-    margin-top: 20px;
+.btn-primary:hover {
+    background: #072d6b;
+}
+
+.estado {
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.estado.pendiente {
+    background: #ffe0e0;
+    color: #d60000;
+}
+
+.estado.entregado {
+    background: #e0ffe7;
+    color: #008f3d;
+}
+
+.producto {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
     font-size: 14px;
+}
+
+.total {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #0b3d91;
+}
+
+.whatsapp {
+    background: #25D366;
+    color: white;
+    text-align: center;
+}
+
+.qr img {
+    width: 180px;
+    display: block;
+    margin: 10px auto;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h2>Consulta tu Pedido</h2>
+<div class="app">
 
+<h2>Consulta tu Pedido</h2>
+
+<div class="card">
     <input type="text" id="codigoCliente" placeholder="Ingresa tu código">
-    <button onclick="buscarCliente()">Buscar</button>
+    <button class="btn-primary" onclick="buscarCliente()">Buscar Pedido</button>
+</div>
 
-    <div id="resultado"></div>
+<div id="resultado"></div>
+
 </div>
 
 <script>
 
 let pedidos = [];
 
-// 🔹 Cargar JSON al iniciar
 fetch("pedidos.json")
 .then(response => response.json())
-.then(data => {
-    pedidos = data;
-})
-.catch(error => {
-    console.error("Error cargando pedidos.json:", error);
-});
+.then(data => pedidos = data)
+.catch(error => console.error("Error cargando JSON:", error));
 
-// 🔹 Detectar automáticamente cualquier campo que contenga "monto"
 function obtenerMonto(obj) {
     const claveMonto = Object.keys(obj).find(k =>
         k.toLowerCase().replace(/\s/g, "").includes("monto")
@@ -92,22 +140,14 @@ function obtenerMonto(obj) {
     return claveMonto ? Number(obj[claveMonto]) : 0;
 }
 
-// 🔹 Buscar cliente
 function buscarCliente() {
 
-    const input = document.getElementById("codigoCliente");
-    const resultadoDiv = document.getElementById("resultado");
-
-    if (!input) {
-        console.error("No existe input codigoCliente");
-        return;
-    }
-
-    const codigo = input.value.trim();
-    resultadoDiv.innerHTML = "";
+    const codigo = document.getElementById("codigoCliente").value.trim();
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = "";
 
     if (!codigo) {
-        resultadoDiv.innerHTML = "<p>Ingrese un código.</p>";
+        alert("Ingrese su código.");
         return;
     }
 
@@ -116,56 +156,67 @@ function buscarCliente() {
     );
 
     if (pedidosCliente.length === 0) {
-        resultadoDiv.innerHTML = "<p>No se encontró información con ese código.</p>";
+        resultado.innerHTML = `<div class="card">No se encontró información.</div>`;
         return;
     }
 
+    const p = pedidosCliente[0];
     let subtotal = 0;
 
-    let html = `
-        <h3>${pedidosCliente[0]["NOMBRE.CLIENTE"]}</h3>
-        <p><strong>Distrito:</strong> ${pedidosCliente[0]["distrito"]}</p>
-        <p><strong>Provincia:</strong> ${pedidosCliente[0]["provincia"]}</p>
-        <p><strong>Departamento:</strong> ${pedidosCliente[0]["departamento"]}</p>
-        <hr>
-        <table border="1" width="100%" cellspacing="0" cellpadding="4">
-            <tr>
-                <th>Producto</th>
-                <th>Unidades</th>
-                <th>Monto</th>
-            </tr>
-    `;
+    let productosHTML = "";
 
-    pedidosCliente.forEach(p => {
-
-        const monto = obtenerMonto(p);
+    pedidosCliente.forEach(item => {
+        const monto = obtenerMonto(item);
         subtotal += monto;
 
-        html += `
-            <tr>
-                <td>${p["Descripcion"]}</td>
-                <td>${p["Unidades Programadas"]}</td>
-                <td>S/ ${monto.toFixed(2)}</td>
-            </tr>
+        productosHTML += `
+            <div class="producto">
+                <div>${item["Descripcion"]}</div>
+                <div>S/ ${monto.toFixed(2)}</div>
+            </div>
         `;
     });
 
     const igv = subtotal * 0.18;
     const total = subtotal + igv;
 
-    html += `
-        </table>
-        <hr>
-        <p><strong>Subtotal:</strong> S/ ${subtotal.toFixed(2)}</p>
-        <p><strong>IGV (18%):</strong> S/ ${igv.toFixed(2)}</p>
-        <p><strong>Total:</strong> S/ ${total.toFixed(2)}</p>
-        <hr>
-        <p><strong>Conductor:</strong> ${pedidosCliente[0]["CONDUCTOR"]}</p>
-        <p><strong>Vehículo:</strong> ${pedidosCliente[0]["VEHICULO"]}</p>
-        <p><strong>Estado:</strong> ${pedidosCliente[0]["FechaPedido"]}</p>
-    `;
+    const estadoTexto = p["FechaPedido"] || "Pendiente";
+    const estadoClase = estadoTexto.toLowerCase().includes("pendiente") 
+        ? "pendiente" 
+        : "entregado";
 
-    resultadoDiv.innerHTML = html;
+    const mensajeWA = encodeURIComponent(
+        `Hola, soy el cliente código ${codigo} y tengo una consulta sobre mi pedido.`
+    );
+
+    resultado.innerHTML = `
+        <div class="card">
+            <h3>${p["NOMBRE.CLIENTE"]}</h3>
+            <div class="estado ${estadoClase}">${estadoTexto}</div>
+            <p><strong>Vehículo:</strong> ${p["VEHICULO"]}</p>
+            <p><strong>Conductor:</strong> ${p["CONDUCTOR"]}</p>
+        </div>
+
+        <div class="card">
+            ${productosHTML}
+            <hr>
+            <div>Subtotal: S/ ${subtotal.toFixed(2)}</div>
+            <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
+            <div class="total">Total a pagar: S/ ${total.toFixed(2)}</div>
+        </div>
+
+        <div class="card qr">
+            <strong>Paga con Yape</strong>
+            <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
+        </div>
+
+        <div class="card">
+            <button class="whatsapp" 
+                onclick="window.open('https://wa.me/51996639020?text=${mensajeWA}','_blank')">
+                Consulta o Reclamo por WhatsApp
+            </button>
+        </div>
+    `;
 }
 
 </script>
