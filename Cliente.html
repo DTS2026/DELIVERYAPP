@@ -90,35 +90,47 @@ function formatearFecha(fechaISO){
     return fecha.toLocaleDateString("es-PE");
 }
 
+
 async function buscarPedido(){
 
-    const codigo = document.getElementById("codigo").value.trim();
+    const codigoInput = document.getElementById("codigo");
+    if(!codigoInput) return;
+
+    const codigo = codigoInput.value.trim();
     if(!codigo){
         alert("Ingrese su código de pedido");
         return;
     }
 
-    // ⚠️ AQUÍ VA TU LLAMADA REAL A GOOGLE SHEETS
-    // Simulación estructurada:
+    try{
 
-    const data = {
-        cliente:{
-            nombre:"Juan Pérez",
-            dni:"12345678",
-            telefono:"999888777",
-            direccion:"Av. Siempre Viva 742",
-            distrito:"Lima",
-            fecha:"2026-02-15"
-        },
-        pedido:[
-            {tipo:"Frutas", sku:"FR001", producto:"Manzana", unidad:"Kg", cantidad:5, monto:25},
-            {tipo:"Frutas", sku:"FR002", producto:"Pera", unidad:"Kg", cantidad:3, monto:18},
-            {tipo:"Verduras", sku:"VE010", producto:"Zanahoria", unidad:"Kg", cantidad:2, monto:6}
-        ]
-    };
+        const response = await fetch("TU_URL_JSON_AQUI"); // ← DEJA TU URL ORIGINAL
+        const data = await response.json();
 
-    mostrarResultado(data);
+        // Buscar coincidencia ignorando espacios y mayúsculas
+        const pedido = data.find(item =>
+            item.codigo &&
+            item.codigo.toString().replace(/\s+/g,'').toLowerCase() ===
+            codigo.replace(/\s+/g,'').toLowerCase()
+        );
+
+        if(!pedido){
+            document.getElementById("resultado").innerHTML =
+                "<div class='card'>No se encontró el pedido.</div>";
+            return;
+        }
+
+        // AQUÍ usamos tu estructura real (NO datos genéricos)
+        mostrarResultado(pedido);
+
+    }catch(error){
+        console.error(error);
+        alert("Error al consultar datos.");
+    }
 }
+
+
+    
 
 function mostrarResultado(data){
 
@@ -212,5 +224,6 @@ function enviarWhatsApp(){
 </div>
 </body>
 </html>
+
 
 
