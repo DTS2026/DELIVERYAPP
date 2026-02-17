@@ -171,18 +171,45 @@ input{
 
 <script>
 
+
+<script>
+
 let pedidos=[];
 let debounceTimer=null;
 
-/* CARGA AUTOMÁTICA DEL JSON */
+/* =========================
+   CARGA AUTOMÁTICA JSON
+========================= */
 fetch('pedidos.json')
-.then(r=>r.json())
+.then(r=>{
+  if(!r.ok) throw new Error("Error cargando JSON");
+  return r.json();
+})
 .then(data=>{
   pedidos=data;
   generarResumenUnidades();
+})
+.catch(err=>{
+  console.error("Error:",err);
+  alert("No se pudo cargar pedidos.json");
 });
 
-/* DETECCIÓN INTELIGENTE DE MONTO */
+/* =========================
+   NORMALIZADOR GLOBAL
+========================= */
+function normalizarTexto(texto){
+  return texto
+    ?.toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+/* =========================
+   DETECCIÓN INTELIGENTE MONTO
+========================= */
 function obtenerMonto(obj){
   const key = Object.keys(obj).find(k => k.trim() === "Monto");
   if(!key) return 0;
@@ -190,7 +217,9 @@ function obtenerMonto(obj){
   return isNaN(valor)?0:valor;
 }
 
-/* RESUMEN POR UNIDAD DE NEGOCIO */
+/* =========================
+   RESUMEN POR UNIDAD
+========================= */
 function generarResumenUnidades(){
 
   const resumen = {};
@@ -225,32 +254,57 @@ function generarResumenUnidades(){
   });
 }
 
-/* BUSCADOR CON DEBOUNCE */
+/* =========================
+   BUSCADOR CORREGIDO TOTAL
+========================= */
 document.getElementById('buscador').addEventListener('input',()=>{
   clearTimeout(debounceTimer);
-  debounceTimer=setTimeout(buscar,300);
+  debounceTimer=setTimeout(buscar,250);
 });
 
 function buscar(){
-  const q=buscador.value.toLowerCase();
-  resultados.innerHTML='';
-  if(q.length<1) return;
 
-  const filtrados=pedidos.filter(p=>
-    p["CODIGO.CLIENTE"]?.toString().includes(q) ||
-    p["NOMBRE.CLIENTE"]?.toLowerCase().includes(q)
-  );
+  const q = normalizarTexto(buscador.value);
+  resultados.innerHTML='';
+
+  if(q.length < 1) return;
+
+  const filtrados = pedidos.filter(p => {
+
+    const codigo = normalizarTexto(p["CODIGO.CLIENTE"]);
+    const nombre = normalizarTexto(p["NOMBRE.CLIENTE"]);
+    const placa = normalizarTexto(p["VEHICULO"]);
+    const conductor = normalizarTexto(p["CONDUCTOR"]);
+    const unidad = normalizarTexto(p["unidadNegocio"]);
+
+    return (
+      codigo?.includes(q) ||
+      nombre?.includes(q) ||
+      placa?.includes(q) ||
+      conductor?.includes(q) ||
+      unidad?.includes(q)
+    );
+  });
+
+  if(filtrados.length===0){
+    resultados.innerHTML="<p style='color:#999'>No se encontraron resultados</p>";
+    return;
+  }
 
   const agrupados={};
+
   filtrados.forEach(p=>{
-    if(!agrupados[p["CODIGO.CLIENTE"]])
-      agrupados[p["CODIGO.CLIENTE"]]=[];
-    agrupados[p["CODIGO.CLIENTE"]].push(p);
+    const codigo = p["CODIGO.CLIENTE"];
+    if(!agrupados[codigo]) agrupados[codigo]=[];
+    agrupados[codigo].push(p);
   });
 
   Object.values(agrupados).forEach(lista=>renderCliente(lista));
 }
 
+/* =========================
+   RENDER CLIENTE
+========================= */
 function renderCliente(lista){
 
   const p=lista[0];
@@ -322,9 +376,16 @@ ${detalleTexto}%0A
 
   resultados.appendChild(div);
 }
+
+</script>
+
+
+
+  
 </script>
 
 </body>
 </html>
+
 
 
