@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consulta tu Pedido I RAZZETO </title>
+<title>Consulta tu Pedido</title>
 
 <style>
 body {
@@ -17,7 +17,7 @@ body {
 
 .app {
     width: 100%;
-    max-width: 460px;
+    max-width: 420px;
 }
 
 .card {
@@ -87,7 +87,7 @@ button {
 
 <div class="app">
 
-<h2>Consulta tu Pedido I RAZZETO</h2>
+<h2>Consulta tu Pedido</h2>
 
 <div class="card">
     <input type="text" id="codigoCliente" placeholder="Ingresa tu código">
@@ -149,38 +149,10 @@ function buscarCliente() {
 
     for (const tipo in grupos) {
 
-detalleHTML += `
-    <div style="
-        margin-bottom:10px;
-        padding:10px;
-        border:1px solid #ddd;
-        border-radius:6px;
-        font-size:14px;
-    ">
-        <div style="display:grid; grid-template-columns: 120px 1fr; gap:4px 10px;">
-            <div><strong>SKU</strong></div>
-            <div>${item["SKU"] || "-"}</div>
-
-            <div><strong>Descripción</strong></div>
-            <div>${item["Descripcion"] || "-"}</div>
-
-            <div><strong>Unidad</strong></div>
-            <div>${item["unidad"] || "-"}</div>
-
-            <div><strong>Unidades</strong></div>
-            <div>${item["Unidades Programadas"] || "-"}</div>
-
-            <div><strong>Kilos</strong></div>
-            <div>${item["Kg Programados"] || "-"}</div>
-
-            <div><strong>Monto Programado</strong></div>
-            <div>${item["Monto Programado"] || "-"}</div>
-
-            <div><strong>Monto</strong></div>
-            <div>S/ ${monto.toFixed(2)}</div>
-        </div>
-    </div>
-`;
+        detalleHTML += `
+        <div class="card">
+            <h4 style="margin-bottom:10px; color:#0b3d91;">${tipo}</h4>
+        `;
 
         grupos[tipo].forEach(item => {
 
@@ -188,24 +160,36 @@ detalleHTML += `
             subtotal += monto;
 
             detalleHTML += `
-                <tr style="border-bottom:1px solid #eee;">
-                    <td style="padding:6px;">${item["SKU"] || "-"}</td>
-                    <td style="padding:6px;">${item["Descripcion"] || "-"}</td>
-                    <td style="padding:6px;">${item["unidad"] || "-"}</td>
-                    <td style="padding:6px;">${item["Unidades Programadas"] || "-"}</td>
-                    <td style="padding:6px;">${item["Kg Programados"] || "-"}</td>
-                    <td style="padding:6px;">${item["Monto Programado"] || "-"}</td>
-                    <td style="padding:6px;">S/ ${monto.toFixed(2)}</td>
-                </tr>
+                <div style="
+                    border:1px solid #eee;
+                    border-radius:12px;
+                    padding:12px;
+                    margin-bottom:10px;
+                    background:#f9f9f9;
+                    font-size:14px;
+                ">
+                    <div style="font-weight:bold; color:#0b3d91; margin-bottom:4px;">
+                        ${item["Descripcion"] || "-"}
+                    </div>
+
+                    <div><strong>SKU:</strong> ${item["SKU"] || "-"}</div>
+                    <div><strong>Unidad:</strong> ${item["unidad"] || "-"}</div>
+                    <div><strong>Unid. Prog:</strong> ${item["Unidades Programadas"] || "-"}</div>
+                    <div><strong>Kg Prog:</strong> ${item["Kg Programados"] || "-"}</div>
+                    <div><strong>Monto Prog:</strong> ${item["Monto Programado"] || "-"}</div>
+
+                    <div style="
+                        margin-top:6px;
+                        font-weight:bold;
+                        color:#0b3d91;
+                    ">
+                        Monto: S/ ${monto.toFixed(2)}
+                    </div>
+                </div>
             `;
         });
 
-        detalleHTML += `
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        `;
+        detalleHTML += `</div>`;
     }
 
     const igv = subtotal * 0.18;
@@ -254,7 +238,3 @@ detalleHTML += `
 
 </body>
 </html>
-
-
-
-
