@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+g<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -12,18 +12,18 @@ body {
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: 10px;
 }
 
 .app {
     width: 100%;
-    max-width: 420px;
+    max-width: 460px;
 }
 
 .card {
     background: white;
     border-radius: 18px;
-    padding: 20px;
+    padding: 10px;
     margin-bottom: 15px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
@@ -169,12 +169,13 @@ function buscarCliente() {
                     font-size:14px;
                 ">
                     <div style="font-weight:bold; color:#0b3d91; margin-bottom:4px;">
-                         ${item["SKU"] || "-"}${item["Descripcion"] || "-"}
+                         ${item["SKU"] || "-"} ${item["Descripcion"] || "-"}
                     </div>
 
                     <div><strong>Unidad:</strong> ${item["unidad"] || "-"}
-                    <strong>Unid. Prog:</strong> ${item["Cantidad"] || "-"}</div>
-                    <div><strong>Monto Prog:</strong> ${item["Precio"] || "-"}</div>
+                    <strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}</div>
+                    <div><strong>Precio:</strong> ${item["Monto Programado"] || "-"}</div>
+
 
                     <div style="
                         margin-top:6px;
@@ -199,20 +200,18 @@ function buscarCliente() {
 
     resultado.innerHTML = `
         <div class="card">
-            <h3>${cliente["NOMBRE.CLIENTE"] || "-"}</h3>
-            <p><strong>CODIGO.CLIENTE:</strong> ${cliente["CODIGO.CLIENTE"] || "-"}</p>
-            <p><strong>formaPago:</strong> ${cliente["formaPago"] || "-"}</p>
-            <p><strong>departamento:</strong> ${cliente["departamento"] || "-"} 
-               <strong>distrito:</strong> ${cliente["distrito"] || "-"}</p>
-            <p><strong>Fecha.Facturacion:</strong> ${cliente["Fecha.Facturacion"] || "-"}</p>
-            <p><strong>VEHICULO:</strong> ${cliente["VEHICULO"] || "-"}</p>
-            <p><strong>LIQUIDADOR:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
-            <p><strong>NROS DE CONTACTO:</strong> ${cliente["NROS DE CONTACTO"] || "-"}</p>
+            <h3>${cliente["CODIGO.CLIENTE"] || "-"} ${cliente["NOMBRE.CLIENTE"] || "-"}</h3>
+            <p><strong>Provincia:</strong> ${cliente["departamento"] || "-"} 
+            <strong>Territorio:</strong> ${cliente["distrito"] || "-"}</p>
+            <p><strong>Vehiculo:</strong> ${cliente["VEHICULO"] || "-"}</p>
+            <p><strong>Reparto:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
+            <p><strong>Nros Contacto:</strong> ${cliente["NROS DE CONTACTO"] || "-"}</p>
         </div>
 
         ${detalleHTML}
 
         <div class="card">
+            <p><strong>formaPago:</strong> ${cliente["formaPago"] || "-"}</p>
             <div>Subtotal: S/ ${subtotal.toFixed(2)}</div>
             <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
             <div class="total">Total a pagar: S/ ${total.toFixed(2)}</div>
@@ -226,7 +225,7 @@ function buscarCliente() {
         <div class="card">
             <button class="whatsapp" 
                 onclick="window.open('https://wa.me/51996639020?text=${mensajeWA}','_blank')">
-                Consulta o Reclamo por WhatsApp
+                Consulta o Reclamos, Escribenos
             </button>
         </div>
     `;
@@ -236,4 +235,5 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
