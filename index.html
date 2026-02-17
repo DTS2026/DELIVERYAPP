@@ -264,6 +264,24 @@ function renderCliente(lista){
   const igv=subtotal*0.18;
   const totalGeneral=subtotal+igv;
 
+  const detalleTexto = lista.map(x=>{
+    return `• ${x.Descripcion} - ${x["Unidades Programadas"]} und - S/ ${obtenerMonto(x).toFixed(2)}`;
+  }).join('%0A');
+
+  const mensaje =
+`*🚚 HOJA DE RUTA - GRUPODN*%0A
+🏢 Cliente: ${p["NOMBRE.CLIENTE"]}%0A
+🆔 Código: ${p["CODIGO.CLIENTE"]}%0A
+📞 Teléfonos: ${p["NROS DE CONTACTO"]}%0A
+🚛 Placa: ${p["VEHICULO"]}%0A
+👤 Conductor: ${p.CONDUCTOR}%0A
+📦 Repartidor: ${p.LIQUIDADOR}%0A
+%0A*📋 DETALLE DEL PEDIDO*%0A
+${detalleTexto}%0A
+%0A💰 Subtotal: S/ ${subtotal.toFixed(2)}%0A
+🧾 IGV (18%): S/ ${igv.toFixed(2)}%0A
+*TOTAL GENERAL: S/ ${totalGeneral.toFixed(2)}*`;
+
   const div=document.createElement('div');
   div.className='card';
 
@@ -278,6 +296,17 @@ function renderCliente(lista){
 
     <div class="info">📦 <strong>Repartidor:</strong> ${p.LIQUIDADOR}</div>
     <div class="info">📞 <strong>Teléfonos:</strong> ${p["NROS DE CONTACTO"]}</div>
+
+    <div class="botones">
+      <button class="btn btn-detalle" onclick="
+        const d=this.closest('.card').querySelector('.detalle');
+        d.style.display=d.style.display==='block'?'none':'block';
+      ">📋 Ver detalle</button>
+
+      <a class="btn btn-wsp" target="_blank"
+      href="https://wa.me/?text=${mensaje}">
+      📲 WhatsApp</a>
+    </div>
 
     <div class="detalle">
       ${lista.map(x=>`
@@ -299,7 +328,9 @@ function renderCliente(lista){
   document.getElementById("resultados").appendChild(div);
 }
 
+
 </script>
 
 </body>
 </html>
+
