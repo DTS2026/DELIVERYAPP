@@ -149,24 +149,38 @@ function buscarCliente() {
 
     for (const tipo in grupos) {
 
-        detalleHTML += `
-        <div class="card">
-            <h4>${tipo}</h4>
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; min-width:700px; font-size:13px;">
-                    <thead>
-                        <tr style="background:#0b3d91; color:white;">
-                            <th style="padding:8px;">SKU</th>
-                            <th style="padding:8px;">Descripcion</th>
-                            <th style="padding:8px;">Unidad</th>
-                            <th style="padding:8px;">Unid. Prog.</th>
-                            <th style="padding:8px;">Kg Prog.</th>
-                            <th style="padding:8px;">Monto Prog.</th>
-                            <th style="padding:8px;">Monto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
+detalleHTML += `
+    <div style="
+        margin-bottom:10px;
+        padding:10px;
+        border:1px solid #ddd;
+        border-radius:6px;
+        font-size:14px;
+    ">
+        <div style="display:grid; grid-template-columns: 120px 1fr; gap:4px 10px;">
+            <div><strong>SKU</strong></div>
+            <div>${item["SKU"] || "-"}</div>
+
+            <div><strong>Descripción</strong></div>
+            <div>${item["Descripcion"] || "-"}</div>
+
+            <div><strong>Unidad</strong></div>
+            <div>${item["unidad"] || "-"}</div>
+
+            <div><strong>Unidades</strong></div>
+            <div>${item["Unidades Programadas"] || "-"}</div>
+
+            <div><strong>Kilos</strong></div>
+            <div>${item["Kg Programados"] || "-"}</div>
+
+            <div><strong>Monto Programado</strong></div>
+            <div>${item["Monto Programado"] || "-"}</div>
+
+            <div><strong>Monto</strong></div>
+            <div>S/ ${monto.toFixed(2)}</div>
+        </div>
+    </div>
+`;
 
         grupos[tipo].forEach(item => {
 
@@ -240,3 +254,4 @@ function buscarCliente() {
 
 </body>
 </html>
+
