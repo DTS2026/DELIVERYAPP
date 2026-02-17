@@ -12,18 +12,18 @@ body {
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: 10px;
 }
 
 .app {
     width: 100%;
-    max-width: 420px;
+    max-width: 460px;
 }
 
 .card {
     background: white;
     border-radius: 18px;
-    padding: 20px;
+    padding: 10px;
     margin-bottom: 15px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
@@ -91,7 +91,7 @@ button {
 
 <div class="card">
     <input type="text" id="codigoCliente" placeholder="Ingresa tu código">
-    <button class="btn-primary" onclick="buscarCliente()">Buscar Pedido</button>
+    <button class="btn-primary" onclick="buscarCliente()">Buscar mi Pedido</button>
 </div>
 
 <div id="resultado"></div>
@@ -174,9 +174,9 @@ function buscarCliente() {
 
                     <div><strong>SKU:</strong> ${item["SKU"] || "-"}</div>
                     <div><strong>Unidad:</strong> ${item["unidad"] || "-"}</div>
-                    <div><strong>Unid. Prog:</strong> ${item["Unidades Programadas"] || "-"}</div>
-                    <div><strong>Kg Prog:</strong> ${item["Kg Programados"] || "-"}</div>
-                    <div><strong>Monto Prog:</strong> ${
+                    <div><strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}</div>
+                    <div><strong>Kilos:</strong> ${item["Kg Programados"] || "-"}</div>
+                    <div><strong>Precio:</strong> ${
     Object.keys(item).find(k =>
         k.toLowerCase().replace(/\s/g,"").includes("montoprogramado")
     )
@@ -219,7 +219,7 @@ function buscarCliente() {
             <p><strong>Fecha.Facturacion:</strong> ${cliente["Fecha.Facturacion"] || "-"}</p>
             <p><strong>VEHICULO:</strong> ${cliente["VEHICULO"] || "-"}</p>
             <p><strong>LIQUIDADOR:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
-            <p><strong>NROS DE CONTACTO:</strong> ${cliente["NROS DE CONTACTO"] || "-"}</p>
+            <p><strong>📞 NROS DE CONTACTO:</strong> ${cliente["NROS DE CONTACTO"] || "-"}</p>
         </div>
 
         ${detalleHTML}
@@ -248,4 +248,5 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
