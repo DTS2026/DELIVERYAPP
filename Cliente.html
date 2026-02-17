@@ -27,35 +27,6 @@ body {
     margin-bottom: 15px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
-.tabla-container {
-    overflow-x: auto;
-    margin-top: 10px;
-}
-
-.tabla-detalle {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 700px;
-    font-size: 13px;
-}
-
-.tabla-detalle th {
-    background: #0b3d91;
-    color: white;
-    padding: 8px;
-    text-align: left;
-    white-space: nowrap;
-}
-
-.tabla-detalle td {
-    padding: 8px;
-    border-bottom: 1px solid #eee;
-    white-space: nowrap;
-}
-
-.tabla-detalle tr:hover {
-    background: #f8f9fa;
-}
 
 h2 {
     text-align: center;
@@ -89,32 +60,6 @@ button {
 
 .btn-primary:hover {
     background: #072d6b;
-}
-
-.estado {
-    padding: 8px 12px;
-    border-radius: 20px;
-    display: inline-block;
-    font-size: 13px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-.estado.pendiente {
-    background: #ffe0e0;
-    color: #d60000;
-}
-
-.estado.entregado {
-    background: #e0ffe7;
-    color: #008f3d;
-}
-
-.producto {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 14px;
 }
 
 .total {
@@ -169,7 +114,6 @@ function obtenerMonto(obj) {
     return claveMonto ? Number(obj[claveMonto]) : 0;
 }
 
-
 function buscarCliente() {
 
     const codigo = document.getElementById("codigoCliente").value.trim();
@@ -192,70 +136,63 @@ function buscarCliente() {
 
     const cliente = pedidosCliente[0];
 
-    // ===== AGRUPAR POR TIPO =====
+    // AGRUPAR POR TIPO
     const grupos = {};
     pedidosCliente.forEach(item => {
         const tipo = item["TIPO"] || "SIN TIPO";
-        if (!grupos[tipo]) {
-            grupos[tipo] = [];
-        }
+        if (!grupos[tipo]) grupos[tipo] = [];
         grupos[tipo].push(item);
     });
 
     let subtotal = 0;
     let detalleHTML = "";
 
-    // ===== CONSTRUIR DETALLE AGRUPADO =====
     for (const tipo in grupos) {
 
+        detalleHTML += `
+        <div class="card">
+            <h4>${tipo}</h4>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; min-width:700px; font-size:13px;">
+                    <thead>
+                        <tr style="background:#0b3d91; color:white;">
+                            <th style="padding:8px;">SKU</th>
+                            <th style="padding:8px;">Descripcion</th>
+                            <th style="padding:8px;">Unidad</th>
+                            <th style="padding:8px;">Unid. Prog.</th>
+                            <th style="padding:8px;">Kg Prog.</th>
+                            <th style="padding:8px;">Monto Prog.</th>
+                            <th style="padding:8px;">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
 
+        grupos[tipo].forEach(item => {
 
-detalleHTML += `
-    <div class="card">
-        <h4>${tipo}</h4>
+            const monto = Number(item["Monto"]) || obtenerMonto(item);
+            subtotal += monto;
 
-        <div class="tabla-container">
-            <table class="tabla-detalle">
-                <thead>
-                    <tr>
-                        <th>SKU</th>
-                        <th>Descripcion</th>
-                        <th>Unidad</th>
-                        <th>Unid. Prog.</th>
-                        <th>Kg Prog.</th>
-                        <th>Monto Prog.</th>
-                        <th>Monto</th>
-                    </tr>
-                </thead>
-                <tbody>
-`;
+            detalleHTML += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:6px;">${item["SKU"] || "-"}</td>
+                    <td style="padding:6px;">${item["Descripcion"] || "-"}</td>
+                    <td style="padding:6px;">${item["unidad"] || "-"}</td>
+                    <td style="padding:6px;">${item["Unidades Programadas"] || "-"}</td>
+                    <td style="padding:6px;">${item["Kg Programados"] || "-"}</td>
+                    <td style="padding:6px;">${item["Monto Programado"] || "-"}</td>
+                    <td style="padding:6px;">S/ ${monto.toFixed(2)}</td>
+                </tr>
+            `;
+        });
 
-grupos[tipo].forEach(item => {
-
-    const monto = Number(item["Monto"]) || obtenerMonto(item);
-    subtotal += monto;
-
-    detalleHTML += `
-        <tr>
-            <td>${item["SKU"] || "-"}</td>
-            <td>${item["Descripcion"] || "-"}</td>
-            <td>${item["unidad"] || "-"}</td>
-            <td>${item["Unidades Programadas"] || "-"}</td>
-            <td>${item["Kg Programados"] || "-"}</td>
-            <td>${item["Monto Programado"] || "-"}</td>
-            <td>S/ ${monto.toFixed(2)}</td>
-        </tr>
-    `;
-});
-
-detalleHTML += `
-                </tbody>
-            </table>
+        detalleHTML += `
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-`;
-
-        
+        `;
+    }
 
     const igv = subtotal * 0.18;
     const total = subtotal + igv;
@@ -265,35 +202,31 @@ detalleHTML += `
     );
 
     resultado.innerHTML = `
-
-        <!-- DETALLE CLIENTE -->
         <div class="card">
-            <h3>${cliente["CODIGO.CLIENTE"] || "-"}${cliente["NOMBRE.CLIENTE"] || "-"}</h3>
-           <p><strong>formaPago:</strong> ${cliente["formaPago"] || "-"}</p>
+            <h3>${cliente["NOMBRE.CLIENTE"] || "-"}</h3>
+            <p><strong>CODIGO.CLIENTE:</strong> ${cliente["CODIGO.CLIENTE"] || "-"}</p>
+            <p><strong>formaPago:</strong> ${cliente["formaPago"] || "-"}</p>
             <p><strong>departamento:</strong> ${cliente["departamento"] || "-"} 
                <strong>distrito:</strong> ${cliente["distrito"] || "-"}</p>
+            <p><strong>Fecha.Facturacion:</strong> ${cliente["Fecha.Facturacion"] || "-"}</p>
             <p><strong>VEHICULO:</strong> ${cliente["VEHICULO"] || "-"}</p>
-            <p><strong>REPARTIDOR:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
+            <p><strong>LIQUIDADOR:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
             <p><strong>NROS DE CONTACTO:</strong> ${cliente["NROS DE CONTACTO"] || "-"}</p>
         </div>
 
-        <!-- DETALLE PEDIDO AGRUPADO -->
         ${detalleHTML}
 
-        <!-- TOTALES -->
         <div class="card">
             <div>Subtotal: S/ ${subtotal.toFixed(2)}</div>
             <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
             <div class="total">Total a pagar: S/ ${total.toFixed(2)}</div>
         </div>
 
-        <!-- QR -->
         <div class="card qr">
             <strong>Paga con Yape</strong>
             <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
         </div>
 
-        <!-- WHATSAPP -->
         <div class="card">
             <button class="whatsapp" 
                 onclick="window.open('https://wa.me/51996639020?text=${mensajeWA}','_blank')">
@@ -303,11 +236,7 @@ detalleHTML += `
     `;
 }
 
-
-    
-
 </script>
 
 </body>
 </html>
-
