@@ -102,27 +102,19 @@ button {
 
 let pedidos = [];
 
+// 🔹 Cargar JSON y normalizar nombres de campos
 fetch("pedidos.json")
   .then(response => response.json())
   .then(data => {
-      // Normalizar nombres de campos: quitar espacios al inicio y final
       pedidos = data.map(pedido => {
           const obj = {};
           for (let key in pedido) {
-              obj[key.trim()] = pedido[key];
+              obj[key.trim()] = pedido[key]; // quitar espacios de nombres
           }
           return obj;
       });
   })
   .catch(error => console.error("Error cargando JSON:", error));
-    
-
-function obtenerMonto(obj) {
-    const claveMonto = Object.keys(obj).find(k =>
-        k.toLowerCase().replace(/\s/g, "").includes("monto")
-    );
-    return claveMonto ? Number(obj[claveMonto]) : 0;
-}
 
 function buscarCliente() {
 
@@ -135,6 +127,7 @@ function buscarCliente() {
         return;
     }
 
+    // 🔹 Buscar pedidos del cliente
     const pedidosCliente = pedidos.filter(p =>
         String(p["CODIGO.CLIENTE"]).trim() === codigo
     );
@@ -146,10 +139,10 @@ function buscarCliente() {
 
     const cliente = pedidosCliente[0];
 
-    // AGRUPAR POR TIPO
+    // 🔹 AGRUPAR POR tipo
     const grupos = {};
     pedidosCliente.forEach(item => {
-        const tipo = item["TIPO"] || "SIN TIPO";
+        const tipo = item["tipo"] || "SIN TIPO";  // ← corrección aquí
         if (!grupos[tipo]) grupos[tipo] = [];
         grupos[tipo].push(item);
     });
@@ -166,8 +159,8 @@ function buscarCliente() {
 
         grupos[tipo].forEach(item => {
 
-           const monto = Number(item["Monto"]) || 0;
-           const precio = Number(item["Precio"]) || 0;
+            const monto = Number(item["Monto"]) || 0;
+            const precio = Number(item["Precio"]) || 0;
             subtotal += monto;
 
             detalleHTML += `
@@ -186,17 +179,7 @@ function buscarCliente() {
                     <div><strong>SKU:</strong> ${item["SKU"] || "-"}</div>
                     <div><strong>Unidad:</strong> ${item["unidad"] || "-"}</div>
                     <div><strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}</div>
-                    
-                    
-<div><strong>Precio:</strong> S/ ${precio.toFixed(2)}</div>
-<div style="
-    margin-top:6px;
-    font-weight:bold;
-    color:#0b3d91;
-">
-    Monto: S/ ${monto.toFixed(2)}
-</div>
-
+                    <div><strong>Precio:</strong> S/ ${precio.toFixed(2)}</div>
 
                     <div style="
                         margin-top:6px;
@@ -219,6 +202,7 @@ function buscarCliente() {
         `Hola, soy el cliente código ${codigo} y tengo una consulta sobre mi pedido.`
     );
 
+    // 🔹 Mostrar información del cliente y detalle
     resultado.innerHTML = `
         <div class="card">
             <h3>${cliente["NOMBRE.CLIENTE"] || "-"}</h3>
@@ -258,10 +242,3 @@ function buscarCliente() {
 
 </body>
 </html>
-
-
-
-
-
-
-
