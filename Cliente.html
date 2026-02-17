@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta tu Pedido</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f6f9;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:white;
+    width:95%;
+    max-width:420px;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+    margin-bottom:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#007bff;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0056b3;
+}
+
+.resultado{
+    margin-top:20px;
+    text-align:left;
+    display:none;
+    border-top:1px solid #eee;
+    padding-top:15px;
+}
+
+.estado{
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.whatsapp{
+    margin-top:15px;
+    display:block;
+    background:#25D366;
+    text-align:center;
+    padding:12px;
+    border-radius:10px;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.qr{
+    margin-top:20px;
+    text-align:center;
+}
+
+.qr img{
+    width:200px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Consulta tu Pedido</h2>
+
+    <input type="text" id="codigoCliente" placeholder="Ingresa tu código de cliente">
+
+    <button onclick="buscarPedido()">Buscar</button>
+
+    <div class="resultado" id="resultado">
+
+        <div class="estado" id="estadoPedido"></div>
+        <div id="detallePedido"></div>
+        <div id="repartidor"></div>
+        <div id="monto"></div>
+
+        <div class="qr">
+            <p><strong>Paga con Yape</strong></p>
+            <!-- AQUI DEBES PONER TU IMAGEN QR -->
+            <img src="AQUI_TU_IMAGEN_QR_YAPE.png" alt="QR Yape">
+        </div>
+
+        <a class="whatsapp" 
+           href="https://wa.me/51996639020?text=Hola%20tengo%20una%20consulta%20sobre%20mi%20pedido" 
+           target="_blank">
+           Contactar Central por WhatsApp
+        </a>
+
+    </div>
+</div>
+
+<script>
+
+// ⚠️ SIMULACIÓN DE BASE DE DATOS
+const pedidos = [
+    {
+        codigo: "C123",
+        estado: "En Ruta",
+        detalle: "Pedido #4589 - 2 Cajas",
+        repartidor: "Carlos M.",
+        monto: "S/ 120.00"
+    },
+    {
+        codigo: "C456",
+        estado: "Entregado",
+        detalle: "Pedido #4595 - 1 Caja",
+        repartidor: "Luis R.",
+        monto: "S/ 75.00"
+    }
+];
+
+function buscarPedido(){
+    const codigo = document.getElementById("codigoCliente").value.trim();
+    const resultado = document.getElementById("resultado");
+
+    const pedido = pedidos.find(p => p.codigo.toLowerCase() === codigo.toLowerCase());
+
+    if(pedido){
+        document.getElementById("estadoPedido").innerHTML = "Estado: " + pedido.estado;
+        document.getElementById("detallePedido").innerHTML = "Detalle: " + pedido.detalle;
+        document.getElementById("repartidor").innerHTML = "Repartidor: " + pedido.repartidor;
+        document.getElementById("monto").innerHTML = "Monto a cancelar: " + pedido.monto;
+        resultado.style.display = "block";
+    }else{
+        alert("No se encontró información con ese código.");
+        resultado.style.display = "none";
+    }
+}
+
+</script>
+
+</body>
+</html>
