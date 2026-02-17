@@ -175,7 +175,6 @@ function buscarCliente() {
                     <div><strong>SKU:</strong> ${item["SKU"] || "-"}</div>
                     <div><strong>Unidad:</strong> ${item["unidad"] || "-"}</div>
                     <div><strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}</div>
-                    <div><strong>Kilos:</strong> ${item["Kg Programados"] || "-"}</div>
                     <div><strong>Precio:</strong> ${
     Object.keys(item).find(k =>
         k.toLowerCase().replace(/\s/g,"").includes("montoprogramado")
@@ -193,7 +192,7 @@ function buscarCliente() {
                         font-weight:bold;
                         color:#0b3d91;
                     ">
-                        Monto: S/ ${monto.toFixed(2)}
+                        Monto: S/ ${monto.toFixed(2)}*${item["Unidades Programadas"] }
                     </div>
                 </div>
             `;
@@ -248,5 +247,6 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
