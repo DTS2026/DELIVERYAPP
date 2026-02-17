@@ -177,26 +177,16 @@ function buscarCliente() {
                     <div><strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}</div>
                     <div><strong>Precio:</strong> ${
     Object.keys(item).find(k =>
-        k.toLowerCase().replace(/\s/g,"").includes("montoprogramado")
+        k.toLowerCase().replace(/\s/g,"").includes("precio")
     )
     ? item[
         Object.keys(item).find(k =>
-            k.toLowerCase().replace(/\s/g,"").includes("montoprogramado")
+            k.toLowerCase().replace(/\s/g,"").includes("precio")
         )
       ]
     : "-"
 }</div>
-<div><strong>Precio final:</strong> ${
-    Object.keys(item).find(k =>
-        k.toLowerCase().replace(/\s/g,"").includes("Monto")
-    )
-    ? item[
-        Object.keys(item).find(k =>
-            k.toLowerCase().replace(/\s/g,"").includes("Monto")
-        )
-      ]
-    : "-"
-}</div>
+
 
                     <div style="
                         margin-top:6px;
@@ -258,6 +248,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
