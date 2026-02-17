@@ -13,13 +13,13 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
+    min-height:100vh;
 }
 
 .container{
     background:white;
     width:95%;
-    max-width:420px;
+    max-width:450px;
     padding:25px;
     border-radius:15px;
     box-shadow:0 8px 25px rgba(0,0,0,0.1);
@@ -44,14 +44,14 @@ button{
     padding:12px;
     border:none;
     border-radius:10px;
-    background:#007bff;
+    background:#0b3d91;
     color:white;
     font-size:16px;
     cursor:pointer;
 }
 
 button:hover{
-    background:#0056b3;
+    background:#072d6b;
 }
 
 .resultado{
@@ -62,9 +62,15 @@ button:hover{
     padding-top:15px;
 }
 
-.estado{
+.producto{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:6px;
+}
+
+.total{
+    margin-top:10px;
     font-weight:bold;
-    margin-bottom:8px;
 }
 
 .whatsapp{
@@ -99,68 +105,90 @@ button:hover{
 
     <button onclick="buscarPedido()">Buscar</button>
 
-    <div class="resultado" id="resultado">
-
-        <div class="estado" id="estadoPedido"></div>
-        <div id="detallePedido"></div>
-        <div id="repartidor"></div>
-        <div id="monto"></div>
-
-        <div class="qr">
-            <p><strong>Paga con Yape</strong></p>
-            <!-- AQUI DEBES PONER TU IMAGEN QR -->
-            <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
-        </div>
-
-        <a class="whatsapp" 
-           href="https://wa.me/51996639020?text=Hola%20tengo%20una%20consulta%20sobre%20mi%20pedido" 
-           target="_blank">
-           Contactar Central por WhatsApp
-        </a>
-
-    </div>
+    <div class="resultado" id="resultado"></div>
 </div>
 
 <script>
 
-// ⚠️ SIMULACIÓN DE BASE DE DATOS
-const pedidos = [
-    {
-        codigo: "C123",
-        estado: "En Ruta",
-        detalle: "Pedido #4589 - 2 Cajas",
-        repartidor: "Carlos M.",
-        monto: "S/ 120.00"
-    },
-    {
-        codigo: "C456",
-        estado: "Entregado",
-        detalle: "Pedido #4595 - 1 Caja",
-        repartidor: "Luis R.",
-        monto: "S/ 75.00"
-    }
-];
+let pedidos = [];
+
+fetch('pedidos.json')
+.then(r => r.json())
+.then(data => pedidos = data);
+
+function obtenerMonto(obj){
+    const key = Object.keys(obj).find(k => k.trim() === "Monto");
+    if(!key) return 0;
+    const valor = parseFloat(obj[key]);
+    return isNaN(valor) ? 0 : valor;
+}
 
 function buscarPedido(){
-    const codigo = document.getElementById("codigoCliente").value.trim();
-    const resultado = document.getElementById("resultado");
 
-    const pedido = pedidos.find(p => p.codigo.toLowerCase() === codigo.toLowerCase());
+    const codigoIngresado = document.getElementById("codigoCliente").value.trim();
+    const resultadoDiv = document.getElementById("resultado");
 
-    if(pedido){
-        document.getElementById("estadoPedido").innerHTML = "Estado: " + pedido.estado;
-        document.getElementById("detallePedido").innerHTML = "Detalle: " + pedido.detalle;
-        document.getElementById("repartidor").innerHTML = "Repartidor: " + pedido.repartidor;
-        document.getElementById("monto").innerHTML = "Monto a cancelar: " + pedido.monto;
-        resultado.style.display = "block";
-    }else{
+    resultadoDiv.style.display = "none";
+    resultadoDiv.innerHTML = "";
+
+    if(!codigoIngresado) return;
+
+    const pedidosCliente = pedidos.filter(p => 
+        p["CODIGO.CLIENTE"].toString() === codigoIngresado
+    );
+
+    if(pedidosCliente.length === 0){
         alert("No se encontró información con ese código.");
-        resultado.style.display = "none";
+        return;
     }
+
+    const p = pedidosCliente[0];
+
+    const subtotal = pedidosCliente.reduce((s,x)=> s + obtenerMonto(x),0);
+    const igv = subtotal * 0.18;
+    const totalGeneral = subtotal + igv;
+
+    const detalleHTML = pedidosCliente.map(x => `
+        <div class="producto">
+            <div>${x.Descripcion}</div>
+            <div>S/ ${obtenerMonto(x).toFixed(2)}</div>
+        </div>
+    `).join('');
+
+    const mensaje = encodeURIComponent(
+        `Hola, soy el cliente código ${codigoIngresado} y tengo una consulta sobre mi pedido.`
+    );
+
+    resultadoDiv.innerHTML = `
+        <p><strong>Cliente:</strong> ${p["NOMBRE.CLIENTE"]}</p>
+        <p><strong>Vehículo:</strong> ${p["VEHICULO"]}</p>
+        <p><strong>Conductor:</strong> ${p["CONDUCTOR"]}</p>
+        <p><strong>Repartidor:</strong> ${p["LIQUIDADOR"]}</p>
+
+        <hr>
+
+        ${detalleHTML}
+
+        <div class="total">Subtotal: S/ ${subtotal.toFixed(2)}</div>
+        <div class="total">IGV (18%): S/ ${igv.toFixed(2)}</div>
+        <div class="total">TOTAL A PAGAR: S/ ${totalGeneral.toFixed(2)}</div>
+
+        <div class="qr">
+            <p><strong>Paga con Yape</strong></p>
+            <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
+        </div>
+
+        <a class="whatsapp"
+           href="https://wa.me/51996639020?text=${mensaje}"
+           target="_blank">
+           Contactar Central por WhatsApp
+        </a>
+    `;
+
+    resultadoDiv.style.display = "block";
 }
 
 </script>
 
 </body>
 </html>
-
