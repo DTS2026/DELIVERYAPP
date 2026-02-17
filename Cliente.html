@@ -110,85 +110,86 @@ button:hover{
 
 <script>
 
-let pedidos = [];
 
-fetch('pedidos.json')
-.then(r => r.json())
-.then(data => pedidos = data);
 
-function obtenerMonto(obj){
-    const key = Object.keys(obj).find(k => k.trim() === "Monto");
-    if(!key) return 0;
-    const valor = parseFloat(obj[key]);
-    return isNaN(valor) ? 0 : valor;
+function obtenerMonto(obj) {
+    const claveMonto = Object.keys(obj).find(k =>
+        k.toLowerCase().replace(/\s/g, "").includes("monto")
+    );
+    return claveMonto ? Number(obj[claveMonto]) : 0;
 }
 
-function buscarPedido(){
+async function buscarPedido() {
+    const codigo = document.getElementById("codigoInput").value.trim();
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = "";
 
-    const codigoIngresado = document.getElementById("codigoCliente").value.trim();
-    const resultadoDiv = document.getElementById("resultado");
-
-    resultadoDiv.style.display = "none";
-    resultadoDiv.innerHTML = "";
-
-    if(!codigoIngresado) return;
-
-    const pedidosCliente = pedidos.filter(p => 
-        p["CODIGO.CLIENTE"].toString() === codigoIngresado
-    );
-
-    if(pedidosCliente.length === 0){
-        alert("No se encontró información con ese código.");
+    if (!codigo) {
+        alert("Ingrese un código");
         return;
     }
 
-    const p = pedidosCliente[0];
+    try {
+        const response = await fetch("pedidos.json");
+        const data = await response.json();
 
-    const subtotal = pedidosCliente.reduce((s,x)=> s + obtenerMonto(x),0);
-    const igv = subtotal * 0.18;
-    const totalGeneral = subtotal + igv;
+        const pedidosCliente = data.filter(p =>
+            String(p["CODIGO.CLIENTE"]).trim() === codigo
+        );
 
-    const detalleHTML = pedidosCliente.map(x => `
-        <div class="producto">
-            <div>${x.Descripcion}</div>
-            <div>S/ ${obtenerMonto(x).toFixed(2)}</div>
-        </div>
-    `).join('');
+        if (pedidosCliente.length === 0) {
+            resultado.innerHTML = "<p>No se encontró información con ese código.</p>";
+            return;
+        }
 
-    const mensaje = encodeURIComponent(
-        `Hola, soy el cliente código ${codigoIngresado} y tengo una consulta sobre mi pedido.`
-    );
+        let subtotal = 0;
 
-    resultadoDiv.innerHTML = `
-        <p><strong>Cliente:</strong> ${p["NOMBRE.CLIENTE"]}</p>
-        <p><strong>Vehículo:</strong> ${p["VEHICULO"]}</p>
-        <p><strong>Conductor:</strong> ${p["CONDUCTOR"]}</p>
-        <p><strong>Repartidor:</strong> ${p["LIQUIDADOR"]}</p>
+        let tabla = `
+            <h3>Cliente: ${pedidosCliente[0]["NOMBRE.CLIENTE"]}</h3>
+            <table border="1" width="100%">
+                <tr>
+                    <th>Producto</th>
+                    <th>Unidades</th>
+                    <th>Monto</th>
+                </tr>
+        `;
 
-        <hr>
+        pedidosCliente.forEach(p => {
+            const monto = obtenerMonto(p);
+            subtotal += monto;
 
-        ${detalleHTML}
+            tabla += `
+                <tr>
+                    <td>${p["Descripcion"]}</td>
+                    <td>${p["Unidades Programadas"]}</td>
+                    <td>S/ ${monto.toFixed(2)}</td>
+                </tr>
+            `;
+        });
 
-        <div class="total">Subtotal: S/ ${subtotal.toFixed(2)}</div>
-        <div class="total">IGV (18%): S/ ${igv.toFixed(2)}</div>
-        <div class="total">TOTAL A PAGAR: S/ ${totalGeneral.toFixed(2)}</div>
+        const igv = subtotal * 0.18;
+        const total = subtotal + igv;
 
-        <div class="qr">
-            <p><strong>Paga con Yape</strong></p>
-            <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
-        </div>
+        tabla += `
+            </table>
+            <p><strong>Subtotal:</strong> S/ ${subtotal.toFixed(2)}</p>
+            <p><strong>IGV (18%):</strong> S/ ${igv.toFixed(2)}</p>
+            <p><strong>Total:</strong> S/ ${total.toFixed(2)}</p>
+            <p><strong>Conductor:</strong> ${pedidosCliente[0]["CONDUCTOR"]}</p>
+            <p><strong>Vehículo:</strong> ${pedidosCliente[0]["VEHICULO"]}</p>
+        `;
 
-        <a class="whatsapp"
-           href="https://wa.me/51996639020?text=${mensaje}"
-           target="_blank">
-           Contactar Central por WhatsApp
-        </a>
-    `;
+        resultado.innerHTML = tabla;
 
-    resultadoDiv.style.display = "block";
+    } catch (error) {
+        console.error(error);
+        resultado.innerHTML = "<p>Error al cargar pedidos.json</p>";
+    }
 }
+
 
 </script>
 
 </body>
 </html>
+
