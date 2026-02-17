@@ -27,6 +27,35 @@ body {
     margin-bottom: 15px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
+.tabla-container {
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+.tabla-detalle {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+    font-size: 13px;
+}
+
+.tabla-detalle th {
+    background: #0b3d91;
+    color: white;
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tabla-detalle td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+}
+
+.tabla-detalle tr:hover {
+    background: #f8f9fa;
+}
 
 h2 {
     text-align: center;
@@ -179,32 +208,54 @@ function buscarCliente() {
     // ===== CONSTRUIR DETALLE AGRUPADO =====
     for (const tipo in grupos) {
 
-        detalleHTML += `
-            <div class="card">
-                <h4>${tipo}</h4>
-        `;
 
-        grupos[tipo].forEach(item => {
 
-            const monto = Number(item["Monto"]) || obtenerMonto(item);
-            subtotal += monto;
+detalleHTML += `
+    <div class="card">
+        <h4>${tipo}</h4>
 
-            detalleHTML += `
-                <div style="margin-bottom:8px; font-size:14px;">
-                    <strong>SKU:</strong> ${item["SKU"] || "-"}<br>
-                    <strong>Descripcion:</strong> ${item["Descripcion"] || "-"}<br>
-                    <strong>unidad:</strong> ${item["unidad"] || "-"}<br>
-                    <strong>Unidades Programadas:</strong> ${item["Unidades Programadas"] || "-"}<br>
-                    <strong>Kg Programados:</strong> ${item["Kg Programados"] || "-"}<br>
-                    <strong>Monto Programado:</strong> ${item["Monto Programado"] || "-"}<br>
-                    <strong>Monto:</strong> S/ ${monto.toFixed(2)}
-                </div>
-                <hr>
-            `;
-        });
+        <div class="tabla-container">
+            <table class="tabla-detalle">
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Descripcion</th>
+                        <th>Unidad</th>
+                        <th>Unid. Prog.</th>
+                        <th>Kg Prog.</th>
+                        <th>Monto Prog.</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+`;
 
-        detalleHTML += `</div>`;
-    }
+grupos[tipo].forEach(item => {
+
+    const monto = Number(item["Monto"]) || obtenerMonto(item);
+    subtotal += monto;
+
+    detalleHTML += `
+        <tr>
+            <td>${item["SKU"] || "-"}</td>
+            <td>${item["Descripcion"] || "-"}</td>
+            <td>${item["unidad"] || "-"}</td>
+            <td>${item["Unidades Programadas"] || "-"}</td>
+            <td>${item["Kg Programados"] || "-"}</td>
+            <td>${item["Monto Programado"] || "-"}</td>
+            <td>S/ ${monto.toFixed(2)}</td>
+        </tr>
+    `;
+});
+
+detalleHTML += `
+                </tbody>
+            </table>
+        </div>
+    </div>
+`;
+
+        
 
     const igv = subtotal * 0.18;
     const total = subtotal + igv;
@@ -217,14 +268,12 @@ function buscarCliente() {
 
         <!-- DETALLE CLIENTE -->
         <div class="card">
-            <h3>${cliente["NOMBRE.CLIENTE"] || "-"}</h3>
-            <p><strong>CODIGO.CLIENTE:</strong> ${cliente["CODIGO.CLIENTE"] || "-"}</p>
-            <p><strong>formaPago:</strong> ${cliente["formaPago"] || "-"}</p>
+            <h3>${cliente["CODIGO.CLIENTE"] || "-"}${cliente["NOMBRE.CLIENTE"] || "-"}</h3>
+           <p><strong>formaPago:</strong> ${cliente["formaPago"] || "-"}</p>
             <p><strong>departamento:</strong> ${cliente["departamento"] || "-"} 
                <strong>distrito:</strong> ${cliente["distrito"] || "-"}</p>
-            <p><strong>Fecha.Facturacion:</strong> ${cliente["Fecha.Facturacion"] || "-"}</p>
             <p><strong>VEHICULO:</strong> ${cliente["VEHICULO"] || "-"}</p>
-            <p><strong>LIQUIDADOR:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
+            <p><strong>REPARTIDOR:</strong> ${cliente["LIQUIDADOR"] || "-"}</p>
             <p><strong>NROS DE CONTACTO:</strong> ${cliente["NROS DE CONTACTO"] || "-"}</p>
         </div>
 
