@@ -103,9 +103,19 @@ button {
 let pedidos = [];
 
 fetch("pedidos.json")
-.then(response => response.json())
-.then(data => pedidos = data)
-.catch(error => console.error("Error cargando JSON:", error));
+  .then(response => response.json())
+  .then(data => {
+      // Normalizar nombres de campos: quitar espacios al inicio y final
+      pedidos = data.map(pedido => {
+          const obj = {};
+          for (let key in pedido) {
+              obj[key.trim()] = pedido[key];
+          }
+          return obj;
+      });
+  })
+  .catch(error => console.error("Error cargando JSON:", error));
+    
 
 function obtenerMonto(obj) {
     const claveMonto = Object.keys(obj).find(k =>
@@ -156,7 +166,8 @@ function buscarCliente() {
 
         grupos[tipo].forEach(item => {
 
-            const monto = Number(item["Monto"]) || obtenerMonto(item);
+           const monto = Number(item["Monto"]) || 0;
+           const precio = Number(item["Precio"]) || 0;
             subtotal += monto;
 
             detalleHTML += `
@@ -175,17 +186,16 @@ function buscarCliente() {
                     <div><strong>SKU:</strong> ${item["SKU"] || "-"}</div>
                     <div><strong>Unidad:</strong> ${item["unidad"] || "-"}</div>
                     <div><strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}</div>
-                    <div><strong>Precio:</strong> ${
-    Object.keys(item).find(k =>
-        k.toLowerCase().replace(/\s/g,"").includes("precio")
-    )
-    ? item[
-        Object.keys(item).find(k =>
-            k.toLowerCase().replace(/\s/g,"").includes("precio")
-        )
-      ]
-    : "-"
-}</div>
+                    
+                    
+<div><strong>Precio:</strong> S/ ${precio.toFixed(2)}</div>
+<div style="
+    margin-top:6px;
+    font-weight:bold;
+    color:#0b3d91;
+">
+    Monto: S/ ${monto.toFixed(2)}
+</div>
 
 
                     <div style="
@@ -248,6 +258,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
