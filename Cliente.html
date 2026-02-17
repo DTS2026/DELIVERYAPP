@@ -2,96 +2,59 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>consulta aqui</title>
+<title>Consulta tu Pedido</title>
 
 <style>
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#f4f6f9;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-.container{
-    background:white;
-    width:95%;
-    max-width:450px;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 8px 25px rgba(0,0,0,0.1);
-    text-align:center;
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 420px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-h2{
-    margin-bottom:20px;
+h2 {
+    text-align: center;
 }
 
-input{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:1px solid #ccc;
-    font-size:16px;
-    margin-bottom:15px;
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
 }
 
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#0b3d91;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 8px;
+    border: none;
+    background: #1f4e9e;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-button:hover{
-    background:#072d6b;
+button:hover {
+    background: #163c7a;
 }
 
-.resultado{
-    margin-top:20px;
-    text-align:left;
-    display:none;
-    border-top:1px solid #eee;
-    padding-top:15px;
-}
-
-.producto{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:6px;
-}
-
-.total{
-    margin-top:10px;
-    font-weight:bold;
-}
-
-.whatsapp{
-    margin-top:15px;
-    display:block;
-    background:#25D366;
-    text-align:center;
-    padding:12px;
-    border-radius:10px;
-    color:white;
-    text-decoration:none;
-    font-weight:bold;
-}
-
-.qr{
-    margin-top:20px;
-    text-align:center;
-}
-
-.qr img{
-    width:200px;
+#resultado {
+    margin-top: 20px;
+    font-size: 14px;
 }
 </style>
 </head>
@@ -99,19 +62,29 @@ button:hover{
 <body>
 
 <div class="container">
-    <h2>Consulta tu Pedido AQUI</h2>
+    <h2>Consulta tu Pedido</h2>
 
-    <input type="text" id="codigoCliente" placeholder="Ingresa tu código de cliente">
+    <input type="text" id="codigoCliente" placeholder="Ingresa tu código">
+    <button onclick="buscarCliente()">Buscar</button>
 
-    <button onclick="buscarPedido()">BOTON</button>
-
-    <div class="resultado" id="resultado"></div>
+    <div id="resultado"></div>
 </div>
 
 <script>
 
+let pedidos = [];
 
+// 🔹 Cargar JSON al iniciar
+fetch("pedidos.json")
+.then(response => response.json())
+.then(data => {
+    pedidos = data;
+})
+.catch(error => {
+    console.error("Error cargando pedidos.json:", error);
+});
 
+// 🔹 Detectar automáticamente cualquier campo que contenga "monto"
 function obtenerMonto(obj) {
     const claveMonto = Object.keys(obj).find(k =>
         k.toLowerCase().replace(/\s/g, "").includes("monto")
@@ -119,80 +92,83 @@ function obtenerMonto(obj) {
     return claveMonto ? Number(obj[claveMonto]) : 0;
 }
 
-async function buscarPedido() {
-    const codigo = document.getElementById("codigoCliente").value.trim();
-    const resultado = document.getElementById("resultado");
-    resultado.innerHTML = "";
+// 🔹 Buscar cliente
+function buscarCliente() {
 
-    if (!codigo) {
-        alert("Ingrese un código");
+    const input = document.getElementById("codigoCliente");
+    const resultadoDiv = document.getElementById("resultado");
+
+    if (!input) {
+        console.error("No existe input codigoCliente");
         return;
     }
 
-    try {
-        const response = await fetch("pedidos.json");
-        const data = await response.json();
+    const codigo = input.value.trim();
+    resultadoDiv.innerHTML = "";
 
-        const pedidosCliente = data.filter(p =>
-            String(p["CODIGO.CLIENTE"]).trim() === codigo
-        );
-
-        if (pedidosCliente.length === 0) {
-            resultado.innerHTML = "<p>No se encontró información con ese código.</p>";
-            return;
-        }
-
-        let subtotal = 0;
-
-        let tabla = `
-            <h3>Cliente: ${pedidosCliente[0]["NOMBRE.CLIENTE"]}</h3>
-            <table border="1" width="100%">
-                <tr>
-                    <th>Producto</th>
-                    <th>Unidades</th>
-                    <th>Monto</th>
-                </tr>
-        `;
-
-        pedidosCliente.forEach(p => {
-            const monto = obtenerMonto(p);
-            subtotal += monto;
-
-            tabla += `
-                <tr>
-                    <td>${p["Descripcion"]}</td>
-                    <td>${p["Unidades Programadas"]}</td>
-                    <td>S/ ${monto.toFixed(2)}</td>
-                </tr>
-            `;
-        });
-
-        const igv = subtotal * 0.18;
-        const total = subtotal + igv;
-
-        tabla += `
-            </table>
-            <p><strong>Subtotal:</strong> S/ ${subtotal.toFixed(2)}</p>
-            <p><strong>IGV (18%):</strong> S/ ${igv.toFixed(2)}</p>
-            <p><strong>Total:</strong> S/ ${total.toFixed(2)}</p>
-            <p><strong>Conductor:</strong> ${pedidosCliente[0]["CONDUCTOR"]}</p>
-            <p><strong>Vehículo:</strong> ${pedidosCliente[0]["VEHICULO"]}</p>
-        `;
-
-        resultado.innerHTML = tabla;
-
-    } catch (error) {
-        console.error(error);
-        resultado.innerHTML = "<p>Error al cargar pedidos.json</p>";
+    if (!codigo) {
+        resultadoDiv.innerHTML = "<p>Ingrese un código.</p>";
+        return;
     }
-}
 
+    const pedidosCliente = pedidos.filter(p =>
+        String(p["CODIGO.CLIENTE"]).trim() === codigo
+    );
+
+    if (pedidosCliente.length === 0) {
+        resultadoDiv.innerHTML = "<p>No se encontró información con ese código.</p>";
+        return;
+    }
+
+    let subtotal = 0;
+
+    let html = `
+        <h3>${pedidosCliente[0]["NOMBRE.CLIENTE"]}</h3>
+        <p><strong>Distrito:</strong> ${pedidosCliente[0]["distrito"]}</p>
+        <p><strong>Provincia:</strong> ${pedidosCliente[0]["provincia"]}</p>
+        <p><strong>Departamento:</strong> ${pedidosCliente[0]["departamento"]}</p>
+        <hr>
+        <table border="1" width="100%" cellspacing="0" cellpadding="4">
+            <tr>
+                <th>Producto</th>
+                <th>Unidades</th>
+                <th>Monto</th>
+            </tr>
+    `;
+
+    pedidosCliente.forEach(p => {
+
+        const monto = obtenerMonto(p);
+        subtotal += monto;
+
+        html += `
+            <tr>
+                <td>${p["Descripcion"]}</td>
+                <td>${p["Unidades Programadas"]}</td>
+                <td>S/ ${monto.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+
+    const igv = subtotal * 0.18;
+    const total = subtotal + igv;
+
+    html += `
+        </table>
+        <hr>
+        <p><strong>Subtotal:</strong> S/ ${subtotal.toFixed(2)}</p>
+        <p><strong>IGV (18%):</strong> S/ ${igv.toFixed(2)}</p>
+        <p><strong>Total:</strong> S/ ${total.toFixed(2)}</p>
+        <hr>
+        <p><strong>Conductor:</strong> ${pedidosCliente[0]["CONDUCTOR"]}</p>
+        <p><strong>Vehículo:</strong> ${pedidosCliente[0]["VEHICULO"]}</p>
+        <p><strong>Estado:</strong> ${pedidosCliente[0]["FechaPedido"]}</p>
+    `;
+
+    resultadoDiv.innerHTML = html;
+}
 
 </script>
 
 </body>
 </html>
-
-
-
-
