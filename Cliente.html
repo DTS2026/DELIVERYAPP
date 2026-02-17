@@ -176,7 +176,17 @@ function buscarCliente() {
                     <div><strong>Unidad:</strong> ${item["unidad"] || "-"}</div>
                     <div><strong>Unid. Prog:</strong> ${item["Unidades Programadas"] || "-"}</div>
                     <div><strong>Kg Prog:</strong> ${item["Kg Programados"] || "-"}</div>
-                    <div><strong>Monto Prog:</strong> ${item["Monto Programado"] || "-"}</div>
+                    <div><strong>Monto Prog:</strong> ${
+    Object.keys(item).find(k =>
+        k.toLowerCase().replace(/\s/g,"").includes("montoprogramado")
+    )
+    ? item[
+        Object.keys(item).find(k =>
+            k.toLowerCase().replace(/\s/g,"").includes("montoprogramado")
+        )
+      ]
+    : "-"
+}</div>
 
                     <div style="
                         margin-top:6px;
@@ -238,3 +248,4 @@ function buscarCliente() {
 
 </body>
 </html>
+
