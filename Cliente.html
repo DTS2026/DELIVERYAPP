@@ -205,7 +205,32 @@ NO LO MODIFIQUÉ NI ELIMINÉ NADA */
 
 function buscarCliente() {
 
-    let estadoHTML = "";
+  
+
+
+
+    const codigo = document.getElementById("codigoCliente").value.trim();
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = "";
+
+    if (!codigo) {
+        alert("Ingrese su código.");
+        return;
+    }
+
+    // 🔹 Buscar pedidos del cliente
+    const pedidosCliente = pedidos.filter(p =>
+        String(p["CODIGO.CLIENTE"]).trim() === codigo
+    );
+
+    if (pedidosCliente.length === 0) {
+        resultado.innerHTML = `<div class="card">No se encontró pedido programado para hoy.</div>`;
+        return;
+    }
+
+    const cliente = pedidosCliente[0];
+// 🔹 AGREGADO PARA VISUAL DE ESTATUS DE PEDIDO, AQUI CAMBIAR EL NOMBRE DEL CAMPO
+  let estadoHTML = "";
 const estado = (cliente["FechaPedido"] || "").trim();
 
 if (estado) {
@@ -233,27 +258,9 @@ if (estado) {
 
 
 
-    const codigo = document.getElementById("codigoCliente").value.trim();
-    const resultado = document.getElementById("resultado");
-    resultado.innerHTML = "";
 
-    if (!codigo) {
-        alert("Ingrese su código.");
-        return;
-    }
 
-    // 🔹 Buscar pedidos del cliente
-    const pedidosCliente = pedidos.filter(p =>
-        String(p["CODIGO.CLIENTE"]).trim() === codigo
-    );
-
-    if (pedidosCliente.length === 0) {
-        resultado.innerHTML = `<div class="card">No se encontró pedido programado para hoy.</div>`;
-        return;
-    }
-
-    const cliente = pedidosCliente[0];
-
+    
     // 🔹 AGRUPAR POR tipo
     const grupos = {};
     pedidosCliente.forEach(item => {
@@ -541,6 +548,7 @@ ${estadoHTML}
 
 </body>
 </html>
+
 
 
 
