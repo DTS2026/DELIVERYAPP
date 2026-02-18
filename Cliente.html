@@ -433,16 +433,18 @@ if (bonificacion.length > 0) {
 
   <div style="display:flex; flex-wrap:wrap; gap:6px 12px; font-size:11px; color:#333;">
     <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
-      <strong>🚚 Vehículo:</strong> ${cliente["VEHICULO"] || "-"}
+     <strong>🧾 Repartidor:</strong> ${cliente["LIQUIDADOR"] || "-"}
     </div>
 
     <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
-      <strong>🧾 Repartidor:</strong> ${cliente["LIQUIDADOR"] || "-"}
+            <strong>🚚 Vehículo:</strong> ${cliente["VEHICULO"] || "-"}
     </div>
 
     <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
       <strong>📞 Contacto:</strong> ${cliente["NROS DE CONTACTO"] || "-"}
     </div>
+
+    
   </div>
 </div>
 
@@ -549,6 +551,7 @@ ${estadoHTML}
 
 </body>
 </html>
+
 
 
 
