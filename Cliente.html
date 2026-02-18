@@ -57,6 +57,18 @@ button {
     background: #0b3d91;
     color: white;
 }
+.cuenta-item {
+    font-size: 13px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.copiar-mini {
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 6px;
+    color: #0b3d91;
+}
 
 .btn-primary:hover {
     background: #2a2c2b;
@@ -116,13 +128,10 @@ fetch("pedidos.json")
   })
   .catch(error => console.error("Error cargando JSON:", error));
 
-function copiarCuenta(numero) {
-    navigator.clipboard.writeText(numero).then(() => {
-        alert("Cuenta copiada: " + numero);
-    }).catch(err => {
-        console.error("Error al copiar:", err);
-    });
+function copiarTexto(texto) {
+    navigator.clipboard.writeText(texto);
 }
+
     
 function buscarCliente() {
 
@@ -350,41 +359,62 @@ if (bonificacion.length > 0) {
 <div class="card">
     <h3 style="margin-top:0; color:#0b3d91;">💳 Medios de Pago</h3>
 
-    <div style="margin-bottom:8px;">
-        <strong>BBVA:</strong><br>
-        249-04-0100004830<br>
-        <button onclick="copiarCuenta('249-04-0100004830')" class="btn-primary" style="padding:8px; font-size:13px;">
-            Copiar cuenta
-        </button>
+    <div class="cuenta-item">
+        <strong>RUC:</strong> 20132381624
     </div>
 
-    <div style="margin-bottom:8px;">
-        <strong>BCP:</strong><br>
-        570-0060652-0-20<br>
-        <button onclick="copiarCuenta('570-0060652-0-20')" class="btn-primary" style="padding:8px; font-size:13px;">
-            Copiar cuenta
-        </button>
+    <div class="cuenta-item">
+        <strong>BBVA (S/)</strong><br>
+        Cuenta: 249-04-0100004830 
+        <span class="copiar-mini" onclick="copiarTexto('249-04-0100004830')">📋</span><br>
+        Recaudo (fuera de Trujillo) – Código: 5616
     </div>
 
-    <div style="margin-bottom:8px;">
-        <strong>Interbank:</strong><br>
-        600-3000378477<br>
-        <button onclick="copiarCuenta('600-3000378477')" class="btn-primary" style="padding:8px; font-size:13px;">
-            Copiar cuenta
-        </button>
+    <div class="cuenta-item">
+        <strong>BCP (S/)</strong><br>
+        Cuenta: 570-0060652-0-20 
+        <span class="copiar-mini" onclick="copiarTexto('570-0060652-0-20')">📋</span><br>
+        Recaudo (fuera de Trujillo): 380-2505561-0-79 
+        <span class="copiar-mini" onclick="copiarTexto('380-2505561-0-79')">📋</span><br>
+        Indicar código en agentes: 21982
     </div>
 
-    <div style="margin-bottom:8px;">
-        <strong>Yape:</strong> 949 376 130<br>
-        <button onclick="copiarCuenta('949376130')" class="btn-primary" style="padding:8px; font-size:13px;">
-            Copiar número
-        </button>
+    <div class="cuenta-item">
+        <strong>Scotiabank (S/)</strong><br>
+        Cuenta: 000-0102563 
+        <span class="copiar-mini" onclick="copiarTexto('000-0102563')">📋</span><br>
+        Recaudo (fuera de Trujillo): Solo indicar cuenta de recaudo
+    </div>
+
+    <div class="cuenta-item">
+        <strong>Interbank (S/)</strong><br>
+        Cuenta: 600-3000378477 
+        <span class="copiar-mini" onclick="copiarTexto('600-3000378477')">📋</span>
+    </div>
+
+    <div class="cuenta-item">
+        <strong>Banco de la Nación (S/)</strong><br>
+        Cuenta: 00-741-797623 
+        <span class="copiar-mini" onclick="copiarTexto('00-741-797623')">📋</span>
+    </div>
+
+    <div class="cuenta-item">
+        <strong>Caja Trujillo (S/)</strong><br>
+        Cuenta: 000133281001 
+        <span class="copiar-mini" onclick="copiarTexto('000133281001')">📋</span>
+    </div>
+
+    <div class="cuenta-item" style="background:#f3e8ff; padding:8px; border-radius:8px;">
+        <strong>Yape:</strong> YUGOCORP Trujillo<br>
+        Celular Yape: 949 376 130 
+        <span class="copiar-mini" onclick="copiarTexto('949376130')">📋</span>
     </div>
 
     <div style="font-size:12px; color:#666; margin-top:8px;">
-        📌 Enviar constancia de pago indicando su código de cliente.
+        📌 Agradecemos enviar constancia de pago una vez realizada la operación.
     </div>
 </div>
+
 
 /////////////////
 
@@ -407,6 +437,7 @@ if (bonificacion.length > 0) {
 
 </body>
 </html>
+
 
 
 
