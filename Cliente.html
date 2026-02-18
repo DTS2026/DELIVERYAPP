@@ -165,7 +165,7 @@ const bonificacion = [];
 grupos[tipo].forEach(item => {
     const descripcion = (item["Descripcion"] || "").toLowerCase();
 
-    if (descripcion.includes("actv.")) {
+    if (descripcion.includes("acti")) {
         bonificacion.push(item);
     } else {
         normales.push(item);
@@ -354,6 +354,7 @@ if (bonificacion.length > 0) {
 
 </body>
 </html>
+
 
 
 
