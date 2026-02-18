@@ -160,7 +160,7 @@ function buscarCliente() {
         grupos[tipo].forEach(item => {
 
             const monto = Number(item["Monto"]) || 0;
-            const precio = Number(item["Precio"]) || 0;
+            const precio = Number(item["precio"]) || 0;
             subtotal += monto;
 
             detalleHTML += `
@@ -268,6 +268,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
