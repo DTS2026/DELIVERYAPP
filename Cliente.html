@@ -172,14 +172,23 @@ function buscarCliente() {
                     background:#f9f9f9;
                     font-size:14px;
                 ">
-                    <div style="font-weight:bold; color:#0b3d91; margin-bottom:4px;">
-                        ${item["Descripcion"] || "-"}
-                    </div>
+                
+<div style="font-weight:bold; color:#0b3d91; margin-bottom:4px;">
+    ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
+</div>
 
-                    <div><strong>SKU:</strong> ${item["SKU"] || "-"}</div>
-                    <div><strong>Unidad:</strong> ${item["unidad"] || "-"}</div>
-                    <div><strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}</div>
-                    <div><strong>Precio:</strong> S/ ${precio.toFixed(2)}</div>
+<div>
+    <strong>Unidad Medida:</strong> ${item["unidad"] || "-"} 
+    &nbsp;&nbsp; 
+    <strong>Cantidad Pedida:</strong> ${item["Unidades Programadas"] || "-"}
+</div>
+
+<div>
+    <strong>Precio Unitario:</strong> S/ ${precio.toFixed(2)} 
+    &nbsp;&nbsp; 
+    <strong>Monto Total:</strong> S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+</div>
+
 
                     <div style="
                         margin-top:6px;
@@ -268,6 +277,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
