@@ -62,6 +62,12 @@ button {
     margin-bottom: 10px;
     line-height: 1.4;
 }
+.qr-pequeno img {
+    width: 170px;
+    max-width: 100%;
+    display: block;
+    margin: 10px auto;
+}
 
 .copiar-mini {
     font-size: 12px;
@@ -409,8 +415,11 @@ if (bonificacion.length > 0) {
         Celular Yape: 949 376 130 
         <span class="copiar-mini" onclick="copiarTexto('949376130')">📋</span>
     </div>
-          <strong>Scannea el QR</strong>
-            <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
+    
+<div class="qr-pequeno">
+    <strong style="display:block; text-align:center;">Scannea el QR</strong>
+    <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
+</div>
 
 
     <div style="font-size:12px; color:#666; margin-top:8px;">
@@ -436,6 +445,7 @@ if (bonificacion.length > 0) {
 
 </body>
 </html>
+
 
 
 
