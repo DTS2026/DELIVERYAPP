@@ -87,7 +87,7 @@ button {
 
 <div class="app">
 
-<h2>Consulta tu Pedido..</h2>
+<h2>Consulta tu Pedido xxxx</h2>
 
 <div class="card">
     <input type="text" id="codigoCliente" placeholder="Ingresa tu código de cliente">
@@ -173,33 +173,22 @@ function buscarCliente() {
                     font-size:14px;
                 ">
                 
-<div style="font-weight:bold; color:#0b3d91; margin-bottom:8px;">
-    ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
-</div>
+<div style="display:grid; grid-template-columns: auto 1fr auto 1fr; gap:6px 15px;">
 
-<div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px 20px;">
-    
-    <div>
-        <strong>Unidad Medida:</strong><br>
-        ${item["unidad"] || "-"}
-    </div>
+    <strong>Unidad:</strong>
+    <span>${item["unidad"] || "-"}</span>
 
-    <div>
-        <strong>Cantidad Pedida:</strong><br>
-        ${item["Unidades Programadas"] || "-"}
-    </div>
+    <strong>Cantidad:</strong>
+    <span>${item["Unidades Programadas"] || "-"}</span>
 
-    <div>
-        <strong>Precio Unitario:</strong><br>
-        S/ ${precio.toFixed(2)}
-    </div>
+    <strong>Precio:</strong>
+    <span>S/ ${precio.toFixed(2)}</span>
 
-    <div>
-        <strong>Monto Total:</strong><br>
-        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
-    </div>
+    <strong>Total:</strong>
+    <span>S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}</span>
 
 </div>
+
 
 
                     <div style="
@@ -283,6 +272,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
