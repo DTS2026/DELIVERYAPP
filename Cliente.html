@@ -116,6 +116,14 @@ fetch("pedidos.json")
   })
   .catch(error => console.error("Error cargando JSON:", error));
 
+function copiarCuenta(numero) {
+    navigator.clipboard.writeText(numero).then(() => {
+        alert("Cuenta copiada: " + numero);
+    }).catch(err => {
+        console.error("Error al copiar:", err);
+    });
+}
+    
 function buscarCliente() {
 
     const codigo = document.getElementById("codigoCliente").value.trim();
@@ -336,6 +344,51 @@ if (bonificacion.length > 0) {
     Total a pagar: S/ ${total.toFixed(2)}
   </div>
 </div>
+
+/////////////////
+
+<div class="card">
+    <h3 style="margin-top:0; color:#0b3d91;">💳 Medios de Pago</h3>
+
+    <div style="margin-bottom:8px;">
+        <strong>BBVA:</strong><br>
+        249-04-0100004830<br>
+        <button onclick="copiarCuenta('249-04-0100004830')" class="btn-primary" style="padding:8px; font-size:13px;">
+            Copiar cuenta
+        </button>
+    </div>
+
+    <div style="margin-bottom:8px;">
+        <strong>BCP:</strong><br>
+        570-0060652-0-20<br>
+        <button onclick="copiarCuenta('570-0060652-0-20')" class="btn-primary" style="padding:8px; font-size:13px;">
+            Copiar cuenta
+        </button>
+    </div>
+
+    <div style="margin-bottom:8px;">
+        <strong>Interbank:</strong><br>
+        600-3000378477<br>
+        <button onclick="copiarCuenta('600-3000378477')" class="btn-primary" style="padding:8px; font-size:13px;">
+            Copiar cuenta
+        </button>
+    </div>
+
+    <div style="margin-bottom:8px;">
+        <strong>Yape:</strong> 949 376 130<br>
+        <button onclick="copiarCuenta('949376130')" class="btn-primary" style="padding:8px; font-size:13px;">
+            Copiar número
+        </button>
+    </div>
+
+    <div style="font-size:12px; color:#666; margin-top:8px;">
+        📌 Enviar constancia de pago indicando su código de cliente.
+    </div>
+</div>
+
+/////////////////
+
+
         <div class="card qr">
             <strong>Paga con Yape</strong>
             <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
@@ -354,6 +407,7 @@ if (bonificacion.length > 0) {
 
 </body>
 </html>
+
 
 
 
