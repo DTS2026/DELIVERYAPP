@@ -31,7 +31,12 @@ body {
     align-items: center;
     gap: 15px;
 }
-
+.whatsapp {
+    background: #25D366;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
 .header-banner span {
     background: #ffef00;
     color: red;
@@ -480,10 +485,12 @@ if (bonificacion.length > 0) {
             <div style="font-size:12px; color:#666; margin-top:8px;">
          Tienes alguna consulta, enviar tus constancias de deposito, subir un reclamo?.
     </div>
-            <button class="whatsapp" 
-                onclick="window.open('https://wa.me/51996639020?text=${mensajeWA}','_blank')">
-                
-            </button>
+    
+<button class="whatsapp" 
+    onclick="window.open('https://wa.me/51996639020?text=${mensajeWA}','_blank')">
+    💬 Contactar por WhatsApp
+</button>
+
         </div>
     `;
 }
@@ -494,6 +501,7 @@ if (bonificacion.length > 0) {
 
 </body>
 </html>
+
 
 
 
