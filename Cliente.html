@@ -67,6 +67,17 @@ input {
     text-align: center;
     box-sizing: border-box;   /* 👈 ESTA ES LA CLAVE */
 }
+.camion-animado {
+    font-size: 40px;
+    margin-top: 10px;
+    animation: moverCamion 2s linear infinite;
+}
+
+@keyframes moverCamion {
+    0% { transform: translateX(-20px); }
+    50% { transform: translateX(20px); }
+    100% { transform: translateX(-20px); }
+}
 
 button {
     width: 100%;
@@ -193,6 +204,34 @@ function copiarTexto(texto) {
 NO LO MODIFIQUÉ NI ELIMINÉ NADA */
 
 function buscarCliente() {
+
+    let estadoHTML = "";
+const estado = (cliente["FechaPedido"] || "").trim();
+
+if (estado) {
+
+    if (estado === "⚫ Pendiente") {
+        estadoHTML = `
+        <div class="card" style="background:#e8f5e9; text-align:center;">
+            <div style="font-weight:bold; color:#2e7d32; font-size:16px;">
+                🚚 PEDIDO EN RUTA
+            </div>
+            <div class="camion-animado">🚛</div>
+        </div>
+        `;
+    } else {
+        estadoHTML = `
+        <div class="card" style="background:#f3f4f6; text-align:center;">
+            <div style="font-weight:bold; font-size:15px;">
+                ${estado}
+            </div>
+        </div>
+        `;
+    }
+
+}
+
+
 
     const codigo = document.getElementById("codigoCliente").value.trim();
     const resultado = document.getElementById("resultado");
@@ -399,6 +438,7 @@ if (bonificacion.length > 0) {
   </div>
 </div>
 
+${estadoHTML}
 
         ${detalleHTML}
 
@@ -501,6 +541,7 @@ if (bonificacion.length > 0) {
 
 </body>
 </html>
+
 
 
 
