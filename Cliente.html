@@ -68,7 +68,7 @@ input {
     box-sizing: border-box;   /* 👈 ESTA ES LA CLAVE */
 }
 .camion-animado {
-    font-size: 40px;
+    font-size: 30px;
     margin-top: 10px;
     animation: moverCamion 2s linear infinite;
 }
@@ -100,7 +100,7 @@ button {
 }
 
 .cuenta-item {
-    font-size: 13px;
+    font-size: 30px;
     margin-bottom: 10px;
     line-height: 1.4;
 }
@@ -238,10 +238,11 @@ if (estado) {
     if (estado === "⚫Pendiente") {
         estadoHTML = `
         <div class="card" style="background:#e8f5e9; text-align:center;">
-            <div style="font-weight:bold; color:#2e7d32; font-size:16px;">
-                🚚 PEDIDO EN RUTA
-            </div>
+            <div style="font-weight:bold; color:#2e7d32; font-size:14px;">
+                🚚 TU PEDIDO ESTA EN CAMINO
+            
             <div class="camion-animado">🚛</div>
+            </div>
         </div>
         `;
     } else {
@@ -548,6 +549,7 @@ ${estadoHTML}
 
 </body>
 </html>
+
 
 
 
