@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Consulta tu Pedido.</title>
 
 <style>
@@ -20,6 +20,42 @@ body {
     max-width: 460px;
 }
 
+/* Banner azul con logo y título */
+.banner {
+    background-color: #0b3d91;
+    color: white;
+    border-radius: 15px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 15px rgba(11, 61, 145, 0.5);
+}
+
+.banner img {
+    height: 50px;
+    width: auto;
+    user-select: none;
+}
+
+.banner h1 {
+    font-size: 22px;
+    margin: 0;
+    font-weight: 700;
+    user-select: none;
+}
+
+/* Texto de instrucciones claro */
+.instructions {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+    line-height: 1.4;
+    user-select: none;
+}
+
 .card {
     background: white;
     border-radius: 15px;
@@ -33,30 +69,70 @@ h2 {
     color: black;
 }
 
+/* Input grande y destacado */
 input {
     width: 100%;
-    padding: 05px;
+    padding: 14px 12px;
     border-radius: 12px;
-    border: 1px solid #ddd;
-    font-size: 15px;
-    margin-top: 05px;
+    border: 2px solid #0b3d91;
+    font-size: 16px;
+    margin-top: 5px;
+    transition: border-color 0.3s ease;
 }
 
+input::placeholder {
+    color: #6b7a99;
+    font-weight: 500;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2a2c2b;
+    box-shadow: 0 0 6px rgba(43,44,43,0.3);
+}
+
+/* Botón azul llamativo con hover y feedback visual */
 button {
     width: 100%;
-    padding: 20px;
+    padding: 18px;
     border-radius: 12px;
     border: none;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: bold;
     margin-top: 15px;
     cursor: pointer;
-}
-
-.btn-primary {
     background: #0b3d91;
     color: white;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease;
+    user-select: none;
 }
+
+button:hover, button:focus {
+    background: #0a357a;
+    box-shadow: 0 4px 12px rgba(11, 61, 145, 0.6);
+}
+
+/* Pie de página con WhatsApp, discreto y alineado */
+.footer-whatsapp {
+    margin-top: 15px;
+    font-size: 13px;
+    text-align: center;
+    color: #666;
+    user-select: none;
+}
+
+.footer-whatsapp a {
+    color: #25D366;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-whatsapp a:hover,
+.footer-whatsapp a:focus {
+    text-decoration: underline;
+}
+
+/* Resto de estilos originales no tocados */
 .cuenta-item {
     font-size: 13px;
     margin-bottom: 10px;
@@ -74,10 +150,6 @@ button {
     cursor: pointer;
     margin-left: 6px;
     color: #0b3d91;
-}
-
-.btn-primary:hover {
-    background: #2a2c2b;
 }
 
 .total {
@@ -98,6 +170,29 @@ button {
     display: block;
     margin: 10px auto;
 }
+
+/* Responsive básico para móvil y desktop */
+@media (max-width: 480px) {
+    .banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .banner h1 {
+        font-size: 20px;
+    }
+
+    button {
+        padding: 16px;
+        font-size: 16px;
+    }
+
+    input {
+        font-size: 15px;
+        padding: 12px 10px;
+    }
+}
 </style>
 </head>
 
@@ -105,19 +200,34 @@ button {
 
 <div class="app">
 
-<h2>CONSULTA TU PEDIDO I RAZZETO</h2>
+    <!-- Banner con logo y título -->
+    <div class="banner">
+        <img src="logo-razzeto.png" alt="Logo Razzeto" />
+        <h1>Consulta tu Pedido | Razzeto</h1>
+    </div>
 
-<div class="card">
-    <input type="text" id="codigoCliente" placeholder="Ingresa tu código de cliente">
-    <button class="btn-primary" onclick="buscarCliente()">Buscar mi Pedido</button>
-</div>
+    <!-- Texto de instrucciones -->
+    <div class="instructions">
+        Ingresa tu código de cliente en el campo y presiona "Buscar mi Pedido" para consultar el estado y detalle de tu pedido.
+    </div>
 
-<div id="resultado"></div>
+    <div class="card">
+        <input type="text" id="codigoCliente" placeholder="Ejemplo: 123456" />
+        <button class="btn-primary" onclick="buscarCliente()">Buscar mi Pedido</button>
+    </div>
+
+    <div id="resultado"></div>
+
+    <!-- Pie de página WhatsApp discreto -->
+    <div class="footer-whatsapp">
+        ¿Tienes alguna consulta? Escríbenos por WhatsApp: 
+        <a href="https://wa.me/51996639020" target="_blank" rel="noopener noreferrer">+51 996 639 020</a>
+    </div>
 
 </div>
 
 <script>
-
+/* Aquí va tu JS original sin cambio (no copio todo para ahorrar espacio) */
 let pedidos = [];
 
 // 🔹 Cargar JSON y normalizar nombres de campos
@@ -440,28 +550,7 @@ if (bonificacion.length > 0) {
         </div>
     `;
 }
-
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
