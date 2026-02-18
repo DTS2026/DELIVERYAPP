@@ -87,7 +87,7 @@ button {
 
 <div class="app">
 
-<h2>Consulta tu Pedido</h2>
+<h2>Consulta tu Pedido..</h2>
 
 <div class="card">
     <input type="text" id="codigoCliente" placeholder="Ingresa tu código de cliente">
@@ -173,20 +173,32 @@ function buscarCliente() {
                     font-size:14px;
                 ">
                 
-<div style="font-weight:bold; color:#0b3d91; margin-bottom:4px;">
+<div style="font-weight:bold; color:#0b3d91; margin-bottom:8px;">
     ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
 </div>
 
-<div>
-    <strong>Unidad Medida:</strong> ${item["unidad"] || "-"} 
-    &nbsp;&nbsp; 
-    <strong>Cantidad Pedida:</strong> ${item["Unidades Programadas"] || "-"}
-</div>
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px 20px;">
+    
+    <div>
+        <strong>Unidad Medida:</strong><br>
+        ${item["unidad"] || "-"}
+    </div>
 
-<div>
-    <strong>Precio Unitario:</strong> S/ ${precio.toFixed(2)} 
-    &nbsp;&nbsp; 
-    <strong>Monto Total:</strong> S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+    <div>
+        <strong>Cantidad Pedida:</strong><br>
+        ${item["Unidades Programadas"] || "-"}
+    </div>
+
+    <div>
+        <strong>Precio Unitario:</strong><br>
+        S/ ${precio.toFixed(2)}
+    </div>
+
+    <div>
+        <strong>Monto Total:</strong><br>
+        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+    </div>
+
 </div>
 
 
@@ -228,12 +240,6 @@ function buscarCliente() {
         </div>
 
         <!-- Ubicación -->
-        <div style="flex: 1 1 45%; background:#f5f8fb#FFFFFF; padding:6px 8px; border-radius:8px;">
-            <strong>📍 Depto:</strong> ${cliente["departamento"] || "-"}
-        </div>
-        <div style="flex: 1 1 45%; background:#f5f8fb; padding:6px 8px; border-radius:8px;">
-            <strong>🏘 Distrito:</strong> ${cliente["distrito"] || "-"}
-        </div>
 
         <!-- Facturación y vehículo -->
 
@@ -277,6 +283,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
