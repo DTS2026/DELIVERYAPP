@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Consulta tu Pedido.</title>
 
 <style>
@@ -20,129 +20,96 @@ body {
     max-width: 460px;
 }
 
-/* Banner azul con logo y título */
-.banner {
-    background-color: #0b3d91;
-    color: white;
-    border-radius: 15px;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 12px;
-    box-shadow: 0 6px 15px rgba(11, 61, 145, 0.5);
-}
-
-.banner img {
-    height: 50px;
-    width: auto;
-    user-select: none;
-}
-
-.banner h1 {
-    font-size: 22px;
-    margin: 0;
-    font-weight: 700;
-    user-select: none;
-}
-
-/* Texto de instrucciones claro */
-.instructions {
-    font-size: 15px;
-    color: #333;
-    margin-bottom: 15px;
-    text-align: center;
-    line-height: 1.4;
-    user-select: none;
-}
-
 .card {
     background: white;
-    border-radius: 15px;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    border-radius: 18px;
+    padding: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
 }
 
 h2 {
     text-align: center;
     color: black;
+    font-weight: 600;
 }
 
-/* Input grande y destacado */
 input {
     width: 100%;
-    padding: 14px 12px;
+    padding: 12px;
     border-radius: 12px;
-    border: 2px solid #0b3d91;
-    font-size: 16px;
-    margin-top: 5px;
-    transition: border-color 0.3s ease;
-}
-
-input::placeholder {
-    color: #6b7a99;
-    font-weight: 500;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    margin-top: 8px;
+    transition: all 0.25s ease;
 }
 
 input:focus {
     outline: none;
-    border-color: #2a2c2b;
-    box-shadow: 0 0 6px rgba(43,44,43,0.3);
+    border-color: #0b3d91;
+    box-shadow: 0 0 0 3px rgba(11,61,145,0.15);
 }
 
-/* Botón azul llamativo con hover y feedback visual */
 button {
     width: 100%;
-    padding: 18px;
+    padding: 16px;
     border-radius: 12px;
     border: none;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: bold;
     margin-top: 15px;
     cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+.btn-primary {
     background: #0b3d91;
     color: white;
-    transition: background-color 0.3s ease, box-shadow 0.2s ease;
-    user-select: none;
 }
 
-button:hover, button:focus {
-    background: #0a357a;
-    box-shadow: 0 4px 12px rgba(11, 61, 145, 0.6);
+.btn-primary:hover {
+    background: #092c6b;
 }
 
-/* Pie de página con WhatsApp, discreto y alineado */
-.footer-whatsapp {
-    margin-top: 15px;
-    font-size: 13px;
-    text-align: center;
-    color: #666;
-    user-select: none;
+.total {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #061f4a;
 }
 
-.footer-whatsapp a {
-    color: #25D366;
-    text-decoration: none;
-    font-weight: 600;
+.whatsapp {
+    background: #25D366;
+    color: white;
 }
 
-.footer-whatsapp a:hover,
-.footer-whatsapp a:focus {
-    text-decoration: underline;
-}
-
-/* Resto de estilos originales no tocados */
-.cuenta-item {
-    font-size: 13px;
-    margin-bottom: 10px;
-    line-height: 1.4;
-}
 .qr-pequeno img {
     width: 170px;
     max-width: 100%;
     display: block;
     margin: 10px auto;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.cuenta-item {
+    font-size: 13px;
+    margin-bottom: 10px;
+    line-height: 1.4;
 }
 
 .copiar-mini {
@@ -152,45 +119,17 @@ button:hover, button:focus {
     color: #0b3d91;
 }
 
-.total {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 10px;
-    color: #061f4a;
+/* Animación de aparición */
+.fade-in {
+    opacity: 0;
+    transform: translateY(15px);
+    animation: aparecer 0.4s ease forwards;
 }
 
-.whatsapp {
-    background: #25D366;
-    color: white;
-    text-align: center;
-}
-
-.qr img {
-    width: 180px;
-    display: block;
-    margin: 10px auto;
-}
-
-/* Responsive básico para móvil y desktop */
-@media (max-width: 480px) {
-    .banner {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-
-    .banner h1 {
-        font-size: 20px;
-    }
-
-    button {
-        padding: 16px;
-        font-size: 16px;
-    }
-
-    input {
-        font-size: 15px;
-        padding: 12px 10px;
+@keyframes aparecer {
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 </style>
@@ -200,44 +139,28 @@ button:hover, button:focus {
 
 <div class="app">
 
-    <!-- Banner con logo y título -->
-    <div class="banner">
-        <img src="logo-razzeto.png" alt="Logo Razzeto" />
-        <h1>Consulta tu Pedido | Razzeto</h1>
-    </div>
+<h2>CONSULTA TU PEDIDO I RAZZETO</h2>
 
-    <!-- Texto de instrucciones -->
-    <div class="instructions">
-        Ingresa tu código de cliente en el campo y presiona "Buscar mi Pedido" para consultar el estado y detalle de tu pedido.
-    </div>
+<div class="card">
+    <input type="text" id="codigoCliente" placeholder="Ingresa tu código de cliente">
+    <button class="btn-primary" onclick="buscarCliente()">Buscar mi Pedido</button>
+</div>
 
-    <div class="card">
-        <input type="text" id="codigoCliente" placeholder="Ejemplo: 123456" />
-        <button class="btn-primary" onclick="buscarCliente()">Buscar mi Pedido</button>
-    </div>
-
-    <div id="resultado"></div>
-
-    <!-- Pie de página WhatsApp discreto -->
-    <div class="footer-whatsapp">
-        ¿Tienes alguna consulta? Escríbenos por WhatsApp: 
-        <a href="https://wa.me/51996639020" target="_blank" rel="noopener noreferrer">+51 996 639 020</a>
-    </div>
+<div id="resultado"></div>
 
 </div>
 
 <script>
-/* Aquí va tu JS original sin cambio (no copio todo para ahorrar espacio) */
+
 let pedidos = [];
 
-// 🔹 Cargar JSON y normalizar nombres de campos
 fetch("pedidos.json")
   .then(response => response.json())
   .then(data => {
       pedidos = data.map(pedido => {
           const obj = {};
           for (let key in pedido) {
-              obj[key.trim()] = pedido[key]; // quitar espacios de nombres
+              obj[key.trim()] = pedido[key];
           }
           return obj;
       });
@@ -248,7 +171,6 @@ function copiarTexto(texto) {
     navigator.clipboard.writeText(texto);
 }
 
-    
 function buscarCliente() {
 
     const codigo = document.getElementById("codigoCliente").value.trim();
@@ -260,22 +182,20 @@ function buscarCliente() {
         return;
     }
 
-    // 🔹 Buscar pedidos del cliente
     const pedidosCliente = pedidos.filter(p =>
         String(p["CODIGO.CLIENTE"]).trim() === codigo
     );
 
     if (pedidosCliente.length === 0) {
-        resultado.innerHTML = `<div class="card">No se encontró pedido programado para hoy.</div>`;
+        resultado.innerHTML = `<div class="card fade-in">No se encontró pedido programado para hoy.</div>`;
         return;
     }
 
     const cliente = pedidosCliente[0];
 
-    // 🔹 AGRUPAR POR tipo
     const grupos = {};
     pedidosCliente.forEach(item => {
-        const tipo = item["tipo"] || "PRODUCTOS";  // ← corrección aquí
+        const tipo = item["tipo"] || "PRODUCTOS";
         if (!grupos[tipo]) grupos[tipo] = [];
         grupos[tipo].push(item);
     });
@@ -285,137 +205,36 @@ function buscarCliente() {
 
     for (const tipo in grupos) {
 
-        detalleHTML += `
-        <div class="card">
-            <h4 style="margin-bottom:3px; color:#0b3d91;">${tipo}</h4>
-        `;
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+        detalleHTML += `<div class="card fade-in">
+        <h4 style="margin-bottom:3px; color:#0b3d91;">${tipo}</h4>`;
 
-// 🔹 Separar normales y bonificación dentro del tipo
-const normales = [];
-const bonificacion = [];
+        grupos[tipo].forEach(item => {
 
-grupos[tipo].forEach(item => {
-    const descripcion = (item["Descripcion"] || "").toLowerCase();
+            const precio = Number(item["precio"]) || 0;
+            subtotal += Number(item["Monto"]) || 0;
 
-    if (descripcion.includes("acti")) {
-        bonificacion.push(item);
-    } else {
-        normales.push(item);
-    }
-});
-
-
-// 🔹 Primero mostrar normales
-normales.forEach(item => {
-
-    const monto = Number(item["Monto"]) || 0;
-    const precio = Number(item["precio"]) || 0;
-    subtotal += monto;
-
-    detalleHTML += `
-        <div style="
-            border:1px solid #eee;
-            border-radius:12px;
-            padding:08px;
-            margin-bottom:08px;
-            background:#f9f9f9;
-            font-size:14px;
-        ">
-
-<div style="font-weight:bold; color:#0b3d91; margin-bottom:5px;">
-    ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
-</div>
-                
-<div style="display:grid; grid-template-columns: auto 1fr auto 1fr; gap:4px 10px;">
-
-    <strong>Medida:</strong>
-    <span>${item["unidad"] || "-"}</span>
-
-    <strong>Cantidad:</strong>
-    <span>${item["Unidades Programadas"] || "-"}</span>
-
-    <strong>Valor:</strong>
-    <span>S/ ${precio.toFixed(2)}</span>
-
-    <strong>Precio Total:</strong>
-    <span style="font-weight:bold; color:#0b3d91;">
-        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
-    </span>
-
-</div>
-
-        </div>
-    `;
-});
-
-
-// 🔹 Luego sección Bonificación (solo si existe)
-if (bonificacion.length > 0) {
-
-    detalleHTML += `
-        <div style="
-            margin-top:10px;
-            margin-bottom:4px;
-            font-weight:bold;
-            color:#b26a00;
-            display:flex;
-            align-items:center;
-            gap:8px;
-            font-size:14px;
-        ">
-            ⚠ Bonificación
-        </div>
-    `;
-
-    bonificacion.forEach(item => {
-
-        const monto = Number(item["Monto"]) || 0;
-        const precio = Number(item["precio"]) || 0;
-        subtotal += monto;
-
-        detalleHTML += `
+            detalleHTML += `
             <div style="
-                border:1px solid #f5c27a;
-                border-radius:12px;
+                border:1px solid #eee;
+                border-radius:14px;
                 padding:12px;
                 margin-bottom:10px;
-                background:#fff4e5;
+                background:#f9f9f9;
                 font-size:14px;
+                transition:0.2s;
             ">
-
-<div style="font-weight:bold; color:#b26a00; margin-bottom:8px;">
-    ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
-</div>
-                
-<div style="display:grid; grid-template-columns: auto 1fr auto 1fr; gap:6px 15px;">
-
-    <strong>Medida:</strong>
-    <span>${item["unidad"] || "-"}</span>
-
-    <strong>Cantidad facturada:</strong>
-    <span>${item["Unidades Programadas"] || "-"}</span>
-
-    <strong>Precio Unitario:</strong>
-    <span>S/ ${precio.toFixed(2)}</span>
-
-    <strong>Precio Total:</strong>
-    <span style="font-weight:bold; color:#b26a00;">
-        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
-    </span>
-
-</div>
-
-            </div>
-        `;
-    });
-}
-
-        
-            
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////        
-            
-            ;
+                <div style="font-weight:bold; color:#0b3d91; margin-bottom:6px;">
+                    ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
+                </div>
+                <div>
+                    <strong>Cantidad:</strong> ${item["Unidades Programadas"] || "-"}<br>
+                    <strong>Precio Total:</strong> 
+                    <span style="font-weight:bold; color:#0b3d91;">
+                        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+                    </span>
+                </div>
+            </div>`;
+        });
 
         detalleHTML += `</div>`;
     }
@@ -423,134 +242,34 @@ if (bonificacion.length > 0) {
     const igv = subtotal * 0.18;
     const total = subtotal + igv;
 
-    const mensajeWA = encodeURIComponent(
-        `Hola, soy el cliente código ${codigo} y tengo una consulta sobre mi pedido.`
-    );
-
-    // 🔹 Mostrar información del cliente y detalle
     resultado.innerHTML = `
+    <div class="fade-in">
 
-
-    
-<div class="card" style="padding:6px 8px; line-height:1.2; background: #f5f8fb;">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-    <h3 style="color:#0b3d91; font-size:16px; font-weight:600; margin: 0;">
-      ${cliente["NOMBRE.CLIENTE"] || "-"}
-    </h3>
-    <div style="font-size:13px; color:#333; font-weight: 600;">
-      🆔 ${cliente["CODIGO.CLIENTE"] || "-"}
-    </div>
-  </div>
-
-  <div style="display:flex; flex-wrap:wrap; gap:6px 12px; font-size:13px; color:#333;">
-    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
-      <strong>🚚 Vehículo:</strong> ${cliente["VEHICULO"] || "-"}
-    </div>
-
-    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
-      <strong>🧾 Repartidor:</strong> ${cliente["LIQUIDADOR"] || "-"}
-    </div>
-
-    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
-      <strong>📞 Contacto:</strong> ${cliente["NROS DE CONTACTO"] || "-"}
-    </div>
-  </div>
-</div>
-
-
-        ${detalleHTML}
-
-<div class="card" style="padding:12px 16px;">
-  <div style="display:flex; justify-content: space-between; font-size: 14px; color: #333; margin-bottom: 8px;">
-    <div>Subtotal: S/ ${subtotal.toFixed(2)}</div>
-    <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
-  </div>
-  <div class="total" style="font-size: 20px; font-weight: bold; color: #0b3d91;">
-    Total a pagar: S/ ${total.toFixed(2)}
-  </div>
-</div>
-
-/////////////////
-
-<div class="card">
-    <h3 style="margin-top:0; color:#0b3d91;">💳 Medios de Pago</h3>
-
-    <div class="cuenta-item">
-        <strong>RUC:</strong> 20132381624
-    </div>
-
-    <div class="cuenta-item">
-        <strong>BBVA (S/)</strong><br>
-        Cuenta: 249-04-0100004830 
-        <span class="copiar-mini" onclick="copiarTexto('249-04-0100004830')">📋</span><br>
-        Recaudo (fuera de Trujillo) – Código: 5616
-    </div>
-
-    <div class="cuenta-item">
-        <strong>BCP (S/)</strong><br>
-        Cuenta: 570-0060652-0-20 
-        <span class="copiar-mini" onclick="copiarTexto('570-0060652-0-20')">📋</span><br>
-        Recaudo (fuera de Trujillo): 380-2505561-0-79 
-        <span class="copiar-mini" onclick="copiarTexto('380-2505561-0-79')">📋</span><br>
-        Indicar código en agentes: 21982
-    </div>
-
-    <div class="cuenta-item">
-        <strong>Scotiabank (S/)</strong><br>
-        Cuenta: 000-0102563 
-        <span class="copiar-mini" onclick="copiarTexto('000-0102563')">📋</span><br>
-        Recaudo (fuera de Trujillo): Solo indicar cuenta de recaudo
-    </div>
-
-    <div class="cuenta-item">
-        <strong>Interbank (S/)</strong><br>
-        Cuenta: 600-3000378477 
-        <span class="copiar-mini" onclick="copiarTexto('600-3000378477')">📋</span>
-    </div>
-
-    <div class="cuenta-item">
-        <strong>Banco de la Nación (S/)</strong><br>
-        Cuenta: 00-741-797623 
-        <span class="copiar-mini" onclick="copiarTexto('00-741-797623')">📋</span>
-    </div>
-
-    <div class="cuenta-item">
-        <strong>Caja Trujillo (S/)</strong><br>
-        Cuenta: 000133281001 
-        <span class="copiar-mini" onclick="copiarTexto('000133281001')">📋</span>
-    </div>
-
-    <div class="cuenta-item" style="background:#f3e8ff; padding:8px; border-radius:8px;">
-        <strong>Yape:</strong> YUGOCORP Trujillo<br>
-        Celular Yape: 949 376 130 
-        <span class="copiar-mini" onclick="copiarTexto('949376130')">📋</span>
-    </div>
-    
-<div class="qr-pequeno">
-    <strong style="display:block; text-align:center;">Scannea el QR</strong>
-    <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
-</div>
-
-
-    <div style="font-size:12px; color:#666; margin-top:8px;">
-        📌 Agradecemos enviar constancia de pago una vez realizada la operación.
-    </div>
-</div>
-
-
-
-        <div class="card">
-            <div style="font-size:12px; color:#666; margin-top:8px;">
-         Tienes alguna consulta, enviar tus constancias de deposito, subir un reclamo?.
-    </div>
-            <button class="whatsapp" 
-                onclick="window.open('https://wa.me/51996639020?text=${mensajeWA}','_blank')">
-                
-            </button>
+    <div class="card">
+        <h3 style="color:#0b3d91; margin-top:0;">
+            ${cliente["NOMBRE.CLIENTE"] || "-"}
+        </h3>
+        <div style="font-size:13px;">
+            🆔 ${cliente["CODIGO.CLIENTE"] || "-"}
         </div>
+    </div>
+
+    ${detalleHTML}
+
+    <div class="card">
+        <div>Subtotal: S/ ${subtotal.toFixed(2)}</div>
+        <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
+        <div class="total">
+            Total a pagar: S/ ${total.toFixed(2)}
+        </div>
+    </div>
+
+    </div>
     `;
 }
+
 </script>
 
 </body>
 </html>
+
