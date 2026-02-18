@@ -156,22 +156,39 @@ function buscarCliente() {
         <div class="card">
             <h4 style="margin-bottom:10px; color:#0b3d91;">${tipo}</h4>
         `;
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        grupos[tipo].forEach(item => {
+// 🔹 Separar normales y bonificación dentro del tipo
+const normales = [];
+const bonificacion = [];
 
-            const monto = Number(item["Monto"]) || 0;
-            const precio = Number(item["precio"]) || 0;
-            subtotal += monto;
+grupos[tipo].forEach(item => {
+    const descripcion = (item["Descripcion"] || "").toLowerCase();
 
-            detalleHTML += `
-                <div style="
-                    border:1px solid #eee;
-                    border-radius:12px;
-                    padding:12px;
-                    margin-bottom:10px;
-                    background:#f9f9f9;
-                    font-size:14px;
-                ">
+    if (descripcion.includes("actv.")) {
+        bonificacion.push(item);
+    } else {
+        normales.push(item);
+    }
+});
+
+
+// 🔹 Primero mostrar normales
+normales.forEach(item => {
+
+    const monto = Number(item["Monto"]) || 0;
+    const precio = Number(item["precio"]) || 0;
+    subtotal += monto;
+
+    detalleHTML += `
+        <div style="
+            border:1px solid #eee;
+            border-radius:12px;
+            padding:12px;
+            margin-bottom:10px;
+            background:#f9f9f9;
+            font-size:14px;
+        ">
 
 <div style="font-weight:bold; color:#0b3d91; margin-bottom:8px;">
     ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
@@ -189,14 +206,83 @@ function buscarCliente() {
     <span>S/ ${precio.toFixed(2)}</span>
 
     <strong>Precio Total:</strong>
-    <span>S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}</span>
+    <span style="font-weight:bold; color:#0b3d91;">
+        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+    </span>
 
 </div>
 
-                    </div>
-                </div>
-            `;
-        });
+        </div>
+    `;
+});
+
+
+// 🔹 Luego sección Bonificación (solo si existe)
+if (bonificacion.length > 0) {
+
+    detalleHTML += `
+        <div style="
+            margin-top:15px;
+            margin-bottom:8px;
+            font-weight:bold;
+            color:#b26a00;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            font-size:14px;
+        ">
+            ⚠ Bonificación
+        </div>
+    `;
+
+    bonificacion.forEach(item => {
+
+        const monto = Number(item["Monto"]) || 0;
+        const precio = Number(item["precio"]) || 0;
+        subtotal += monto;
+
+        detalleHTML += `
+            <div style="
+                border:1px solid #f5c27a;
+                border-radius:12px;
+                padding:12px;
+                margin-bottom:10px;
+                background:#fff4e5;
+                font-size:14px;
+            ">
+
+<div style="font-weight:bold; color:#b26a00; margin-bottom:8px;">
+    ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
+</div>
+                
+<div style="display:grid; grid-template-columns: auto 1fr auto 1fr; gap:6px 15px;">
+
+    <strong>Medida:</strong>
+    <span>${item["unidad"] || "-"}</span>
+
+    <strong>Cantidad facturada:</strong>
+    <span>${item["Unidades Programadas"] || "-"}</span>
+
+    <strong>Precio Unitario:</strong>
+    <span>S/ ${precio.toFixed(2)}</span>
+
+    <strong>Precio Total:</strong>
+    <span style="font-weight:bold; color:#b26a00;">
+        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+    </span>
+
+</div>
+
+            </div>
+        `;
+    });
+}
+
+        
+            
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////        
+            
+            ;
 
         detalleHTML += `</div>`;
     }
@@ -268,6 +354,7 @@ function buscarCliente() {
 
 </body>
 </html>
+
 
 
 
