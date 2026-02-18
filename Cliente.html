@@ -175,15 +175,317 @@ function copiarTexto(texto) {
     navigator.clipboard.writeText(texto);
 }
 
-function buscarCliente() {
+
 
 /* ⚠️ AQUÍ CONTINÚA TODO TU JS EXACTAMENTE IGUAL
 NO LO MODIFIQUÉ NI ELIMINÉ NADA */
 
+function buscarCliente() {
+
+    const codigo = document.getElementById("codigoCliente").value.trim();
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = "";
+
+    if (!codigo) {
+        alert("Ingrese su código.");
+        return;
+    }
+
+    // 🔹 Buscar pedidos del cliente
+    const pedidosCliente = pedidos.filter(p =>
+        String(p["CODIGO.CLIENTE"]).trim() === codigo
+    );
+
+    if (pedidosCliente.length === 0) {
+        resultado.innerHTML = `<div class="card">No se encontró pedido programado para hoy.</div>`;
+        return;
+    }
+
+    const cliente = pedidosCliente[0];
+
+    // 🔹 AGRUPAR POR tipo
+    const grupos = {};
+    pedidosCliente.forEach(item => {
+        const tipo = item["tipo"] || "PRODUCTOS";  // ← corrección aquí
+        if (!grupos[tipo]) grupos[tipo] = [];
+        grupos[tipo].push(item);
+    });
+
+    let subtotal = 0;
+    let detalleHTML = "";
+
+    for (const tipo in grupos) {
+
+        detalleHTML += `
+        <div class="card">
+            <h4 style="margin-bottom:3px; color:#0b3d91;">${tipo}</h4>
+        `;
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 🔹 Separar normales y bonificación dentro del tipo
+const normales = [];
+const bonificacion = [];
+
+grupos[tipo].forEach(item => {
+    const descripcion = (item["Descripcion"] || "").toLowerCase();
+
+    if (descripcion.includes("acti")) {
+        bonificacion.push(item);
+    } else {
+        normales.push(item);
+    }
+});
+
+
+// 🔹 Primero mostrar normales
+normales.forEach(item => {
+
+    const monto = Number(item["Monto"]) || 0;
+    const precio = Number(item["precio"]) || 0;
+    subtotal += monto;
+
+    detalleHTML += `
+        <div style="
+            border:1px solid #eee;
+            border-radius:12px;
+            padding:08px;
+            margin-bottom:08px;
+            background:#f9f9f9;
+            font-size:14px;
+        ">
+
+<div style="font-weight:bold; color:#0b3d91; margin-bottom:5px;">
+    ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
+</div>
+                
+<div style="display:grid; grid-template-columns: auto 1fr auto 1fr; gap:4px 10px;">
+
+    <strong>Medida:</strong>
+    <span>${item["unidad"] || "-"}</span>
+
+    <strong>Cantidad:</strong>
+    <span>${item["Unidades Programadas"] || "-"}</span>
+
+    <strong>Valor:</strong>
+    <span>S/ ${precio.toFixed(2)}</span>
+
+    <strong>Precio Total:</strong>
+    <span style="font-weight:bold; color:#0b3d91;">
+        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+    </span>
+
+</div>
+
+        </div>
+    `;
+});
+
+
+// 🔹 Luego sección Bonificación (solo si existe)
+if (bonificacion.length > 0) {
+
+    detalleHTML += `
+        <div style="
+            margin-top:10px;
+            margin-bottom:4px;
+            font-weight:bold;
+            color:#b26a00;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            font-size:14px;
+        ">
+            ⚠ Bonificación
+        </div>
+    `;
+
+    bonificacion.forEach(item => {
+
+        const monto = Number(item["Monto"]) || 0;
+        const precio = Number(item["precio"]) || 0;
+        subtotal += monto;
+
+        detalleHTML += `
+            <div style="
+                border:1px solid #f5c27a;
+                border-radius:12px;
+                padding:12px;
+                margin-bottom:10px;
+                background:#fff4e5;
+                font-size:14px;
+            ">
+
+<div style="font-weight:bold; color:#b26a00; margin-bottom:8px;">
+    ${item["SKU"] || "-"} :: ${item["Descripcion"] || "-"}
+</div>
+                
+<div style="display:grid; grid-template-columns: auto 1fr auto 1fr; gap:6px 15px;">
+
+    <strong>Medida:</strong>
+    <span>${item["unidad"] || "-"}</span>
+
+    <strong>Cantidad facturada:</strong>
+    <span>${item["Unidades Programadas"] || "-"}</span>
+
+    <strong>Precio Unitario:</strong>
+    <span>S/ ${precio.toFixed(2)}</span>
+
+    <strong>Precio Total:</strong>
+    <span style="font-weight:bold; color:#b26a00;">
+        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+    </span>
+
+</div>
+
+            </div>
+        `;
+    });
+}
+
+        
+            
+    
+            ;
+
+        detalleHTML += `</div>`;
+    }
+
+    const igv = subtotal * 0.18;
+    const total = subtotal + igv;
+
+    const mensajeWA = encodeURIComponent(
+        `Hola, soy el cliente código ${codigo} y tengo una consulta sobre mi pedido.`
+    );
+
+    // 🔹 Mostrar información del cliente y detalle
+    resultado.innerHTML = `
+
+
+    
+<div class="card" style="padding:6px 8px; line-height:1.2; background: #f5f8fb;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+    <h3 style="color:#0b3d91; font-size:16px; font-weight:600; margin: 0;">
+      ${cliente["NOMBRE.CLIENTE"] || "-"}
+    </h3>
+    <div style="font-size:13px; color:#333; font-weight: 600;">
+      🆔 ${cliente["CODIGO.CLIENTE"] || "-"}
+    </div>
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:6px 12px; font-size:13px; color:#333;">
+    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
+      <strong>🚚 Vehículo:</strong> ${cliente["VEHICULO"] || "-"}
+    </div>
+
+    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
+      <strong>🧾 Repartidor:</strong> ${cliente["LIQUIDADOR"] || "-"}
+    </div>
+
+    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
+      <strong>📞 Contacto:</strong> ${cliente["NROS DE CONTACTO"] || "-"}
+    </div>
+  </div>
+</div>
+
+
+        ${detalleHTML}
+
+<div class="card" style="padding:12px 16px;">
+  <div style="display:flex; justify-content: space-between; font-size: 14px; color: #333; margin-bottom: 8px;">
+    <div>Subtotal: S/ ${subtotal.toFixed(2)}</div>
+    <div>IGV (18%): S/ ${igv.toFixed(2)}</div>
+  </div>
+  <div class="total" style="font-size: 20px; font-weight: bold; color: #0b3d91;">
+    Total a pagar: S/ ${total.toFixed(2)}
+  </div>
+</div>
+
+
+
+<div class="card">
+    <h3 style="margin-top:0; color:#0b3d91;">💳 Medios de Pago</h3>
+
+    <div class="cuenta-item">
+        <strong>RUC:</strong> 20132381624
+    </div>
+
+    <div class="cuenta-item">
+        <strong>BBVA (S/)</strong><br>
+        Cuenta: 249-04-0100004830 
+        <span class="copiar-mini" onclick="copiarTexto('249-04-0100004830')">📋</span><br>
+        Recaudo (fuera de Trujillo) – Código: 5616
+    </div>
+
+    <div class="cuenta-item">
+        <strong>BCP (S/)</strong><br>
+        Cuenta: 570-0060652-0-20 
+        <span class="copiar-mini" onclick="copiarTexto('570-0060652-0-20')">📋</span><br>
+        Recaudo (fuera de Trujillo): 380-2505561-0-79 
+        <span class="copiar-mini" onclick="copiarTexto('380-2505561-0-79')">📋</span><br>
+        Indicar código en agentes: 21982
+    </div>
+
+    <div class="cuenta-item">
+        <strong>Scotiabank (S/)</strong><br>
+        Cuenta: 000-0102563 
+        <span class="copiar-mini" onclick="copiarTexto('000-0102563')">📋</span><br>
+        Recaudo (fuera de Trujillo): Solo indicar cuenta de recaudo
+    </div>
+
+    <div class="cuenta-item">
+        <strong>Interbank (S/)</strong><br>
+        Cuenta: 600-3000378477 
+        <span class="copiar-mini" onclick="copiarTexto('600-3000378477')">📋</span>
+    </div>
+
+    <div class="cuenta-item">
+        <strong>Banco de la Nación (S/)</strong><br>
+        Cuenta: 00-741-797623 
+        <span class="copiar-mini" onclick="copiarTexto('00-741-797623')">📋</span>
+    </div>
+
+    <div class="cuenta-item">
+        <strong>Caja Trujillo (S/)</strong><br>
+        Cuenta: 000133281001 
+        <span class="copiar-mini" onclick="copiarTexto('000133281001')">📋</span>
+    </div>
+
+    <div class="cuenta-item" style="background:#f3e8ff; padding:8px; border-radius:8px;">
+        <strong>Yape:</strong> YUGOCORP Trujillo<br>
+        Celular Yape: 949 376 130 
+        <span class="copiar-mini" onclick="copiarTexto('949376130')">📋</span>
+    </div>
+    
+<div class="qr-pequeno">
+    <strong style="display:block; text-align:center;">Scannea el QR</strong>
+    <img src="YAPEQRYUGOCORP.png" alt="QR Yape">
+</div>
+
+
+    <div style="font-size:12px; color:#666; margin-top:8px;">
+        📌 Agradecemos enviar constancia de pago una vez realizada la operación.
+    </div>
+</div>
+
+
+
+        <div class="card">
+            <div style="font-size:12px; color:#666; margin-top:8px;">
+         Tienes alguna consulta, enviar tus constancias de deposito, subir un reclamo?.
+    </div>
+            <button class="whatsapp" 
+                onclick="window.open('https://wa.me/51996639020?text=${mensajeWA}','_blank')">
+                
+            </button>
+        </div>
+    `;
 }
 
 </script>
 
+
+
 </body>
 </html>
+
 
