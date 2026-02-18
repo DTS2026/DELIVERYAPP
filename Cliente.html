@@ -199,10 +199,10 @@ normales.forEach(item => {
     <strong>Medida:</strong>
     <span>${item["unidad"] || "-"}</span>
 
-    <strong>Cantidad facturada:</strong>
+    <strong>Cantidad:</strong>
     <span>${item["Unidades Programadas"] || "-"}</span>
 
-    <strong>Precio Unitario:</strong>
+    <strong>Valor:</strong>
     <span>S/ ${precio.toFixed(2)}</span>
 
     <strong>Precio Total:</strong>
@@ -299,34 +299,31 @@ if (bonificacion.length > 0) {
 
 
     
-<div class="card" style="padding:14px; line-height:1.4; background: #f5f8fb;">
-    <h3 style="margin-bottom:10px; color:#0b3d91; font-size:18px;">
-        ${cliente["NOMBRE.CLIENTE"] || "-"}
+<div class="card" style="padding:6px 8px; line-height:1.2; background: #f5f8fb;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+    <h3 style="color:#0b3d91; font-size:16px; font-weight:600; margin: 0;">
+      ${cliente["NOMBRE.CLIENTE"] || "-"}
     </h3>
-
-    <div style="display:flex; flex-wrap:wrap; gap:10px; font-size:14px; color:#333;">
-        <!-- Código y forma de pago -->
-        <div style="flex: 1 1 45%; background:#f5f8fb; padding:6px 8px; border-radius:8px;">
-            <strong>🆔 Código:</strong> ${cliente["CODIGO.CLIENTE"] || "-"}
-        </div>
-
-        <!-- Ubicación -->
-
-        <!-- Facturación y vehículo -->
-
-        <div style="flex: 1 1 45%; background:#f5f8fb; padding:6px 8px; border-radius:8px;">
-            <strong>🚚 Vehículo:</strong> ${cliente["VEHICULO"] || "-"}
-        </div>
-
-        <!-- Liquidador y contactos -->
-        <div style="flex: 1 1 45%; background:#f5f8fb; padding:6px 8px; border-radius:8px;">
-            <strong>🧾 Repartidor:</strong> ${cliente["LIQUIDADOR"] || "-"}
-        </div>
-        <div style="flex: 1 1 45%; background:#f5f8fb; padding:6px 8px; border-radius:8px;">
-            <strong>📞 Contacto:</strong> ${cliente["NROS DE CONTACTO"] || "-"}
-        </div>
+    <div style="font-size:13px; color:#333; font-weight: 600;">
+      🆔 ${cliente["CODIGO.CLIENTE"] || "-"}
     </div>
-</div
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:6px 12px; font-size:13px; color:#333;">
+    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
+      <strong>🚚 Vehículo:</strong> ${cliente["VEHICULO"] || "-"}
+    </div>
+
+    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
+      <strong>🧾 Repartidor:</strong> ${cliente["LIQUIDADOR"] || "-"}
+    </div>
+
+    <div style="flex: 1 1 45%; background:#f5f8fb; padding:4px 6px; border-radius:6px;">
+      <strong>📞 Contacto:</strong> ${cliente["NROS DE CONTACTO"] || "-"}
+    </div>
+  </div>
+</div>
+
 
         ${detalleHTML}
 
@@ -354,6 +351,7 @@ if (bonificacion.length > 0) {
 
 </body>
 </html>
+
 
 
 
