@@ -121,6 +121,11 @@ button {
     display: block;
     margin: 10px auto;
 }
+
+    * {
+    box-sizing: border-box;
+}
+    
 </style>
 </head>
 
@@ -131,18 +136,18 @@ button {
 <!-- 🔹 NUEVO ENCABEZADO -->
 <div class="header-banner">
     <span>RAZZETO</span>
-    RAZZETO I GRUPO DN
+    CONSULTA TU PEDIDO
 </div>
 
 <div class="card">
     <div style="margin-bottom:10px; font-weight:600;">
-        revisa el estado de tu pedido:
+        Conoce el estatus de tu pedido:
     </div>
 
-    <input type="text" id="codigoCliente" placeholder="Ingresa tu código de cliente">
+    <input type="text" id="codigoCliente" placeholder="Ingresa el codigo de cliente que aparece en tu factura">
 
     <div style="font-size:12px; margin-top:8px; text-align:center;">
-        tu código de cliente lo puedes ubicar en tu factura, si no lo ubicas contáctanos para brindarte tu código
+        tienes problemas para encotrar tu codigo?, contactanos.
     </div>
 
     <button class="btn-primary" onclick="buscarCliente()">
@@ -326,10 +331,10 @@ if (bonificacion.length > 0) {
     <strong>Medida:</strong>
     <span>${item["unidad"] || "-"}</span>
 
-    <strong>Cantidad facturada:</strong>
+    <strong>Cantidad:</strong>
     <span>${item["Unidades Programadas"] || "-"}</span>
 
-    <strong>Precio Unitario:</strong>
+    <strong>Valor:</strong>
     <span>S/ ${precio.toFixed(2)}</span>
 
     <strong>Precio Total:</strong>
@@ -356,7 +361,7 @@ if (bonificacion.length > 0) {
     const total = subtotal + igv;
 
     const mensajeWA = encodeURIComponent(
-        `Hola, soy el cliente código ${codigo} y tengo una consulta sobre mi pedido.`
+        `Hola, soy el cliente ${cliente["NOMBRE.CLIENTE"] || "-"} con codigo ${codigo} y tengo una consulta sobre mi pedido.`
     );
 
     // 🔹 Mostrar información del cliente y detalle
@@ -489,6 +494,7 @@ if (bonificacion.length > 0) {
 
 </body>
 </html>
+
 
 
 
