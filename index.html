@@ -366,7 +366,7 @@ if (bonificacion.length > 0) {
 
         const monto = Number(item["Monto"])*1.18 || 0;
         const precio = Number(item["precio"])*1.18 || 0;
-        subtotal += monto;
+        subtotal += monto/1.18;
 
         detalleHTML += `
             <div style="
@@ -555,6 +555,7 @@ ${estadoHTML}
 
 </body>
 </html>
+
 
 
 
