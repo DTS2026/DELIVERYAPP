@@ -160,10 +160,10 @@ button {
         Conoce el estatus de tu pedido:
     </div>
 
-    <input type="text" id="codigoCliente" placeholder="Ingresa el codigo de cliente que aparece en tu factura">
+    <input type="text" id="codigoCliente" placeholder="Ingresa el codigo de cliente que aparece en tu factura o tu nro de Documento RUC/DNI">
 
     <div style="font-size:12px; margin-top:8px; text-align:center;">
-        tienes problemas para encotrar tu codigo?, contactanos.
+        tienes problemas ?, contactanos.
     </div>
 
     <button class="btn-primary" onclick="buscarCliente()">
@@ -305,7 +305,7 @@ normales.forEach(item => {
 
     const monto = Number(item["Monto"]) || 0;
     const precio = Number(item["precio"]) || 0;
-    subtotal += monto;
+    subtotal += monto / 1.18 ;
 
     detalleHTML += `
         <div style="
@@ -395,7 +395,7 @@ if (bonificacion.length > 0) {
 
     <strong>Precio Total:</strong>
     <span style="font-weight:bold; color:#b26a00;">
-        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+        S/ ${(precio * 1.18 * (item["Unidades Programadas"] || 0)).toFixed(2)}
     </span>
 
 </div>
@@ -555,4 +555,5 @@ ${estadoHTML}
 
 </body>
 </html>
+
 
