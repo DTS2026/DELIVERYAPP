@@ -160,7 +160,7 @@ button {
         Conoce el estatus de tu pedido:
     </div>
 
-    <input type="text" id="codigoCliente" placeholder="Ingresa el codigo de cliente  o tu nro de Documento RUC/DNI">
+    <input type="text" id="codigoCliente" placeholder="Ingresa tu codigo de cliente o tu nro de Documento RUC/DNI">
 
     <div style="font-size:12px; margin-top:8px; text-align:center;">
         tienes problemas ?, contactanos.
@@ -303,7 +303,7 @@ grupos[tipo].forEach(item => {
 // 🔹 Primero mostrar normales
 normales.forEach(item => {
 
-    const monto = Number(item["Monto"])*1.18 || 0;
+    const monto = Number(item["Monto"]) || 0;
     const precio = Number(item["precio"])*1.18 || 0;
     subtotal += monto / 1.18 ;
 
@@ -364,7 +364,7 @@ if (bonificacion.length > 0) {
 
     bonificacion.forEach(item => {
 
-        const monto = Number(item["Monto"])*1.18 || 0;
+        const monto = Number(item["Monto"]) || 0;
         const precio = Number(item["precio"])*1.18 || 0;
         subtotal += monto/1.18;
 
@@ -555,6 +555,7 @@ ${estadoHTML}
 
 </body>
 </html>
+
 
 
 
