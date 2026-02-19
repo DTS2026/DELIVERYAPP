@@ -218,10 +218,14 @@ function buscarCliente() {
         return;
     }
 
-    // 🔹 Buscar pedidos del cliente
-    const pedidosCliente = pedidos.filter(p =>
-        String(p["CODIGO.CLIENTE"]).trim() === codigo
-    );
+// 🔹 Buscar por código o por documento
+const pedidosCliente = pedidos.filter(p => {
+
+    const codigoCliente = String(p["CODIGO.CLIENTE"] || "").trim();
+    const documento = String(p["documento"] || "").trim();
+
+    return codigoCliente === codigo || documento === codigo;
+});
 
     if (pedidosCliente.length === 0) {
         resultado.innerHTML = `<div class="card">No se encontró pedido programado para hoy.</div>`;
@@ -551,3 +555,4 @@ ${estadoHTML}
 
 </body>
 </html>
+
