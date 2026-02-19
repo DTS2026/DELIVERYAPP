@@ -303,8 +303,8 @@ grupos[tipo].forEach(item => {
 // 🔹 Primero mostrar normales
 normales.forEach(item => {
 
-    const monto = Number(item["Monto"]) || 0;
-    const precio = Number(item["precio"]) || 0;
+    const monto = Number(item["Monto"])*1.18 || 0;
+    const precio = Number(item["precio"])*1.18 || 0;
     subtotal += monto / 1.18 ;
 
     detalleHTML += `
@@ -364,8 +364,8 @@ if (bonificacion.length > 0) {
 
     bonificacion.forEach(item => {
 
-        const monto = Number(item["Monto"]) || 0;
-        const precio = Number(item["precio"]) || 0;
+        const monto = Number(item["Monto"])*1.18 || 0;
+        const precio = Number(item["precio"])*1.18 || 0;
         subtotal += monto;
 
         detalleHTML += `
@@ -555,5 +555,6 @@ ${estadoHTML}
 
 </body>
 </html>
+
 
 
