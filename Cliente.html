@@ -160,10 +160,10 @@ button {
         Conoce el estatus de tu pedido:
     </div>
 
-    <input type="text" id="codigoCliente" placeholder="Ingresa el codigo de cliente que aparece en tu factura">
+    <input type="text" id="codigoCliente" placeholder="Ingresa tu codigo de cliente o tu nro de Documento RUC/DNI">
 
     <div style="font-size:12px; margin-top:8px; text-align:center;">
-        tienes problemas para encotrar tu codigo?, contactanos.
+        tienes problemas ?, contactanos.
     </div>
 
     <button class="btn-primary" onclick="buscarCliente()">
@@ -218,10 +218,14 @@ function buscarCliente() {
         return;
     }
 
-    // 🔹 Buscar pedidos del cliente
-    const pedidosCliente = pedidos.filter(p =>
-        String(p["CODIGO.CLIENTE"]).trim() === codigo
-    );
+// 🔹 Buscar por código o por documento
+const pedidosCliente = pedidos.filter(p => {
+
+    const codigoCliente = String(p["CODIGO.CLIENTE"] || "").trim();
+    const documento = String(p["documento"] || "").trim();
+
+    return codigoCliente === codigo || documento === codigo;
+});
 
     if (pedidosCliente.length === 0) {
         resultado.innerHTML = `<div class="card">No se encontró pedido programado para hoy.</div>`;
@@ -300,8 +304,8 @@ grupos[tipo].forEach(item => {
 normales.forEach(item => {
 
     const monto = Number(item["Monto"]) || 0;
-    const precio = Number(item["precio"]) || 0;
-    subtotal += monto;
+    const precio = Number(item["precio"])*1.18 || 0;
+    subtotal += monto / 1.18 ;
 
     detalleHTML += `
         <div style="
@@ -361,8 +365,8 @@ if (bonificacion.length > 0) {
     bonificacion.forEach(item => {
 
         const monto = Number(item["Monto"]) || 0;
-        const precio = Number(item["precio"]) || 0;
-        subtotal += monto;
+        const precio = Number(item["precio"])*1.18 || 0;
+        subtotal += monto/1.18;
 
         detalleHTML += `
             <div style="
@@ -391,7 +395,7 @@ if (bonificacion.length > 0) {
 
     <strong>Precio Total:</strong>
     <span style="font-weight:bold; color:#b26a00;">
-        S/ ${(precio * (item["Unidades Programadas"] || 0)).toFixed(2)}
+        S/ ${(precio * 1.18 * (item["Unidades Programadas"] || 0)).toFixed(2)}
     </span>
 
 </div>
@@ -551,15 +555,6 @@ ${estadoHTML}
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
 
 
 
