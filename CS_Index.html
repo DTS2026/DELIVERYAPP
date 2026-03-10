@@ -350,14 +350,34 @@ let estado="APTO"
 if(valores.includes("FALLA")) estado="NO SALIR"
 else if(valores.includes("OBS")) estado="REVISAR"
 
+document.getElementById("formChecklist").addEventListener("submit",function(e){
+
+e.preventDefault()
+
+let formData = new FormData(this)
+let datos = Object.fromEntries(formData.entries())
+
+let valores = Object.values(datos)
+
+let estado="APTO"
+
+if(valores.includes("FALLA")) estado="NO SALIR"
+else if(valores.includes("OBS")) estado="REVISAR"
+
 document.getElementById("resultado").innerText="Resultado: "+estado
 
 fetch(URL_SCRIPT,{
 method:"POST",
-body:new FormData(this)
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify(datos)
 })
 
-alert("Checklist enviado")
+.then(res=>res.text())
+.then(res=>{
+alert("Checklist enviado correctamente")
+})
 
 })
 
@@ -365,3 +385,4 @@ alert("Checklist enviado")
 
 </body>
 </html>
+
