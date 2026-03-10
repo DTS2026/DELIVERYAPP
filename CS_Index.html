@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checklist Unidad Refrigerada</title>
+
+<link rel="stylesheet" href="CS_style.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+<h2>Checklist Unidad Refrigerada</h2>
+
+<label>Sucursal</label>
+<select id="sucursal"></select>
+
+<label>Placa</label>
+<select id="placa"></select>
+
+<label>Conductor</label>
+<input type="text" id="conductor">
+
+<label>Kilometraje</label>
+<input type="number" id="km">
+
+<h3>Seguridad del Vehículo</h3>
+
+<label><input type="checkbox" id="luces_delanteras"> Luces delanteras</label>
+<label><input type="checkbox" id="luces_traseras"> Luces traseras</label>
+<label><input type="checkbox" id="direccionales"> Direccionales</label>
+<label><input type="checkbox" id="bocina"> Bocina</label>
+
+<h3>Equipo de Refrigeración</h3>
+
+<label><input type="checkbox" id="equipo_frio"> Equipo frío enciende</label>
+
+<label>Temperatura °C</label>
+<input type="number" id="temperatura">
+
+<h3>Observaciones</h3>
+
+<textarea id="observaciones"></textarea>
+
+<button onclick="enviarChecklist()">Enviar Checklist</button>
+
+</div>
+
+<script src="CS_script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+[
+{"sucursal":"T1 - CONTENEDOR","estado":"OPERATIVA","placa":"AOW-996"},
+{"sucursal":"T1 - CONTENEDOR","estado":"OPERATIVA","placa":"TNG-973"},
+{"sucursal":"T1 - CONTENEDOR","estado":"OPERATIVA","placa":"AJQ-973"},
+{"sucursal":"T1 - CONTENEDOR","estado":"OPERATIVA","placa":"ACM-973"},
+{"sucursal":"T1 - CONTENEDOR","estado":"OPERATIVA","placa":"AJQ-990"},
+{"sucursal":"T1 - CONTENEDOR","estado":"OPERATIVA","placa":"F6U-995"},
+
+{"sucursal":"T1 - TRUJILLO","estado":"OPERATIVA","placa":"T9K-855"},
+{"sucursal":"T1 - TRUJILLO","estado":"OPERATIVA","placa":"TAR-877"},
+{"sucursal":"T1 - TRUJILLO","estado":"RETEN","placa":"AKP-829"},
+{"sucursal":"T1 - TRUJILLO","estado":"OPERATIVA","placa":"T8N-930"},
+{"sucursal":"T1 - TRUJILLO","estado":"OPERATIVA","placa":"T9K-882"},
+
+{"sucursal":"T2 - PIURA","estado":"OPERATIVA","placa":"T9W-873"},
+{"sucursal":"T2 - PIURA","estado":"OPERATIVA","placa":"C9B-934"},
+{"sucursal":"T2 - PIURA","estado":"OPERATIVA","placa":"D8N-730"},
+{"sucursal":"T2 - PIURA","estado":"OPERATIVA","placa":"T8P-825"},
+{"sucursal":"T2 - PIURA","estado":"OPERATIVA","placa":"T8Q-813"},
+{"sucursal":"T2 - PIURA","estado":"OPERATIVA","placa":"TCQ-884"},
+
+{"sucursal":"T2 - TRUJILLO","estado":"OPERATIVA","placa":"BYG-928"},
+{"sucursal":"T2 - TRUJILLO","estado":"OPERATIVA","placa":"BYH-919"},
+{"sucursal":"T2 - TRUJILLO","estado":"OPERATIVA","placa":"T8Q-823"},
+{"sucursal":"T2 - TRUJILLO","estado":"OPERATIVA","placa":"T9K-920"},
+{"sucursal":"T2 - TRUJILLO","estado":"OPERATIVA","placa":"T9L-873"},
+{"sucursal":"T2 - TRUJILLO","estado":"OPERATIVA","placa":"TCQ-861"}
+]
