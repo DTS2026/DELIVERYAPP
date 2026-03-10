@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Checklist Preoperacional</title>
+<title>Checklist FINAL 15.51</title>
 
 <style>
 
@@ -149,8 +149,8 @@ font-size:18px;
 
 <script>
 
-
 const URL_SCRIPT="https://script.google.com/macros/s/AKfycbyFJbjd2__XxvKjX88k_X4TdeiuadPNy0GA33IfU6cYbS7jIxlSiee5fhey12monbAGOw/exec"
+
 const checklist = {
 
 "2️⃣ Seguridad del vehículo":[
@@ -249,7 +249,6 @@ ${item}
 })
 
 div.innerHTML=html
-
 container.appendChild(div)
 
 })
@@ -331,10 +330,7 @@ document.getElementById("resultado").innerText="Resultado: "+estado
 
 fetch(URL_SCRIPT,{
 method:"POST",
-body:JSON.stringify(datos),
-headers:{
-"Content-Type":"application/json"
-}
+body:new URLSearchParams(datos)
 })
 .then(res=>res.text())
 .then(res=>{
@@ -351,5 +347,3 @@ console.log(err)
 
 </body>
 </html>
-
-
