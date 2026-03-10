@@ -19,10 +19,17 @@
 <h2>Checklist Unidad Refrigerada</h2>
 
 <label>Sucursal</label>
-<select id="sucursal"></select>
+<select id="sucursal">
+<option value="T1 - TRUJILLO">T1 - TRUJILLO</option>
+<option value="T2 - LIMA">T2 - LIMA</option>
+<option value="T2 - PIURA">T2 - PIURA</option>
+<option value="T2 - CHICLAYO">T2 - CHICLAYO</option>
+<option value="T2 - CHIMBOTE">T2 - CHIMBOTE</option>
+<option value="T2 - CAJAMARCA">T2 - CAJAMARCA</option>
+</select>
 
 <label>Placa</label>
-<select id="placa"></select>
+<input type="text" id="placa">
 
 <label>Conductor</label>
 <input type="text" id="conductor">
@@ -32,9 +39,9 @@
 
 <h3>Seguridad del Vehículo</h3>
 
-<label><input type="checkbox" id="luces_delanteras"> Luces delanteras</label>
-<label><input type="checkbox" id="luces_traseras"> Luces traseras</label>
-<label><input type="checkbox" id="direccionales"> Direccionales</label>
+<label><input type="checkbox" id="luces_delanteras"> Luces delanteras</label><br>
+<label><input type="checkbox" id="luces_traseras"> Luces traseras</label><br>
+<label><input type="checkbox" id="direccionales"> Direccionales</label><br>
 <label><input type="checkbox" id="bocina"> Bocina</label>
 
 <h3>Equipo de Refrigeración</h3>
@@ -48,11 +55,60 @@
 
 <textarea id="observaciones"></textarea>
 
+<br><br>
+
 <button onclick="enviarChecklist()">Enviar Checklist</button>
 
 </div>
 
-<script src="CS_script.js"></script>
+<script>
+
+function enviarChecklist(){
+
+let datos = {
+
+  sucursal: document.getElementById("sucursal").value,
+  placa: document.getElementById("placa").value,
+  conductor: document.getElementById("conductor").value,
+  km: document.getElementById("km").value,
+
+  lucesDelanteras: document.getElementById("luces_delanteras").checked ? "OK" : "FALLA",
+  lucesTraseras: document.getElementById("luces_traseras").checked ? "OK" : "FALLA",
+  direccionales: document.getElementById("direccionales").checked ? "OK" : "FALLA",
+  bocina: document.getElementById("bocina").checked ? "OK" : "FALLA",
+
+  equipoFrio: document.getElementById("equipo_frio").checked ? "OK" : "FALLA",
+
+  temperatura: document.getElementById("temperatura").value,
+  observaciones: document.getElementById("observaciones").value
+
+};
+
+fetch("https://script.google.com/macros/s/AKfycbyAFjClJDZTqnTpfFR7XHnmHlv_Ox48Fs7aHEYj_BAkcMnnW4yxVcWfjF6knyc6z-zPng/exec", {
+
+method: "POST",
+body: JSON.stringify(datos)
+
+})
+
+.then(res => res.text())
+.then(res => {
+
+alert("Checklist enviado correctamente");
+
+document.getElementById("placa").value = "";
+document.getElementById("conductor").value = "";
+document.getElementById("km").value = "";
+document.getElementById("temperatura").value = "";
+document.getElementById("observaciones").value = "";
+
+})
+
+.catch(err => alert("Error al enviar checklist"));
+
+}
+
+</script>
 
 </body>
 </html>
