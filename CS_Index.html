@@ -331,15 +331,18 @@ document.getElementById("resultado").innerText="Resultado: "+estado
 
 fetch(URL_SCRIPT,{
 method:"POST",
+body:JSON.stringify(datos),
 headers:{
 "Content-Type":"application/json"
-},
-body:JSON.stringify(datos)
+}
 })
-
 .then(res=>res.text())
 .then(res=>{
 alert("Checklist enviado correctamente")
+})
+.catch(err=>{
+alert("Error enviando checklist")
+console.log(err)
 })
 
 })
@@ -348,4 +351,5 @@ alert("Checklist enviado correctamente")
 
 </body>
 </html>
+
 
