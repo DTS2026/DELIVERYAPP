@@ -126,32 +126,13 @@ font-size:18px;
 <div id="checklistContainer"></div>
 
 <div class="section">
-
 <h3>Temperatura del equipo °C</h3>
 <input type="number" name="temperatura">
-
 </div>
 
 <div class="section">
-
-<h3>Fotos</h3>
-
-<label>Foto frontal unidad</label>
-<input type="file" accept="image/*" capture="environment">
-
-<label>Foto interior furgón</label>
-<input type="file" accept="image/*" capture="environment">
-
-<label>Foto panel equipo frío</label>
-<input type="file" accept="image/*" capture="environment">
-
-</div>
-
-<div class="section">
-
 <h3>Observaciones</h3>
 <textarea name="observaciones"></textarea>
-
 </div>
 
 <div class="resultado" id="resultado"></div>
@@ -168,64 +149,15 @@ const URL_SCRIPT="https://script.google.com/macros/s/AKfycbyAFjClJDZTqnTpfFR7XHn
 
 const checklist = {
 
-"2️⃣ Seguridad del vehículo":[
-"Luces delanteras",
-"Luces altas",
-"Luces traseras",
-"Luces de freno",
-"Direccionales",
-"Bocina",
-"Espejos",
-"Limpiaparabrisas",
-"Cinturón seguridad"
+"Seguridad del vehículo":[
+{label:"Luces delanteras",name:"lucesDelanteras"},
+{label:"Luces traseras",name:"lucesTraseras"},
+{label:"Direccionales",name:"direccionales"},
+{label:"Bocina",name:"bocina"}
 ],
 
-"3️⃣ Estado mecánico":[
-"Nivel aceite",
-"Nivel refrigerante",
-"Fugas visibles",
-"Estado batería",
-"Correas"
-],
-
-"4️⃣ Llantas":[
-"Presión correcta",
-"Estado neumáticos",
-"Tuercas completas"
-],
-
-"5️⃣ Frenos":[
-"Frenos responden",
-"Freno de mano"
-],
-
-"6️⃣ Equipo de refrigeración":[
-"Equipo frío enciende",
-"Sin alarmas",
-"Evaporador limpio",
-"Ventiladores funcionando",
-"Condensador limpio"
-],
-
-"7️⃣ Estado del furgón":[
-"Interior limpio",
-"Piso en buen estado",
-"Puertas cierran bien",
-"Sellos puerta",
-"Cortinas térmicas"
-],
-
-"8️⃣ Seguridad":[
-"Extintor vigente",
-"Triángulos seguridad",
-"Botiquín",
-"Chaleco reflectivo"
-],
-
-"9️⃣ Documentos":[
-"SOAT vigente",
-"Tarjeta propiedad",
-"Licencia conductor"
+"Equipo de refrigeración":[
+{label:"Equipo frío enciende",name:"equipoFrio"}
 ]
 
 }
@@ -239,21 +171,19 @@ div.className="section"
 
 let html=`<h3>${section}</h3>`
 
-items.forEach((item,i)=>{
-
-let name=section+i
+items.forEach(item=>{
 
 html+=`
 
 <div class="item">
 
-${item}
+${item.label}
 
 <div class="options">
 
-<label><input type="radio" name="${name}" value="OK"> OK</label>
-<label><input type="radio" name="${name}" value="OBS"> OBS</label>
-<label><input type="radio" name="${name}" value="FALLA"> FALLA</label>
+<label><input type="radio" name="${item.name}" value="OK"> OK</label>
+<label><input type="radio" name="${item.name}" value="OBS"> OBS</label>
+<label><input type="radio" name="${item.name}" value="FALLA"> FALLA</label>
 
 </div>
 
@@ -271,7 +201,7 @@ container.appendChild(div)
 
 let placasData=[]
 
-fetch(URL_SCRIPT+"?tipo=placas")
+fetch(URL_SCRIPT)
 
 .then(r=>r.json())
 
@@ -317,11 +247,11 @@ placa.appendChild(o)
 
 })
 
-const radios=document.querySelectorAll("input[type=radio]")
+document.addEventListener("change",function(e){
 
-radios.forEach(r=>{
-
-r.addEventListener("change",updateProgress)
+if(e.target.type==="radio"){
+updateProgress()
+}
 
 })
 
@@ -338,17 +268,6 @@ document.getElementById("progressBar").style.width=percent+"%"
 document.getElementById("progressBar").innerText=percent+"%"
 
 }
-
-document.getElementById("formChecklist").addEventListener("submit",function(e){
-
-e.preventDefault()
-
-let valores=[...new FormData(this).values()]
-
-let estado="APTO"
-
-if(valores.includes("FALLA")) estado="NO SALIR"
-else if(valores.includes("OBS")) estado="REVISAR"
 
 document.getElementById("formChecklist").addEventListener("submit",function(e){
 
@@ -385,4 +304,3 @@ alert("Checklist enviado correctamente")
 
 </body>
 </html>
-
