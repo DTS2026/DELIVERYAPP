@@ -8,107 +8,272 @@
 
 <title>Checklist Unidad Refrigerada</title>
 
-<link rel="stylesheet" href="CS_style.css">
+<style>
+
+body{
+font-family:Segoe UI;
+background:#f4f6f8;
+padding:20px;
+}
+
+.container{
+max-width:750px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 5px 12px rgba(0,0,0,0.15);
+}
+
+h2{
+text-align:center;
+}
+
+.section{
+margin-top:25px;
+}
+
+.item{
+margin-bottom:15px;
+}
+
+.options{
+display:flex;
+gap:15px;
+}
+
+label{
+font-weight:600;
+}
+
+input,select,textarea{
+width:100%;
+padding:8px;
+margin-top:5px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+textarea{
+height:80px;
+}
+
+button{
+margin-top:20px;
+width:100%;
+padding:12px;
+background:#1e88e5;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+}
+
+.progress{
+background:#ddd;
+height:20px;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:20px;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:#4caf50;
+text-align:center;
+color:white;
+font-size:12px;
+}
+
+</style>
 
 </head>
 
 <body>
 
-<div class="app">
+<div class="container">
 
-<h2>Checklist Unidad Refrigerada</h2>
+<h2>Checklist Preoperacional</h2>
+
+<div class="progress">
+<div class="progress-bar" id="progressBar">0%</div>
+</div>
+
+<form id="formChecklist">
+
+<div class="section">
 
 <label>Sucursal</label>
-<select id="sucursal">
-<option value="T1 - TRUJILLO">T1 - TRUJILLO</option>
-<option value="T2 - LIMA">T2 - LIMA</option>
-<option value="T2 - PIURA">T2 - PIURA</option>
-<option value="T2 - CHICLAYO">T2 - CHICLAYO</option>
-<option value="T2 - CHIMBOTE">T2 - CHIMBOTE</option>
-<option value="T2 - CAJAMARCA">T2 - CAJAMARCA</option>
+
+<select id="sucursal" name="sucursal" required>
+<option value="">Cargando sucursales...</option>
 </select>
 
 <label>Placa</label>
-<input type="text" id="placa">
+
+<select id="placa" name="placa" required>
+<option value="">Seleccione sucursal primero</option>
+</select>
 
 <label>Conductor</label>
-<input type="text" id="conductor">
+<input type="text" name="conductor" required>
 
 <label>Kilometraje</label>
-<input type="number" id="km">
+<input type="number" name="km" required>
 
-<h3>Seguridad del Vehículo</h3>
+</div>
 
-<label><input type="checkbox" id="luces_delanteras"> Luces delanteras</label><br>
-<label><input type="checkbox" id="luces_traseras"> Luces traseras</label><br>
-<label><input type="checkbox" id="direccionales"> Direccionales</label><br>
-<label><input type="checkbox" id="bocina"> Bocina</label>
+<div class="section">
+
+<h3>Seguridad Vehicular</h3>
+
+<div class="item">
+Luces delanteras
+<div class="options">
+<label><input type="radio" name="luces" value="OK">OK</label>
+<label><input type="radio" name="luces" value="OBS">OBS</label>
+<label><input type="radio" name="luces" value="FALLA">FALLA</label>
+</div>
+</div>
+
+<div class="item">
+Direccionales
+<div class="options">
+<label><input type="radio" name="direccionales" value="OK">OK</label>
+<label><input type="radio" name="direccionales" value="OBS">OBS</label>
+<label><input type="radio" name="direccionales" value="FALLA">FALLA</label>
+</div>
+</div>
+
+<div class="item">
+Bocina
+<div class="options">
+<label><input type="radio" name="bocina" value="OK">OK</label>
+<label><input type="radio" name="bocina" value="OBS">OBS</label>
+<label><input type="radio" name="bocina" value="FALLA">FALLA</label>
+</div>
+</div>
+
+</div>
+
+<div class="section">
 
 <h3>Equipo de Refrigeración</h3>
 
-<label><input type="checkbox" id="equipo_frio"> Equipo frío enciende</label>
+<div class="item">
+Equipo de frío
+<div class="options">
+<label><input type="radio" name="frio" value="OK">OK</label>
+<label><input type="radio" name="frio" value="OBS">OBS</label>
+<label><input type="radio" name="frio" value="FALLA">FALLA</label>
+</div>
+</div>
 
 <label>Temperatura °C</label>
-<input type="number" id="temperatura">
+<input type="number" name="temperatura">
 
-<h3>Observaciones</h3>
+</div>
 
-<textarea id="observaciones"></textarea>
+<div class="section">
 
-<br><br>
+<h3>Fotos Inspección</h3>
 
-<button onclick="enviarChecklist()">Enviar Checklist</button>
+<label>Foto frontal unidad</label>
+<input type="file" name="foto1" accept="image/*" capture="environment">
+
+<label>Foto interior furgón</label>
+<input type="file" name="foto2" accept="image/*" capture="environment">
+
+<label>Foto panel equipo frío</label>
+<input type="file" name="foto3" accept="image/*" capture="environment">
+
+</div>
+
+<div class="section">
+
+<label>Observaciones</label>
+<textarea name="observaciones"></textarea>
+
+</div>
+
+<button type="submit">Enviar Checklist</button>
+
+</form>
 
 </div>
 
 <script>
 
-function enviarChecklist(){
+const URL_SCRIPT="https://script.google.com/macros/s/AKfycbyAFjClJDZTqnTpfFR7XHnmHlv_Ox48Fs7aHEYj_BAkcMnnW4yxVcWfjF6knyc6z-zPng/exec"
 
-let datos = {
+let placasData=[]
 
-  sucursal: document.getElementById("sucursal").value,
-  placa: document.getElementById("placa").value,
-  conductor: document.getElementById("conductor").value,
-  km: document.getElementById("km").value,
+fetch(URL_SCRIPT+"?tipo=placas")
 
-  lucesDelanteras: document.getElementById("luces_delanteras").checked ? "OK" : "FALLA",
-  lucesTraseras: document.getElementById("luces_traseras").checked ? "OK" : "FALLA",
-  direccionales: document.getElementById("direccionales").checked ? "OK" : "FALLA",
-  bocina: document.getElementById("bocina").checked ? "OK" : "FALLA",
+.then(res=>res.json())
 
-  equipoFrio: document.getElementById("equipo_frio").checked ? "OK" : "FALLA",
+.then(data=>{
 
-  temperatura: document.getElementById("temperatura").value,
-  observaciones: document.getElementById("observaciones").value
+placasData=data
 
-};
+const sucursales=[...new Set(data.map(x=>x.sucursal))]
 
-fetch("https://script.google.com/macros/s/AKfycbyAFjClJDZTqnTpfFR7XHnmHlv_Ox48Fs7aHEYj_BAkcMnnW4yxVcWfjF6knyc6z-zPng/exec", {
+const selectSucursal=document.getElementById("sucursal")
 
-method: "POST",
-body: JSON.stringify(datos)
+selectSucursal.innerHTML='<option value="">Seleccionar sucursal</option>'
 
-})
+sucursales.forEach(s=>{
 
-.then(res => res.text())
-.then(res => {
+let option=document.createElement("option")
+option.value=s
+option.text=s
 
-alert("Checklist enviado correctamente");
-
-document.getElementById("placa").value = "";
-document.getElementById("conductor").value = "";
-document.getElementById("km").value = "";
-document.getElementById("temperatura").value = "";
-document.getElementById("observaciones").value = "";
+selectSucursal.appendChild(option)
 
 })
 
-.catch(err => alert("Error al enviar checklist"));
+})
 
-}
+document.getElementById("sucursal").addEventListener("change",function(){
+
+const sucursal=this.value
+const selectPlaca=document.getElementById("placa")
+
+selectPlaca.innerHTML='<option value="">Seleccionar placa</option>'
+
+placasData
+.filter(p=>p.sucursal==sucursal)
+.forEach(p=>{
+
+let option=document.createElement("option")
+
+option.value=p.placa
+option.text=p.placa
+
+selectPlaca.appendChild(option)
+
+})
+
+})
+
+document.getElementById("formChecklist").addEventListener("submit",function(e){
+
+e.preventDefault()
+
+fetch(URL_SCRIPT,{
+method:"POST",
+body:new FormData(this)
+})
+
+alert("Checklist enviado correctamente")
+
+this.reset()
+
+})
 
 </script>
 
 </body>
 </html>
+
