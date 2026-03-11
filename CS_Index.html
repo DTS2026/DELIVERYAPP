@@ -323,7 +323,7 @@ const checklist = {
 "Luces traseras",
 "Luces de freno",
 "Direccionales",
-"Bocina",
+"Claxon",
 "Espejos",
 "Limpiaparabrisas",
 "Cinturón seguridad"
@@ -334,7 +334,7 @@ const checklist = {
 "Nivel refrigerante",
 "Fugas visibles",
 "Estado batería",
-"Correas"
+"Nivel de Liquido Freno"
 ],
 
 "🛞 4️⃣ Llantas":[
@@ -344,13 +344,13 @@ const checklist = {
 ],
 
 "🛑 5️⃣ Frenos":[
-"Frenos responden",
+"Frenos Cortos",
 "Freno de mano"
 ],
 
 "❄️ 6️⃣ Equipo de refrigeración":[
 "Equipo de frío enciende",
-"Sin alarmas",
+"Estado de Faja(Sonido)",
 "Evaporador limpio",
 "Ventiladores funcionando",
 "Condensador limpio"
@@ -361,20 +361,21 @@ const checklist = {
 "Piso en buen estado",
 "Puertas cierran bien",
 "Sellos puerta",
-"Cortinas térmicas"
+"Cortinas térmicas", 
+"Paredes Interiores en buen estado"
 ],
 
 "🦺 8️⃣ Seguridad":[
 "Extintor vigente",
 "Triángulos seguridad",
 "Botiquín",
-"Chaleco reflectivo"
+"LLave de Ruedas"
 ],
 
 "📄 9️⃣ Documentos":[
 "SOAT vigente",
 "Tarjeta propiedad",
-"Licencia conductor"
+"Tarjeta de Circulacion"
 ]
 
 }
@@ -553,8 +554,8 @@ let valores=Object.values(datos)
 
 let estado="APTO"
 
-if(valores.includes("FALLA")) estado="NO SALIR"
-else if(valores.includes("OBS")) estado="REVISAR"
+if(valores.includes("FALLA")) estado="Se Programara Reparaciones"
+else if(valores.includes("OBS")) estado="Se inspeccionara Unidad"
 
 document.getElementById("resultado").innerText="Resultado: "+estado
 
@@ -577,3 +578,4 @@ console.log(err)
 
 </body>
 </html>
+
