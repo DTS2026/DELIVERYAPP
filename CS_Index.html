@@ -1,4 +1,4 @@
-<!-- VERSION 25 -->
+<!-- VERSION 26 -->
 
 <!DOCTYPE html>
 <html lang="es">
@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>1PM</title>
+<title>CheckList</title>
 
 <style>
 
@@ -133,8 +133,8 @@ font-size:15px;
 
 .options{
 display:flex;
-gap:10px;
-margin-top:8px;
+gap:8px;
+margin-top:6px;
 flex-wrap:wrap;
 }
 
@@ -149,13 +149,15 @@ display:none;
 .option-btn label{
 display:block;
 text-align:center;
-padding:11px;
-border-radius:12px;
+padding:6px 8px;
+border-radius:10px;
 font-weight:600;
 cursor:pointer;
 border:2px solid #d1d5db;
 background:#f9fafb;
 transition:all .2s;
+font-size:12px;
+line-height:14px;
 }
 
 .option-btn input:checked + label{
@@ -167,19 +169,16 @@ transform:scale(1.02);
 /* OK */
 
 .ok label{background:#e8f7ee;}
-
 .ok input:checked + label{background:#22c55e;}
 
 /* OBS */
 
 .obs label{background:#fff7e6;}
-
 .obs input:checked + label{background:#f59e0b;}
 
 /* FALLA */
 
 .falla label{background:#ffecec;}
-
 .falla input:checked + label{background:#ef4444;}
 
 /* INPUTS */
@@ -211,24 +210,6 @@ font-size:17px;
 font-weight:bold;
 }
 
-/* BOTON FLOTANTE */
-
-.floating-btn{
-position:fixed;
-bottom:25px;
-right:20px;
-background:#1e88e5;
-color:white;
-border:none;
-border-radius:50px;
-padding:16px 20px;
-font-size:15px;
-font-weight:bold;
-box-shadow:0 6px 20px rgba(0,0,0,0.3);
-cursor:pointer;
-z-index:1000;
-}
-
 /* RESULTADO */
 
 .resultado{
@@ -257,11 +238,11 @@ RAZZETO
 </div>
 
 <div class="header-center">
-CONSULTA TU PEDIDO
+CHECKLIST SEMANAL
 </div>
 
 <div class="header-right">
-DISTRIBUCION | GRUPO DN
+GRUPO DN
 </div>
 
 </div>
@@ -329,10 +310,6 @@ DISTRIBUCION | GRUPO DN
 </form>
 
 </div>
-
-<button class="floating-btn" onclick="document.getElementById('formChecklist').requestSubmit()">
-Enviar ✔
-</button>
 
 <script>
 
