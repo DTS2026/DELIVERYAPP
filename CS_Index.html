@@ -1,3 +1,5 @@
+<!-- VERSION 25 -->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,14 +25,34 @@ position:fixed;
 top:0;
 left:0;
 width:100%;
-background:#1e3a5f;
-color:white;
-text-align:center;
-padding:16px;
+background:#ffe100;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:14px 20px;
 font-weight:bold;
-font-size:18px;
 z-index:1000;
 box-shadow:0 3px 10px rgba(0,0,0,0.25);
+}
+
+.header-left{
+color:red;
+font-weight:900;
+}
+
+.header-center{
+color:white;
+font-size:20px;
+font-weight:900;
+flex:1;
+text-align:center;
+-webkit-text-stroke:1px black;
+}
+
+.header-right{
+color:black;
+font-weight:700;
+font-size:14px;
 }
 
 /* CONTENEDOR */
@@ -144,33 +166,21 @@ transform:scale(1.02);
 
 /* OK */
 
-.ok label{
-background:#e8f7ee;
-}
+.ok label{background:#e8f7ee;}
 
-.ok input:checked + label{
-background:#22c55e;
-}
+.ok input:checked + label{background:#22c55e;}
 
 /* OBS */
 
-.obs label{
-background:#fff7e6;
-}
+.obs label{background:#fff7e6;}
 
-.obs input:checked + label{
-background:#f59e0b;
-}
+.obs input:checked + label{background:#f59e0b;}
 
 /* FALLA */
 
-.falla label{
-background:#ffecec;
-}
+.falla label{background:#ffecec;}
 
-.falla input:checked + label{
-background:#ef4444;
-}
+.falla input:checked + label{background:#ef4444;}
 
 /* INPUTS */
 
@@ -228,6 +238,12 @@ text-align:center;
 font-size:18px;
 }
 
+/* FOTO FALLA */
+
+#fotoContainer{
+display:none;
+}
+
 </style>
 
 </head>
@@ -235,7 +251,19 @@ font-size:18px;
 <body>
 
 <div class="header">
-Checklist Preoperacional Unidad Refrigerada
+
+<div class="header-left">
+RAZZETO
+</div>
+
+<div class="header-center">
+CONSULTA TU PEDIDO
+</div>
+
+<div class="header-right">
+DISTRIBUCION | GRUPO DN
+</div>
+
 </div>
 
 <div class="container">
@@ -283,6 +311,14 @@ Checklist Preoperacional Unidad Refrigerada
 
 <h3>📝 Observaciones</h3>
 <textarea name="observaciones"></textarea>
+
+</div>
+
+<div class="section" id="fotoContainer">
+
+<h3>📷 Evidencia de falla</h3>
+
+<input type="file" id="fotoFalla" accept="image/*" capture="environment">
 
 </div>
 
@@ -459,9 +495,24 @@ document.addEventListener("change",function(e){
 if(e.target.type==="radio"){
 updateProgress()
 updateStats()
+checkFotoFalla()
 }
 
 })
+
+function checkFotoFalla(){
+
+let falla=document.querySelectorAll("input[value='FALLA']:checked").length
+let fotoBox=document.getElementById("fotoContainer")
+
+if(falla>0){
+fotoBox.style.display="block"
+}
+else{
+fotoBox.style.display="none"
+}
+
+}
 
 function updateProgress(){
 
@@ -487,12 +538,39 @@ document.getElementById("fallaCount").innerText=falla
 
 }
 
-document.getElementById("formChecklist").addEventListener("submit",function(e){
+document.getElementById("formChecklist").addEventListener("submit",async function(e){
 
 e.preventDefault()
 
+let falla=document.querySelectorAll("input[value='FALLA']:checked").length
+
+if(falla>0){
+
+let foto=document.getElementById("fotoFalla").files.length
+
+if(foto==0){
+alert("Debe tomar una foto de la falla antes de enviar")
+return
+}
+
+}
+
 let formData=new FormData(this)
 let datos=Object.fromEntries(formData.entries())
+
+const file=document.getElementById("fotoFalla").files[0]
+
+if(file){
+
+let base64=await new Promise(resolve=>{
+let reader=new FileReader()
+reader.onload=e=>resolve(e.target.result)
+reader.readAsDataURL(file)
+})
+
+datos.foto=base64
+
+}
 
 let valores=Object.values(datos)
 
