@@ -5,47 +5,51 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Checklist FINAL 15.51</title>
+<title>Checklist Preoperacional</title>
 
 <style>
 
 body{
-font-family:Segoe UI;
-background:#f4f6f8;
-padding:20px;
+font-family:Segoe UI,Arial;
+background:#eef2f6;
+margin:0;
+padding:0;
 }
+
+/* HEADER APP */
+
+.header{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+background:#1e3a5f;
+color:white;
+text-align:center;
+padding:14px;
+font-weight:bold;
+font-size:18px;
+z-index:1000;
+box-shadow:0 3px 8px rgba(0,0,0,0.2);
+}
+
+/* CONTENEDOR */
 
 .container{
-max-width:850px;
+max-width:750px;
 margin:auto;
 background:white;
-padding:25px;
-border-radius:10px;
-box-shadow:0 5px 15px rgba(0,0,0,0.15);
+min-height:100vh;
+padding:20px;
+padding-top:80px;
 }
 
-h2{
-text-align:center;
-}
-
-.section{
-margin-top:30px;
-}
-
-.item{
-margin-bottom:15px;
-}
-
-.options{
-display:flex;
-gap:15px;
-margin-top:5px;
-}
+/* PROGRESS */
 
 .progress{
-background:#ddd;
+background:#e5e7eb;
 height:22px;
-border-radius:10px;
+border-radius:15px;
 overflow:hidden;
 margin-bottom:20px;
 }
@@ -53,34 +57,130 @@ margin-bottom:20px;
 .progress-bar{
 height:100%;
 width:0%;
-background:#4caf50;
+background:#22c55e;
 text-align:center;
 color:white;
 font-size:12px;
+line-height:22px;
+transition:width 0.4s ease;
 }
+
+/* SECCIONES */
+
+.section{
+margin-top:25px;
+padding:15px;
+background:#f8fafc;
+border-radius:12px;
+border:1px solid #e2e8f0;
+}
+
+.section h3{
+margin-top:0;
+color:#1e3a5f;
+font-size:18px;
+}
+
+/* ITEMS */
+
+.item{
+margin-bottom:18px;
+font-size:15px;
+}
+
+/* BOTONES OPCION */
+
+.options{
+display:flex;
+gap:10px;
+margin-top:8px;
+flex-wrap:wrap;
+}
+
+.option-btn{
+flex:1;
+}
+
+.option-btn input{
+display:none;
+}
+
+.option-btn label{
+display:block;
+text-align:center;
+padding:10px;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+border:2px solid #d1d5db;
+background:#f9fafb;
+}
+
+.option-btn input:checked + label{
+color:white;
+border:none;
+}
+
+/* OK */
+
+.ok label{
+background:#e8f7ee;
+}
+
+.ok input:checked + label{
+background:#22c55e;
+}
+
+/* OBS */
+
+.obs label{
+background:#fff7e6;
+}
+
+.obs input:checked + label{
+background:#f59e0b;
+}
+
+/* FALLA */
+
+.falla label{
+background:#ffecec;
+}
+
+.falla input:checked + label{
+background:#ef4444;
+}
+
+/* INPUTS */
 
 input,select,textarea{
 width:100%;
-padding:8px;
-margin-top:5px;
-border:1px solid #ccc;
-border-radius:5px;
+padding:10px;
+margin-top:6px;
+border:1px solid #cbd5e1;
+border-radius:8px;
+font-size:14px;
 }
 
 textarea{
-height:80px;
+height:90px;
 }
+
+/* BOTON */
 
 button{
 margin-top:25px;
 width:100%;
-padding:12px;
+padding:14px;
 background:#1e88e5;
 color:white;
 border:none;
-border-radius:6px;
-font-size:16px;
+border-radius:12px;
+font-size:17px;
+font-weight:bold;
 }
+
+/* RESULTADO */
 
 .resultado{
 margin-top:15px;
@@ -95,9 +195,11 @@ font-size:18px;
 
 <body>
 
-<div class="container">
+<div class="header">
+Checklist Preoperacional Unidad Refrigerada
+</div>
 
-<h2>Checklist Preoperacional Unidad Refrigerada</h2>
+<div class="container">
 
 <div class="progress">
 <div class="progress-bar" id="progressBar">0%</div>
@@ -225,18 +327,38 @@ div.className="section"
 let html=`<h3>${section}</h3>`
 
 items.forEach((item)=>{
-  let name = item.trim(); // el nombre exacto del campo, coincidente con tu encabezado
 
-  html+=`
-  <div class="item">
-    ${item}
-    <div class="options">
-      <label><input type="radio" name="${name}" value="OK" required> OK</label>
-      <label><input type="radio" name="${name}" value="OBS"> OBS</label>
-      <label><input type="radio" name="${name}" value="FALLA"> FALLA</label>
-    </div>
-  </div>
-  `
+let name=item.trim()
+
+html+=`
+
+<div class="item">
+
+${item}
+
+<div class="options">
+
+<div class="option-btn ok">
+<input type="radio" name="${name}" value="OK" required id="${name}-ok">
+<label for="${name}-ok">OK<br>Perfecto</label>
+</div>
+
+<div class="option-btn obs">
+<input type="radio" name="${name}" value="OBS" id="${name}-obs">
+<label for="${name}-obs">OBS<br>Revisar</label>
+</div>
+
+<div class="option-btn falla">
+<input type="radio" name="${name}" value="FALLA" id="${name}-falla">
+<label for="${name}-falla">FALLA<br>Inoperativo</label>
+</div>
+
+</div>
+
+</div>
+
+`
+
 })
 
 div.innerHTML=html
@@ -338,5 +460,3 @@ console.log(err)
 
 </body>
 </html>
-
-
