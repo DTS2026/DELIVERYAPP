@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Checklist Preoperacional</title>
+<title>1PM</title>
 
 <style>
 
@@ -26,11 +26,11 @@ width:100%;
 background:#1e3a5f;
 color:white;
 text-align:center;
-padding:14px;
+padding:16px;
 font-weight:bold;
 font-size:18px;
 z-index:1000;
-box-shadow:0 3px 8px rgba(0,0,0,0.2);
+box-shadow:0 3px 10px rgba(0,0,0,0.25);
 }
 
 /* CONTENEDOR */
@@ -41,7 +41,7 @@ margin:auto;
 background:white;
 min-height:100vh;
 padding:20px;
-padding-top:80px;
+padding-top:85px;
 }
 
 /* PROGRESS */
@@ -51,7 +51,7 @@ background:#e5e7eb;
 height:22px;
 border-radius:15px;
 overflow:hidden;
-margin-bottom:20px;
+margin-bottom:15px;
 }
 
 .progress-bar{
@@ -62,8 +62,27 @@ text-align:center;
 color:white;
 font-size:12px;
 line-height:22px;
-transition:width 0.4s ease;
+transition:width 0.5s ease;
 }
+
+/* CONTADOR */
+
+.stats{
+display:flex;
+justify-content:space-around;
+margin-bottom:15px;
+font-size:13px;
+font-weight:600;
+}
+
+.stats div{
+padding:6px 10px;
+border-radius:8px;
+}
+
+.okStat{background:#e8f7ee;color:#16a34a}
+.obsStat{background:#fff7e6;color:#d97706}
+.fallaStat{background:#ffecec;color:#dc2626}
 
 /* SECCIONES */
 
@@ -108,17 +127,19 @@ display:none;
 .option-btn label{
 display:block;
 text-align:center;
-padding:10px;
-border-radius:10px;
+padding:11px;
+border-radius:12px;
 font-weight:600;
 cursor:pointer;
 border:2px solid #d1d5db;
 background:#f9fafb;
+transition:all .2s;
 }
 
 .option-btn input:checked + label{
 color:white;
 border:none;
+transform:scale(1.02);
 }
 
 /* OK */
@@ -166,7 +187,7 @@ textarea{
 height:90px;
 }
 
-/* BOTON */
+/* BOTON NORMAL */
 
 button{
 margin-top:25px;
@@ -178,6 +199,24 @@ border:none;
 border-radius:12px;
 font-size:17px;
 font-weight:bold;
+}
+
+/* BOTON FLOTANTE */
+
+.floating-btn{
+position:fixed;
+bottom:25px;
+right:20px;
+background:#1e88e5;
+color:white;
+border:none;
+border-radius:50px;
+padding:16px 20px;
+font-size:15px;
+font-weight:bold;
+box-shadow:0 6px 20px rgba(0,0,0,0.3);
+cursor:pointer;
+z-index:1000;
 }
 
 /* RESULTADO */
@@ -205,6 +244,12 @@ Checklist Preoperacional Unidad Refrigerada
 <div class="progress-bar" id="progressBar">0%</div>
 </div>
 
+<div class="stats">
+<div class="okStat">Perfecto: <span id="okCount">0</span></div>
+<div class="obsStat">Revisar: <span id="obsCount">0</span></div>
+<div class="fallaStat">Fallas: <span id="fallaCount">0</span></div>
+</div>
+
 <form id="formChecklist">
 
 <div class="section">
@@ -229,14 +274,14 @@ Checklist Preoperacional Unidad Refrigerada
 
 <div class="section">
 
-<h3>Temperatura del equipo °C</h3>
+<h3>🌡 Temperatura del equipo °C</h3>
 <input type="number" name="temperatura">
 
 </div>
 
 <div class="section">
 
-<h3>Observaciones</h3>
+<h3>📝 Observaciones</h3>
 <textarea name="observaciones"></textarea>
 
 </div>
@@ -249,13 +294,17 @@ Checklist Preoperacional Unidad Refrigerada
 
 </div>
 
+<button class="floating-btn" onclick="document.getElementById('formChecklist').requestSubmit()">
+Enviar ✔
+</button>
+
 <script>
 
 const URL_SCRIPT="https://script.google.com/macros/s/AKfycbyFJbjd2__XxvKjX88k_X4TdeiuadPNy0GA33IfU6cYbS7jIxlSiee5fhey12monbAGOw/exec"
 
 const checklist = {
 
-"2️⃣ Seguridad del vehículo":[
+"🚨 2️⃣ Seguridad del vehículo":[
 "Luces delanteras",
 "Luces altas",
 "Luces traseras",
@@ -267,7 +316,7 @@ const checklist = {
 "Cinturón seguridad"
 ],
 
-"3️⃣ Estado mecánico":[
+"⚙️ 3️⃣ Estado mecánico":[
 "Nivel aceite",
 "Nivel refrigerante",
 "Fugas visibles",
@@ -275,18 +324,18 @@ const checklist = {
 "Correas"
 ],
 
-"4️⃣ Llantas":[
+"🛞 4️⃣ Llantas":[
 "Presión correcta",
 "Estado neumáticos",
 "Tuercas completas"
 ],
 
-"5️⃣ Frenos":[
+"🛑 5️⃣ Frenos":[
 "Frenos responden",
 "Freno de mano"
 ],
 
-"6️⃣ Equipo de refrigeración":[
+"❄️ 6️⃣ Equipo de refrigeración":[
 "Equipo de frío enciende",
 "Sin alarmas",
 "Evaporador limpio",
@@ -294,7 +343,7 @@ const checklist = {
 "Condensador limpio"
 ],
 
-"7️⃣ Estado del furgón":[
+"📦 7️⃣ Estado del furgón":[
 "Interior limpio",
 "Piso en buen estado",
 "Puertas cierran bien",
@@ -302,14 +351,14 @@ const checklist = {
 "Cortinas térmicas"
 ],
 
-"8️⃣ Seguridad":[
+"🦺 8️⃣ Seguridad":[
 "Extintor vigente",
 "Triángulos seguridad",
 "Botiquín",
 "Chaleco reflectivo"
 ],
 
-"9️⃣ Documentos":[
+"📄 9️⃣ Documentos":[
 "SOAT vigente",
 "Tarjeta propiedad",
 "Licencia conductor"
@@ -409,6 +458,7 @@ document.addEventListener("change",function(e){
 
 if(e.target.type==="radio"){
 updateProgress()
+updateStats()
 }
 
 })
@@ -422,6 +472,18 @@ let percent=Math.round((checked/total)*100)
 
 document.getElementById("progressBar").style.width=percent+"%"
 document.getElementById("progressBar").innerText=percent+"%"
+
+}
+
+function updateStats(){
+
+let ok=document.querySelectorAll("input[value='OK']:checked").length
+let obs=document.querySelectorAll("input[value='OBS']:checked").length
+let falla=document.querySelectorAll("input[value='FALLA']:checked").length
+
+document.getElementById("okCount").innerText=ok
+document.getElementById("obsCount").innerText=obs
+document.getElementById("fallaCount").innerText=falla
 
 }
 
