@@ -224,28 +224,19 @@ div.className="section"
 
 let html=`<h3>${section}</h3>`
 
-items.forEach((item,i)=>{
+items.forEach((item)=>{
+  let name = item.trim(); // el nombre exacto del campo, coincidente con tu encabezado
 
-let name=section+i
-
-html+=`
-
-<div class="item">
-
-${item}
-
-<div class="options">
-
-<label><input type="radio" name="${name}" value="OK"> OK</label>
-<label><input type="radio" name="${name}" value="OBS"> OBS</label>
-<label><input type="radio" name="${name}" value="FALLA"> FALLA</label>
-
-</div>
-
-</div>
-
-`
-
+  html+=`
+  <div class="item">
+    ${item}
+    <div class="options">
+      <label><input type="radio" name="${name}" value="OK" required> OK</label>
+      <label><input type="radio" name="${name}" value="OBS"> OBS</label>
+      <label><input type="radio" name="${name}" value="FALLA"> FALLA</label>
+    </div>
+  </div>
+  `
 })
 
 div.innerHTML=html
@@ -347,4 +338,5 @@ console.log(err)
 
 </body>
 </html>
+
 
